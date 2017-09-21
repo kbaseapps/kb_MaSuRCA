@@ -51,8 +51,8 @@ module kb_MaSuRCA {
         float cgwErrorRate=0.15 - set cgwErrorRate=0.25 for bacteria and 0.1<=cgwErrorRate<=0.15 for other organisms.
         int KMER_COUNT_THRESHOLD - minimum count k-mers used in error correction 1 means all k-mers are used.  one can increase to 2 if Illumina coverage >100
         bool CLOSE_GAPS - whether to attempt to close gaps in scaffolds with Illumina data (1) or not (0)
-        int NUM_THREADS - auto-detected number of cpus to use
-        int JF_SIZE  - this is mandatory jellyfish hash size -- a safe value is estimated_genome_size*estimated_coverage (e.g., 200000000)
+        int NUM_THREADS - auto-detected number of cpus to use, mandatory
+        int JF_SIZE  - this is mandatory jellyfish hash size -- a safe value is estimated_genome_size*estimated_coverage (e.g., 2000000000), mandatory
         bool SOAP_ASSEMBLY - set this to 1 to use SOAPdenovo contigging/scaffolding module.  Assembly will be worse but will run faster. Useful for very large (>5Gbp) genomes
 
         string workspace_name - the name of the workspace from which to take input and store output.
