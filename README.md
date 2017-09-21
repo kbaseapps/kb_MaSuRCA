@@ -14,12 +14,9 @@ example App implementation, run:
 
 General steps to run the MaSuRCA assemblers:
 
-    First, create a configuration file which contains the location of the compiled assembler, the
-    location of the data and some parameters. Copy in your assembly directory the template
-    configuration file '/install_path/sr_config_example.txt' which was created by the installer with
-    the correct paths to the freshly compiled software and with reasonable parameters. Many
-    assembly projects should only need to set the path to the input data.
-
+    First, create a configuration file which contains the location of the compiled assembler (the 
+    executable), data and assembly parameters. 
+    
     Second, run the 'masurca' script which will generate from the configuration file a shell script
     'assemble.sh'. This last script is the main driver of the assembly.
 
