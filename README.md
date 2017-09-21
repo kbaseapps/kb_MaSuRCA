@@ -18,7 +18,7 @@ General steps to run the MaSuRCA assemblers:
     executable), data and assembly parameters. 
     
     Second, run the 'masurca' script which will generate from the configuration file a shell script
-    'assemble.sh'. This last script is the main driver of the assembly.
+    'assemble.sh', which is the main driver of the assembly.
 
     Finally, run the script 'assemble.sh' to assemble the data.
 
