@@ -1,0 +1,227 @@
+{
+    "ver": "0.0.1",
+    "authors": [
+        "qzhang"
+    ],
+    "contact": "help@kbase.us",
+    "categories": ["active", "assembly"],
+    "widgets": {
+        "input": null,
+        "output": "no-display"
+    },
+    "parameters": [ 
+        {
+            "id": "hash_length",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": ["21"],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int",
+                "min_int" : 0,
+                "max_int": 127
+            }
+        },
+        {
+            "id": "read_libraries",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": true,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+            }
+        },
+        {
+            "id": "output_contigset_name",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": ["Velvet.contigs"],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types" : [ "KBaseGenomeAnnotations.Assembly" ],
+                "is_output_name":true
+            }
+        },
+        {
+            "id": "min_contig_length",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "500" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : "int",
+                "min_int" : 1 
+            }
+        },
+        {
+            "id": "cov_cutoff",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "auto" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : ["float","text"],
+                "min_float" : 0.0
+            }
+        },
+        {
+            "id": "ins_length",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : "int",
+                "min_int" : 0 
+            }
+        },
+        {
+            "id": "read_trkg",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "0" ],
+            "field_type": "checkbox",
+            "checkbox_options":{
+                "checked_value": 1,
+                "unchecked_value": 0
+            }
+        },
+        {
+            "id": "amos_file",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "0" ],
+            "field_type": "checkbox",
+            "checkbox_options":{
+                "checked_value": 1,
+                "unchecked_value": 0
+            }
+        },
+        {
+            "id": "exp_cov",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "auto" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : ["float","text"],
+                "min_float" : 0.0
+            }
+        },
+        {
+            "id": "long_cov_cutoff",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : "float",
+                "min_float" : 0.0
+            }
+        }
+    ],
+    "behavior": {
+        "service-mapping": {
+            "url": "",
+            "name":"kb_MaSuRCA",
+            "method": "run_masurca",
+            "input_mapping": [
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "workspace_name"
+                },
+                {
+                    "input_parameter": "read_libraries",
+                    "target_property": "read_libraries",
+                    "target_type_transform": "resolved-ref"
+                },
+                {
+                    "input_parameter": "hash_length",
+                    "target_property": "hash_length"
+                },
+                {
+                    "input_parameter": "output_contigset_name",
+                    "target_property": "output_contigset_name"
+                },
+                {
+                    "input_parameter": "min_contig_length",
+                    "target_property": "min_contig_length"
+                },
+                {
+                    "input_parameter": "cov_cutoff",
+                    "target_property": "cov_cutoff"
+                },
+                {
+                    "input_parameter": "ins_length",
+                    "target_property": "ins_length"
+                },
+                {
+                    "input_parameter": "read_trkg",
+                    "target_property": "read_trkg"
+                },
+                {
+                    "input_parameter": "amos_file",
+                    "target_property": "amos_file"
+                },
+                {
+                    "input_parameter": "exp_cov",
+                    "target_property": "exp_cov"
+                },
+                {
+                    "input_parameter": "long_cov_cutoff",
+                    "target_property": "long_cov_cutoff"
+                }
+            ],
+            "output_mapping": [
+                {
+                    "service_method_output_path": [0,"report_name"],
+                    "target_property": "report_name"
+                },
+                {
+                    "service_method_output_path": [0,"report_ref"],
+                    "target_property": "report_ref"
+                },
+                {
+                    "constant_value": "16",
+                    "target_property": "report_window_line_height"
+                },
+                {
+                    "constant_value": "16",
+                    "target_property": "report_window_line_height"
+                },
+                {
+                    "input_parameter": "read_libraries",
+                    "target_property": "input_read_libraries"
+                },
+                {
+                    "input_parameter": "output_contigset_name",
+                    "target_property": "input_output_contigset_name"
+                },
+                {
+                    "input_parameter": "min_contig_length",
+                    "target_property": "min_contig_length"
+                },
+                {
+                    "service_method_output_path": [0],
+                    "target_property": "Velvet_result"
+                },
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "workspace_name"
+                }
+            ]
+        }
+    },
+    "job_id_output_field": "docker"
+}

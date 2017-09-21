@@ -1,0 +1,89 @@
+#
+# define display information
+#
+name: MaSuRCA Assembler, Version 3.2.3 
+tooltip: |
+      MaSuRCA
+screenshots: []
+
+icon: null
+
+#
+# define a set of similar methods that might be useful to the user
+#
+suggestions:
+    apps:
+        related:
+            []
+        next:
+            []
+    methods:
+        related:
+            []
+        next:
+            [annotate_contigset]
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    read_libraries :
+        ui-name : Read Libraries
+        short-hint : Read libraries (only KBase PairedEnd Libs are input through this parameter)
+    hash_length :
+        ui-name : hash_length 
+        short-hint : |
+            An integer for length of hash
+    output_contigset_name :
+        ui-name : |
+            Output ContigSet
+        short-hint : |
+            The name for the resulting ContigSet will be saved in KBase
+    min_contig_length :
+        ui-name : |
+            Minimal contig length
+        short-hint : |
+            The shortest contig to accept in the resulting assembly object
+    cov_cutoff :
+        ui-name : |
+            cov_cutoff
+        short-hint : |
+            removal of low coverage nodes AFTER tour bus or allow the system to infer it when set it to 'auto' 
+        long-hint : |
+            removal of low coverage nodes AFTER tour bus, it can also be set automatically to half the length weighted median contig coverage depth
+    ins_length :
+        ui-name : |
+            ins_length
+        short-hint : |
+            expected distance between two paired end reads (default: no read pairing)
+    read_trkg :
+        ui-name : |
+            track short read positions
+        short-hint : |
+            tracking of short read positions in assembly (default: no tracking)
+    amos_file :
+        ui-name : |
+            export AMOS file
+        short-hint : |
+            export assembly to AMOS file (default: no export)
+    exp_cov :
+        ui-name : |
+            expected coverage
+        short-hint : |
+            expected short-read k-mer coverage of unique regions or allow the system to infer it when set it to 'auto'
+        long-hint : |
+            <p>A value of 'auto' will set exp cov to the length weighted median contig coverage, and cov cutoff to half that value (unless you override it with a manual setting), it can also be set automatically to half the length weighted median contig coverage depth.</p>
+    long_cov_cutoff :
+        ui-name : |
+            long_cov_cutoff
+        short-hint : |
+            removal of nodes with low long-read coverage AFTER tour bus (default: no removal)
+
+description : |
+    <p>This is a KBase wrapper for MaSuRCA.</p>
+    <p>Velvet is a classic de-bruijn graph based assembler. Velvet works by efficiently manipulating de Bruijn graphs through simplification and compression. It eliminates errors and resolves repeats by first using an error correction algorithm that merges sequences together. Repeats are then removed from the sequence via the repeat solver that separates paths which share local overlaps. Velvet is fast and robust, although it is no longer in active development.</p>
+
+publications :
+    -
+        display-text : |
+           Zimin, A. et al. The MaSuRCA genome Assembler. Bioinformatics (2013). doi:10.1093/bioinformatics/btt476
