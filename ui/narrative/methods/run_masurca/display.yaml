@@ -3,7 +3,11 @@
 #
 name: MaSuRCA Assembler, Version 3.2.3 
 tooltip: |
-      MaSuRCA consists of three main steps - 1. create the config.txt file; 2. run `masurca config.txt`; 3. run assembler
+      MaSuRCA consists of three main steps:
+      1. create the config.txt file
+      2. run `masurca config.txt` to generate the assemble.sh script
+      3. run assembler.sh to assemble the data
+      
 screenshots: []
 
 icon: null
