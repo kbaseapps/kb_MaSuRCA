@@ -45,16 +45,11 @@ RUN \
   tar zxf MaSuRCA-${VERSION}.tar.gz && \
   rm -f MaSuRCA-3.2.3.tar.gz && \
   cd MaSuRCA-${VERSION} && \
-  ./install.sh && \
-  #cp MaSuRCA-${VERSION}/bin/masurca /kb/deployment/bin/. && \ 
-  MaSuRCA-${VERSION}/bin/masurca MaSuRCA-${VERSION}/bin/config.txt
+  ./install.sh
 
 ENV PATH $PATH:/kb/module/MaSuRCA-${VERSION}/bin
-
-#PATH=~/tools/MaSuRCA-3.2.1_12062016/CA/Linux-i686/bin:$PATH
-#PATH=$PATH:~/tools/MaSuRCA-3.2.1_12062016/CA/Linux-i686/bin
-
-#sudo env "PATH=$PATH" ~/tools/MaSuRCA-3.2.1_12062016/bin/masurca ~/tools/MaSuRCA-3.2.1_12062016/bin/config.txt 
+ENV PATH $PATH:/kb/module/MaSuRCA-${VERSION}/CA/Linux-amd64/bin
+ENV PATH $PATH:/kb/module/MaSuRCA-${VERSION}/CA8/Linux-amd64/bin
 
 # -----------------------------------------
 
