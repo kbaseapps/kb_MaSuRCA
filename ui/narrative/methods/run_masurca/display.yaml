@@ -3,7 +3,7 @@
 #
 name: MaSuRCA Assembler, Version 3.2.3 
 tooltip: |
-      MaSuRCA
+      MaSuRCA consists of three main steps - 1. create the config.txt file; 2. run `masurca config.txt`; 3. run assembler
 screenshots: []
 
 icon: null
