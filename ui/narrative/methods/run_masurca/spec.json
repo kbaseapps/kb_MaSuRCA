@@ -45,7 +45,7 @@
             }
         },
         {
-            "id": "pacbio",
+            "id": "pacbio_reads",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
