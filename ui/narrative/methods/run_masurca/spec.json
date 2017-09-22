@@ -103,7 +103,7 @@
             }
         },
         {
-            "id": "imit_jump_coverage",
+            "id": "limit_jump_coverage",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
