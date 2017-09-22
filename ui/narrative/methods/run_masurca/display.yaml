@@ -37,7 +37,7 @@ parameters :
     jump_libraries :
         ui-name : Jump Reads
         short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
-    pacbio_read :
+    pacbio_reads :
         ui-name : PacBio Reads
         short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
     other_frg :
