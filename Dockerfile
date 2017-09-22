@@ -38,18 +38,18 @@ RUN cd /opt && \
 ENV BOOST_ROOT=/opt/BOOST/boost_1_65_1
 
 
-ENV VERSION='3.2.3'
+ENV M_VERSION='3.2.3'
 WORKDIR /kb/module
 RUN \
-  wget ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/MaSuRCA-${VERSION}.tar.gz && \
-  tar zxf MaSuRCA-${VERSION}.tar.gz && \
-  rm -f MaSuRCA-3.2.3.tar.gz && \
-  cd MaSuRCA-${VERSION} && \
+  wget ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/MaSuRCA-${M_VERSION}.tar.gz && \
+  tar zxf MaSuRCA-${M_VERSION}.tar.gz && \
+  rm -f MaSuRCA-${M_VERSION}.tar.gz && \
+  cd MaSuRCA-${M_VERSION} && \
   ./install.sh
 
-ENV PATH $PATH:/kb/module/MaSuRCA-${VERSION}/bin
-ENV PATH $PATH:/kb/module/MaSuRCA-${VERSION}/CA/Linux-amd64/bin
-ENV PATH $PATH:/kb/module/MaSuRCA-${VERSION}/CA8/Linux-amd64/bin
+ENV PATH $PATH:/kb/module/MaSuRCA-${M_VERSION}/bin
+ENV PATH $PATH:/kb/module/MaSuRCA-${M_VERSION}/CA/Linux-amd64/bin
+ENV PATH $PATH:/kb/module/MaSuRCA-${M_VERSION}/CA8/Linux-amd64/bin
 
 # -----------------------------------------
 
