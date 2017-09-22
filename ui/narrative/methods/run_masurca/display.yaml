@@ -97,12 +97,11 @@ parameters :
         ui-name : |
             do_homopolymer_trim
         short-hint : | 
-            <p>specifies if we do (1) or do not (0) want to trim long runs of homopolymers (e.g. GGGGGGGG) from 3' read ends, use it for high GC genomes
-DO_HOMOPOLYMER_TRIM=0</p>
+            <p>specifies if we do (1) or do not (0) want to trim long runs of homopolymers (e.g. GGGGGGGG) from 3' read ends, use it for high GC genomes DO_HOMOPOLYMER_TRIM=0</p>
 
 description : |
-    <p>This is a KBase wrapper for MaSuRCA.</p>
-    <p>The MaSuRCA (Maryland Super Read Cabog Assembler) assembler combines the benefits of deBruijn graph and Overlap-Layout-Consensus assembly approaches. Since version 3.2.1 it supports hybrid assembly with short Illumina reads and long high error PacBio/MinION data.</p> 
+    <p>This is a KBase wrapper for MaSuRCA (Maryland Super Read Cabog Assembler).</p>
+    <p>The MaSuRCA assembler combines the benefits of deBruijn graph and Overlap-Layout-Consensus assembly approaches. Since version 3.2.1 it supports hybrid assembly with short Illumina reads and long high error PacBio/MinION data.</p> 
     
 publications :
     -
