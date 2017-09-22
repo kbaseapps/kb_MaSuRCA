@@ -151,6 +151,18 @@
             }
         },
         {
+            "id": "do_homopolymer_trim",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "0" ],
+            "field_type": "checkbox",
+            "checkbox_options":{
+                "checked_value": 1,
+                "unchecked_value": 0
+            }
+        },
+        {
             "id": "kmer_count_threshold",
             "optional": true,
             "advanced": true,
@@ -222,10 +234,14 @@
                 {
                     "input_parameter": "close_gaps",
                     "target_property": "close_gaps"
-                }, 
+                }, do_homopolymer_trim
                 {
                     "input_parameter": "soap_assembly",
                     "target_property": "soap_assembly"
+                },
+                {
+                    "input_parameter": "do_homopolymer_trim",
+                    "target_property": "do_homopolymer_trim"
                 },
                 {
                     "constant_value": 1,
