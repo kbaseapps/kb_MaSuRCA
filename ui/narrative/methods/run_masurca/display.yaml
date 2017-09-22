@@ -32,61 +32,78 @@ suggestions:
 #
 parameters :
     read_libraries :
-        ui-name : Read Libraries
-        short-hint : Read libraries (only KBase PairedEnd Libs are input through this parameter)
-    hash_length :
-        ui-name : hash_length 
+        ui-name : Reads Libraries
+        short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
+    jump_libraries :
+        ui-name : Jump Reads
+        short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
+    pacbio_read :
+        ui-name : PacBio Reads
+        short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
+    other_frg :
+        ui-name : Other FRG
+        short-hint : must be converted to CABOG format FRG files         
+    jf_size :
+        ui-name : jellyfish_size 
         short-hint : |
-            An integer for length of hash
+            An integer for the mandatory jellyfish hash size
     output_contigset_name :
         ui-name : |
             Output ContigSet
         short-hint : |
             The name for the resulting ContigSet will be saved in KBase
-    min_contig_length :
+    graph_kmer_size :
         ui-name : |
-            Minimal contig length
+            graph_kmer_size
         short-hint : |
-            The shortest contig to accept in the resulting assembly object
-    cov_cutoff :
+            The kmer size to be used for super reads; k-mer size for deBruijn graph values between 25 and 101 are supported
+    use_linking_mates :
         ui-name : |
-            cov_cutoff
+            use_linking_mates
         short-hint : |
-            removal of low coverage nodes AFTER tour bus or allow the system to infer it when set it to 'auto' 
+            Those that do not end up in the same super read are called 'linking mates' 
         long-hint : |
-            removal of low coverage nodes AFTER tour bus, it can also be set automatically to half the length weighted median contig coverage depth
-    ins_length :
+           The best assembly results are achieved by setting this parameter to 1 for Illumina-only assemblies to use the 'linking mates'. 
+    limit_jump_coverage :
         ui-name : |
-            ins_length
+            limit_jump_coverage
         short-hint : |
-            expected distance between two paired end reads (default: no read pairing)
-    read_trkg :
+             setting this parameter to have assembler down-sample the jumping library to 60x (from above) coverage
+    cgwErrorRate :
         ui-name : |
-            track short read positions
+            cgwErrorRate
         short-hint : |
-            tracking of short read positions in assembly (default: no tracking)
-    amos_file :
+            these are the additional parameters to Celera Assembler
+        long-hint : |            
+            set cgwErrorRate=0.25 for bacteria, i.e., CA_PARAMETERS = cgwErrorRate=0.25
+    kmer_count_threshold :
         ui-name : |
-            export AMOS file
+            kmer_count_threshold
         short-hint : |
-            export assembly to AMOS file (default: no export)
-    exp_cov :
-        ui-name : |
-            expected coverage
-        short-hint : |
-            expected short-read k-mer coverage of unique regions or allow the system to infer it when set it to 'auto'
+            minimum count k-mers used in error correction 1 means all k-mers are used. one can increase to 2 if coverage >100
         long-hint : |
-            <p>A value of 'auto' will set exp cov to the length weighted median contig coverage, and cov cutoff to half that value (unless you override it with a manual setting), it can also be set automatically to half the length weighted median contig coverage depth.</p>
-    long_cov_cutoff :
+            <p>MaSuRCA works best with coverage up to 150x. To use 200x+ coverage data you need to set KMER_COUNT_THRESHOLD parameter in the config file to 2 or 3, or simply use part of the data.</p>
+    close_gaps :
         ui-name : |
-            long_cov_cutoff
+            close_gaps
         short-hint : |
-            removal of nodes with low long-read coverage AFTER tour bus (default: no removal)
+            whether to attempt to close gaps in scaffolds with Illumina data (1) or not (0)
+    soap_assembly :
+        ui-name : |
+            soap_assembly
+        short-hint : |
+            <p>set this to 1 to use SOAPdenovo contigging/scaffolding module.  Assembly will be worse but will run faster. Useful for very large (>5Gbp) genomes</p>
+    do_homopolymer_trim :
+        ui-name : |
+            do_homopolymer_trim
+        short-hint : | 
+            <p>specifies if we do (1) or do not (0) want to trim long runs of homopolymers (e.g. GGGGGGGG) from 3' read ends, use it for high GC genomes
+DO_HOMOPOLYMER_TRIM=0</p>
 
 description : |
     <p>This is a KBase wrapper for MaSuRCA.</p>
-    <p>Velvet is a classic de-bruijn graph based assembler. Velvet works by efficiently manipulating de Bruijn graphs through simplification and compression. It eliminates errors and resolves repeats by first using an error correction algorithm that merges sequences together. Repeats are then removed from the sequence via the repeat solver that separates paths which share local overlaps. Velvet is fast and robust, although it is no longer in active development.</p>
-
+    <p>The MaSuRCA (Maryland Super Read Cabog Assembler) assembler combines the benefits of deBruijn graph and Overlap-Layout-Consensus assembly approaches. Since version 3.2.1 it supports hybrid assembly with short Illumina reads and long high error PacBio/MinION data.</p> 
+    
 publications :
     -
         display-text : |
