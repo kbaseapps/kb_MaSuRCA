@@ -199,8 +199,8 @@
                     "target_type_transform": "resolved-ref"
                 },
                 {
-                    "input_parameter": "pacbio",
-                    "target_property": "pacbio",
+                    "input_parameter": "pacbio_reads",
+                    "target_property": "pacbio_reads",
                     "target_type_transform": "resolved-ref"
                 },
                 {
