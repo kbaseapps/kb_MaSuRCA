@@ -11,16 +11,15 @@
     },
     "parameters": [ 
         {
-            "id": "hash_length",
+            "id": "jf_size",
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": ["21"],
+            "default_values": ["2000000000"],
             "field_type": "text",
             "text_options": {
                 "validate_as": "int",
-                "min_int" : 0,
-                "max_int": 127
+                "min_int" : 2000000000
             }
         },
         {
@@ -35,11 +34,44 @@
             }
         },
         {
+            "id": "jump_libraries",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": true,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+            }
+        },
+        {
+            "id": "pacbio",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+            }
+        },
+        {
+            "id": "other_frg",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+            }
+        },
+        {
             "id": "output_contigset_name",
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": ["Velvet.contigs"],
+            "default_values": ["masurca.contigs"],
             "field_type": "text",
             "text_options": {
                 "valid_ws_types" : [ "KBaseGenomeAnnotations.Assembly" ],
@@ -47,43 +79,55 @@
             }
         },
         {
-            "id": "min_contig_length",
+            "id": "graph_kmer_size",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "500" ],
+            "default_values": [ "auto", "int" ],
             "field_type": "text",
             "text_options": {
-                "validate_as" : "int",
+                "validate_as" : "text",
                 "min_int" : 1 
             }
         },
         {
-            "id": "cov_cutoff",
+            "id": "use_linking_mates",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "auto" ],
-            "field_type": "text",
-            "text_options": {
-                "validate_as" : ["float","text"],
-                "min_float" : 0.0
+            "default_values": [ "1" ],
+            "field_type": "checkbox",
+                "checkbox_options":{
+                "checked_value": 1,
+                "unchecked_value": 0
             }
         },
         {
-            "id": "ins_length",
+            "id": "imit_jump_coverage",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "" ],
+            "default_values": [ "60" ],
             "field_type": "text",
             "text_options": {
                 "validate_as" : "int",
-                "min_int" : 0 
+                "min_int" : 60,
+                "max_int" : 300
             }
         },
         {
-            "id": "read_trkg",
+            "id": "cgwErrorRate",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "0.25" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : "float"
+            }
+        },
+        {
+            "id": "close_gap",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
@@ -95,7 +139,7 @@
             }
         },
         {
-            "id": "amos_file",
+            "id": "soap_assembly",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
@@ -107,27 +151,14 @@
             }
         },
         {
-            "id": "exp_cov",
+            "id": "kmer_count_threshold",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "auto" ],
+            "default_values": [ "1" ],
             "field_type": "text",
             "text_options": {
-                "validate_as" : ["float","text"],
-                "min_float" : 0.0
-            }
-        },
-        {
-            "id": "long_cov_cutoff",
-            "optional": true,
-            "advanced": true,
-            "allow_multiple": false,
-            "default_values": [ "" ],
-            "field_type": "text",
-            "text_options": {
-                "validate_as" : "float",
-                "min_float" : 0.0
+                "validate_as" : ["int"]
             }
         }
     ],
@@ -147,40 +178,62 @@
                     "target_type_transform": "resolved-ref"
                 },
                 {
-                    "input_parameter": "hash_length",
-                    "target_property": "hash_length"
+                    "input_parameter": "jf_size",
+                    "target_property": "jf_size"
+                },
+                {
+                    "input_parameter": "jump_libraries",
+                    "target_property": "jump_libraries",
+                    "target_type_transform": "resolved-ref"
+                },
+                {
+                    "input_parameter": "pacbio",
+                    "target_property": "pacbio",
+                    "target_type_transform": "resolved-ref"
                 },
                 {
                     "input_parameter": "output_contigset_name",
                     "target_property": "output_contigset_name"
                 },
                 {
-                    "input_parameter": "min_contig_length",
-                    "target_property": "min_contig_length"
+                    "input_parameter": "other_frg_file",
+                    "target_property": "other_frg_file"
                 },
                 {
-                    "input_parameter": "cov_cutoff",
-                    "target_property": "cov_cutoff"
+                    "input_parameter": "graph_kmer_size",
+                    "target_property": "graph_kmer_size"
                 },
                 {
-                    "input_parameter": "ins_length",
-                    "target_property": "ins_length"
+                    "input_parameter": "use_linking_mates",
+                    "target_property": "use_linking_mates"
                 },
                 {
-                    "input_parameter": "read_trkg",
-                    "target_property": "read_trkg"
+                    "input_parameter": "limit_jump_coverage",
+                    "target_property": "limit_jump_coverage"
                 },
                 {
-                    "input_parameter": "amos_file",
-                    "target_property": "amos_file"
+                    "input_parameter": "cgwErrorRate",
+                    "target_property": "cgwErrorRate"
                 },
                 {
-                    "input_parameter": "exp_cov",
-                    "target_property": "exp_cov"
+                    "input_parameter": "kmer_count_threshold",
+                    "target_property": "kmer_count_threshold"
                 },
                 {
-                    "input_parameter": "long_cov_cutoff",
-                    "target_property": "long_cov_cutoff"
+                    "input_parameter": "close_gaps",
+                    "target_property": "close_gaps"
+                }, 
+                {
+                    "input_parameter": "soap_assembly",
+                    "target_property": "soap_assembly"
+                },
+                {
+                    "constant_value": 1,
+                    "target_property": "create_report"
+                },
+                {            
+                    "constant_value"  : 2,
+                    "target_property" : "num_threads"
                 }
             ],
             "output_mapping": [
@@ -209,12 +262,12 @@
                     "target_property": "input_output_contigset_name"
                 },
                 {
-                    "input_parameter": "min_contig_length",
-                    "target_property": "min_contig_length"
+                    "input_parameter": "jf_size",
+                    "target_property": "jf_size"
                 },
                 {
                     "service_method_output_path": [0],
-                    "target_property": "Velvet_result"
+                    "target_property": "masurca_result"
                 },
                 {
                     "narrative_system_variable": "workspace",
