@@ -127,7 +127,7 @@
             }
         },
         {
-            "id": "close_gap",
+            "id": "close_gaps",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
