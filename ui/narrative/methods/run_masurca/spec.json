@@ -234,7 +234,7 @@
                 {
                     "input_parameter": "close_gaps",
                     "target_property": "close_gaps"
-                }, do_homopolymer_trim
+                },
                 {
                     "input_parameter": "soap_assembly",
                     "target_property": "soap_assembly"
