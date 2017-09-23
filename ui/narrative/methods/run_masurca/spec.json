@@ -56,7 +56,7 @@
             }
         },
         {
-            "id": "other_frg",
+            "id": "other_frg_file",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
