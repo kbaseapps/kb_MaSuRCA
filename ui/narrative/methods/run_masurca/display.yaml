@@ -40,7 +40,7 @@ parameters :
     pacbio_reads :
         ui-name : PacBio Reads
         short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
-    other_frg :
+    other_frg_file:
         ui-name : Other FRG
         short-hint : must be converted to CABOG format FRG files         
     jf_size :
