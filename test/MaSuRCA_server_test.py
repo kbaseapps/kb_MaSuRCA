@@ -14,13 +14,13 @@ except:
 from pprint import pprint  # noqa: F401
 
 from biokbase.workspace.client import Workspace as workspaceService
-from kb_MaSuRCA.kb_MaSuRCAImpl import kb_MaSuRCA
-from kb_MaSuRCA.kb_MaSuRCAServer import MethodContext
-from kb_MaSuRCA.authclient import KBaseAuth as _KBaseAuth
+from MaSuRCA.MaSuRCAImpl import MaSuRCA
+from MaSuRCA.MaSuRCAServer import MethodContext
+from MaSuRCA.authclient import KBaseAuth as _KBaseAuth
 
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 
-class kb_MaSuRCATest(unittest.TestCase):
+class MaSuRCATest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -48,7 +48,7 @@ class kb_MaSuRCATest(unittest.TestCase):
                         'authenticated': 1})
         cls.wsURL = cls.cfg['workspace-url']
         cls.wsClient = workspaceService(cls.wsURL)
-        cls.serviceImpl = kb_MaSuRCA(cls.cfg)
+        cls.serviceImpl = MaSuRCA(cls.cfg)
         cls.scratch = cls.cfg['scratch']
         cls.callback_url = os.environ['SDK_CALLBACK_URL']
 
@@ -65,7 +65,7 @@ class kb_MaSuRCATest(unittest.TestCase):
         if hasattr(self.__class__, 'wsName'):
             return self.__class__.wsName
         suffix = int(time.time() * 1000)
-        wsName = "test_kb_MaSuRCA_" + str(suffix)
+        wsName = "test_MaSuRCA_" + str(suffix)
         ret = self.getWsClient().create_workspace({'workspace': wsName})  # noqa
         self.__class__.wsName = wsName
         return wsName
