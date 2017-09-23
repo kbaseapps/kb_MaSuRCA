@@ -39,14 +39,14 @@ def get_config():
     retconfig = {}
     config = ConfigParser()
     config.read(get_config_file())
-    for nameval in config.items(get_service_name() or 'kb_MaSuRCA'):
+    for nameval in config.items(get_service_name() or 'MaSuRCA'):
         retconfig[nameval[0]] = nameval[1]
     return retconfig
 
 config = get_config()
 
-from MaSuRCA.MaSuRCAImpl import kb_MaSuRCA  # noqa @IgnorePep8
-impl_kb_MaSuRCA = kb_MaSuRCA(config)
+from MaSuRCA.MaSuRCAImpl import MaSuRCA  # noqa @IgnorePep8
+impl_MaSuRCA = MaSuRCA(config)
 
 
 class JSONObjectEncoder(json.JSONEncoder):
@@ -322,7 +322,7 @@ class Application(object):
                                    context['method'], context['call_id'])
 
     def __init__(self):
-        submod = get_service_name() or 'kb_MaSuRCA'
+        submod = get_service_name() or 'MaSuRCA'
         self.userlog = log.log(
             submod, ip_address=True, authuser=True, module=True, method=True,
             call_id=True, changecallback=self.logcallback,
@@ -333,12 +333,12 @@ class Application(object):
         self.serverlog.set_log_level(6)
         self.rpc_service = JSONRPCServiceCustom()
         self.method_authentication = dict()
-        self.rpc_service.add(impl_kb_MaSuRCA.run_masurca,
-                             name='kb_MaSuRCA.run_masurca',
+        self.rpc_service.add(impl_MaSuRCA.run_masurca,
+                             name='MaSuRCA.run_masurca',
                              types=[dict])
-        self.method_authentication['kb_MaSuRCA.run_masurca'] = 'required'  # noqa
-        self.rpc_service.add(impl_kb_MaSuRCA.status,
-                             name='kb_MaSuRCA.status',
+        self.method_authentication['MaSuRCA.run_masurca'] = 'required'  # noqa
+        self.rpc_service.add(impl_MaSuRCA.status,
+                             name='MaSuRCA.status',
                              types=[dict])
         authurl = config.get(AUTH) if config else None
         self.auth_client = _KBaseAuth(authurl)
@@ -393,7 +393,7 @@ class Application(object):
                             err = JSONServerError()
                             err.data = (
                                 'Authentication required for ' +
-                                'kb_MaSuRCA ' +
+                                'MaSuRCA ' +
                                 'but no authentication header was passed')
                             raise err
                         elif token is None and auth_req == 'optional':

@@ -26,7 +26,7 @@ MaSuRCA::MaSuRCAClient
 =head1 DESCRIPTION
 
 
-Name of module: kb_MaSuRCA
+Name of module: MaSuRCA
 
 This KBase module wraps the genome assembly software MaSuRCA(Maryland Super-Read Celera Assembler).
 MaSuRCA 3.2.3
@@ -128,20 +128,26 @@ sub new
 =begin html
 
 <pre>
-$params is a kb_MaSuRCA.masurcaParams
-$output is a kb_MaSuRCA.masurcaResults
+$params is a MaSuRCA.masurcaParams
+$output is a MaSuRCA.masurcaResults
 masurcaParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	hash_length has a value which is an int
-	read_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
+	num_threads has a value which is an int
+	jf_size has a value which is an int
+	read_libraries has a value which is a reference to a list where each element is a MaSuRCA.read_lib
+	jump_libraries has a value which is a reference to a list where each element is a MaSuRCA.read_lib
+	pacbio_reads has a value which is a MaSuRCA.read_lib
+	other_frg_file has a value which is a string
+	graph_kmer_size has a value which is a string
+	use_linking_mates has a value which is a MaSuRCA.bool
+	limit_jump_coverage has a value which is an int
+	cgwErrorRate has a value which is a float
+	kmer_count_threshold has a value which is an int
+	close_gaps has a value which is a MaSuRCA.bool
+	soap_assembly has a value which is a MaSuRCA.bool
+	do_homopolymer_trim has a value which is a MaSuRCA.bool
 	output_contigset_name has a value which is a string
-	min_contig_length has a value which is an int
-	cov_cutoff has a value which is a float
-	ins_length has a value which is an int
-	read_trkg has a value which is a kb_MaSuRCA.bool
-	amos_file has a value which is a kb_MaSuRCA.bool
-	exp_cov has a value which is a float
-	long_cov_cutoff has a value which is a float
+	create_report has a value which is a MaSuRCA.bool
 read_lib is a string
 bool is an int
 masurcaResults is a reference to a hash where the following keys are defined:
@@ -154,20 +160,26 @@ masurcaResults is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$params is a kb_MaSuRCA.masurcaParams
-$output is a kb_MaSuRCA.masurcaResults
+$params is a MaSuRCA.masurcaParams
+$output is a MaSuRCA.masurcaResults
 masurcaParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	hash_length has a value which is an int
-	read_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
+	num_threads has a value which is an int
+	jf_size has a value which is an int
+	read_libraries has a value which is a reference to a list where each element is a MaSuRCA.read_lib
+	jump_libraries has a value which is a reference to a list where each element is a MaSuRCA.read_lib
+	pacbio_reads has a value which is a MaSuRCA.read_lib
+	other_frg_file has a value which is a string
+	graph_kmer_size has a value which is a string
+	use_linking_mates has a value which is a MaSuRCA.bool
+	limit_jump_coverage has a value which is an int
+	cgwErrorRate has a value which is a float
+	kmer_count_threshold has a value which is an int
+	close_gaps has a value which is a MaSuRCA.bool
+	soap_assembly has a value which is a MaSuRCA.bool
+	do_homopolymer_trim has a value which is a MaSuRCA.bool
 	output_contigset_name has a value which is a string
-	min_contig_length has a value which is an int
-	cov_cutoff has a value which is a float
-	ins_length has a value which is an int
-	read_trkg has a value which is a kb_MaSuRCA.bool
-	amos_file has a value which is a kb_MaSuRCA.bool
-	exp_cov has a value which is a float
-	long_cov_cutoff has a value which is a float
+	create_report has a value which is a MaSuRCA.bool
 read_lib is a string
 bool is an int
 masurcaResults is a reference to a hash where the following keys are defined:
@@ -210,7 +222,7 @@ Definition of run_masurca
 
     my $url = $self->{url};
     my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "kb_MaSuRCA.run_masurca",
+	    method => "MaSuRCA.run_masurca",
 	    params => \@args,
     });
     if ($result) {
@@ -241,7 +253,7 @@ sub status
     }
     my $url = $self->{url};
     my $result = $self->{client}->call($url, $self->{headers}, {
-        method => "kb_MaSuRCA.status",
+        method => "MaSuRCA.status",
         params => \@args,
     });
     if ($result) {
@@ -266,7 +278,7 @@ sub status
 sub version {
     my ($self) = @_;
     my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-        method => "kb_MaSuRCA.version",
+        method => "MaSuRCA.version",
         params => [],
     });
     if ($result) {
@@ -451,20 +463,44 @@ a string
 
 Arguments for run_masurca
 
+*******for creating the sr_config.txt file*******
+1. DATA
+consisting of 5 fields: 1)two_letter_prefix 2)mean 3)stdev 4)fastq(.gz)_fwd_reads 5)fastq(.gz)_rev_reads.
+e.g.,
+        PE= pe 180 20  /FULL_PATH/frag_1.fastq  /FULL_PATH/frag_2.fastq
+        JUMP= sh 3600 200  /FULL_PATH/short_1.fastq  /FULL_PATH/short_2.fastq
+        #pacbio reads must be in a single fasta file! make sure you provide absolute path
+        PACBIO=/FULL_PATH/pacbio.fa
+        OTHER=/FULL_PATH/file.frg
+
+2. PARAMETERS
+string graph_kmer_size - the k-mer size for deBruijn graph values between 25 and 127 are supported, 'auto' will compute the optimal size based on the read data and GC content
+bool use_linking_mates - set this to 1 for all Illumina-only assemblies; set this to 1 if you have less than 20x long reads (454, Sanger, Pacbio) and less than 50x CLONE coverage by Illumina, Sanger or 454 mate pairs; otherwise keep at 0
+int limit_jump_coverage - this parameter is useful if you have too many Illumina jumping library mates. Typically set it to 60 for bacteria and 300 for the other organisms
+CA_PARAMETERS: these are the additional parameters to Celera Assembler.  do not worry about performance, number or processors or batch sizes -- these are computed automatically. 
+float cgwErrorRate=0.15 - set cgwErrorRate=0.25 for bacteria and 0.1<=cgwErrorRate<=0.15 for other organisms.
+int kmer_count_threshold - minimum count k-mers used in error correction 1 means all k-mers are used.  one can increase to 2 if Illumina coverage >100
+bool close_gaps - whether to attempt to close gaps in scaffolds with Illumina data (1) or not (0)
+int num_threads - auto-detected number of cpus to use, mandatory
+int jf_size  - this is mandatory jellyfish hash size -- a safe value is estimated_genome_size*estimated_coverage (e.g., 2000000000)
+bool SOAP_ASSEMBLY - set this to 1 to use SOAPdenovo contigging/scaffolding module.  Assembly will be worse but will run faster. Useful for very large (>5Gbp) genomes
+bool do_homopolymer_trim - specifies if we do (1) or do not (0) want to trim long runs of homopolymers 
+
 string workspace_name - the name of the workspace from which to take input and store output.
-int hash_length - an odd integer (if even, it will be decremented) <= 31
 string output_contigset_name - the name of the output contigset
 list<paired_end_lib> read_libraries - Illumina PairedEndLibrary files to assemble
-min_contig_length - integer to filter out contigs with length < min_contig_length
-             from the MaSuRCA output. Default value is 500 (where 0 implies no filter).
 
-@optional min_contig_length
-@optional cov_cutoff
-@optional ins_length
-@optional read_trkg
-@optional amos_file
-@optional exp_cov
-@optional long_cov_cutoff
+@optional jump_libraries
+@optional pacbio_reads
+@optional other_frg_file
+@optional graph_kmer_size
+@optional use_linking_mates
+@optional limit_jump_coverage
+@optional cgwErrorRate
+@optional kmer_count_threshold
+@optional close_gaps
+@optional soap_assembly
+@optional do_homopolymer_trim
 
 
 =item Definition
@@ -474,16 +510,22 @@ min_contig_length - integer to filter out contigs with length < min_contig_lengt
 <pre>
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
-hash_length has a value which is an int
-read_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
+num_threads has a value which is an int
+jf_size has a value which is an int
+read_libraries has a value which is a reference to a list where each element is a MaSuRCA.read_lib
+jump_libraries has a value which is a reference to a list where each element is a MaSuRCA.read_lib
+pacbio_reads has a value which is a MaSuRCA.read_lib
+other_frg_file has a value which is a string
+graph_kmer_size has a value which is a string
+use_linking_mates has a value which is a MaSuRCA.bool
+limit_jump_coverage has a value which is an int
+cgwErrorRate has a value which is a float
+kmer_count_threshold has a value which is an int
+close_gaps has a value which is a MaSuRCA.bool
+soap_assembly has a value which is a MaSuRCA.bool
+do_homopolymer_trim has a value which is a MaSuRCA.bool
 output_contigset_name has a value which is a string
-min_contig_length has a value which is an int
-cov_cutoff has a value which is a float
-ins_length has a value which is an int
-read_trkg has a value which is a kb_MaSuRCA.bool
-amos_file has a value which is a kb_MaSuRCA.bool
-exp_cov has a value which is a float
-long_cov_cutoff has a value which is a float
+create_report has a value which is a MaSuRCA.bool
 
 </pre>
 
@@ -493,16 +535,22 @@ long_cov_cutoff has a value which is a float
 
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
-hash_length has a value which is an int
-read_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
+num_threads has a value which is an int
+jf_size has a value which is an int
+read_libraries has a value which is a reference to a list where each element is a MaSuRCA.read_lib
+jump_libraries has a value which is a reference to a list where each element is a MaSuRCA.read_lib
+pacbio_reads has a value which is a MaSuRCA.read_lib
+other_frg_file has a value which is a string
+graph_kmer_size has a value which is a string
+use_linking_mates has a value which is a MaSuRCA.bool
+limit_jump_coverage has a value which is an int
+cgwErrorRate has a value which is a float
+kmer_count_threshold has a value which is an int
+close_gaps has a value which is a MaSuRCA.bool
+soap_assembly has a value which is a MaSuRCA.bool
+do_homopolymer_trim has a value which is a MaSuRCA.bool
 output_contigset_name has a value which is a string
-min_contig_length has a value which is an int
-cov_cutoff has a value which is a float
-ins_length has a value which is an int
-read_trkg has a value which is a kb_MaSuRCA.bool
-amos_file has a value which is a kb_MaSuRCA.bool
-exp_cov has a value which is a float
-long_cov_cutoff has a value which is a float
+create_report has a value which is a MaSuRCA.bool
 
 
 =end text
