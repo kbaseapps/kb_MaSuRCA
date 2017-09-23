@@ -29,7 +29,7 @@ class MaSuRCATest(unittest.TestCase):
         cls.cfg = {}
         config = ConfigParser()
         config.read(config_file)
-        for nameval in config.items('kb_MaSuRCA'):
+        for nameval in config.items('MaSuRCA'):
             cls.cfg[nameval[0]] = nameval[1]
         # Getting username from Auth profile for token
         authServiceUrl = cls.cfg['auth-service-url']
@@ -41,7 +41,7 @@ class MaSuRCATest(unittest.TestCase):
         cls.ctx.update({'token': token,
                         'user_id': user_id,
                         'provenance': [
-                            {'service': 'kb_MaSuRCA',
+                            {'service': 'MaSuRCA',
                              'method': 'please_never_use_it_in_production',
                              'method_params': []
                              }],

@@ -13,7 +13,7 @@ MAINTAINER KBase Developer
 
 RUN pip install --upgrade pip
 RUN pip install coverage
-#RUN pip install dtrx
+RUN pip install psutil
 
 # update security libraries in the base image
 RUN pip install cffi --upgrade \
@@ -32,7 +32,6 @@ RUN cd /opt && \
   cd /opt/BOOST && \
   wget https://dl.bintray.com/boostorg/release/1.65.1/source/boost_1_65_1.tar.bz2 && \
   #tar -vxjf boost_1_65_1.tar.bz2 && \
-  #dtrx boost_1_65_1.tar.bz2 && \
   tar --bzip2 -xf boost_1_65_1.tar.bz2
 
 ENV BOOST_ROOT=/opt/BOOST/boost_1_65_1

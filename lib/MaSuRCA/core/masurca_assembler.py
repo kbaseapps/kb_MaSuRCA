@@ -14,8 +14,8 @@ import zipfile
 import multiprocessing
 import psutil
 
-from DataFileUtil.DataFileUtilClient import DataFileUtil
-from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
+#from DataFileUtil.DataFileUtilClient import DataFileUtil
+#from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
 
 from KBaseReport.KBaseReportClient import KBaseReport
 from KBaseReport.baseclient import ServerError as _RepError

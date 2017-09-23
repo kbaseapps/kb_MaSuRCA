@@ -2,6 +2,7 @@
 #BEGIN_HEADER
 # The header block is where all import statments should live
 import os
+
 from pprint import pprint, pformat
 from MaSuRCA.core.masurca_assembler import MaSuRCA_Assembler
 #END_HEADER
