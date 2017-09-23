@@ -7,13 +7,13 @@ from MaSuRCA.core.masurca_assembler import MaSuRCA_Assembler
 #END_HEADER
 
 
-class kb_MaSuRCA:
+class MaSuRCA:
     '''
     Module Name:
-    kb_MaSuRCA
+    MaSuRCA
 
     Module Description:
-    Name of module: kb_MaSuRCA
+    Name of module: MaSuRCA
 
 This KBase module wraps the genome assembly software MaSuRCA(Maryland Super-Read Celera Assembler).
 MaSuRCA 3.2.3
@@ -33,7 +33,7 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA.git"
-    GIT_COMMIT_HASH = "8a2e9c64c9af2e9f4b4c53a4260bd75438c77a02"
+    GIT_COMMIT_HASH = "36dd4b537ef5930be736127841b61efd89a28649"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
@@ -87,26 +87,28 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
            a safe value is estimated_genome_size*estimated_coverage (e.g.,
            2000000000) bool SOAP_ASSEMBLY - set this to 1 to use SOAPdenovo
            contigging/scaffolding module.  Assembly will be worse but will
-           run faster. Useful for very large (>5Gbp) genomes string
-           workspace_name - the name of the workspace from which to take
-           input and store output. string output_contigset_name - the name of
-           the output contigset list<paired_end_lib> read_libraries -
-           Illumina PairedEndLibrary files to assemble @optional
-           jump_libraries @optional pacbio @optional other_frg_file @optional
-           graph_kmer_size @optional use_linking_mates @optional
-           limit_jump_coverage @optional cgwErrorRate @optional
-           kmer_count_threshold @optional close_gaps @optional soap_assembly)
-           -> structure: parameter "workspace_name" of String, parameter
+           run faster. Useful for very large (>5Gbp) genomes bool
+           do_homopolymer_trim - specifies if we do (1) or do not (0) want to
+           trim long runs of homopolymers string workspace_name - the name of
+           the workspace from which to take input and store output. string
+           output_contigset_name - the name of the output contigset
+           list<paired_end_lib> read_libraries - Illumina PairedEndLibrary
+           files to assemble @optional jump_libraries @optional pacbio_reads
+           @optional other_frg_file @optional graph_kmer_size @optional
+           use_linking_mates @optional limit_jump_coverage @optional
+           cgwErrorRate @optional kmer_count_threshold @optional close_gaps
+           @optional soap_assembly @optional do_homopolymer_trim) ->
+           structure: parameter "workspace_name" of String, parameter
            "num_threads" of Long, parameter "jf_size" of Long, parameter
            "read_libraries" of list of type "read_lib" (The workspace object
            name of a SingleEndLibrary or PairedEndLibrary file, whether of
            the KBaseAssembly or KBaseFile type.), parameter "jump_libraries"
            of list of type "read_lib" (The workspace object name of a
            SingleEndLibrary or PairedEndLibrary file, whether of the
-           KBaseAssembly or KBaseFile type.), parameter "pacbio" of type
-           "read_lib" (The workspace object name of a SingleEndLibrary or
-           PairedEndLibrary file, whether of the KBaseAssembly or KBaseFile
-           type.), parameter "other_frg_file" of String, parameter
+           KBaseAssembly or KBaseFile type.), parameter "pacbio_reads" of
+           type "read_lib" (The workspace object name of a SingleEndLibrary
+           or PairedEndLibrary file, whether of the KBaseAssembly or
+           KBaseFile type.), parameter "other_frg_file" of String, parameter
            "graph_kmer_size" of String, parameter "use_linking_mates" of type
            "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
            parameter "limit_jump_coverage" of Long, parameter "cgwErrorRate"
@@ -114,7 +116,10 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
            "close_gaps" of type "bool" (A boolean - 0 for false, 1 for true.
            @range (0, 1)), parameter "soap_assembly" of type "bool" (A
            boolean - 0 for false, 1 for true. @range (0, 1)), parameter
-           "output_contigset_name" of String
+           "do_homopolymer_trim" of type "bool" (A boolean - 0 for false, 1
+           for true. @range (0, 1)), parameter "output_contigset_name" of
+           String, parameter "create_report" of type "bool" (A boolean - 0
+           for false, 1 for true. @range (0, 1))
         :returns: instance of type "masurcaResults" (Output parameter items
            for run_masurca report_name - the name of the KBaseReport.Report
            workspace object. report_ref - the workspace reference of the

@@ -11,6 +11,8 @@ from Bio import SeqIO
 from pprint import pprint, pformat
 import traceback
 import zipfile
+import multiprocessing
+import psutil
 
 from DataFileUtil.DataFileUtilClient import DataFileUtil
 from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
@@ -77,6 +79,8 @@ class MaSuRCA_Assembler(object):
             m_dir = self.create_star_dirs(self.scratch)
             self.proj_dir = m_dir
         wsname = params['workspace_name']
+
+        cpus = min(params.get('num_threads'), psutil.cpu_count())
 
         # 1. validate & process the input parameters
         validated_params = self.process_params(params)

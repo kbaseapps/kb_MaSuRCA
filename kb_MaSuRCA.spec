@@ -1,5 +1,5 @@
 /*
-   Name of module: kb_MaSuRCA
+   Name of module: MaSuRCA
 
    This KBase module wraps the genome assembly software MaSuRCA(Maryland Super-Read Celera Assembler).
    MaSuRCA 3.2.3
@@ -12,7 +12,7 @@
 
 */
 
-module kb_MaSuRCA {
+module MaSuRCA {
     typedef string assembly_ref;
 
     /* A boolean - 0 for false, 1 for true.
@@ -54,13 +54,14 @@ module kb_MaSuRCA {
         int num_threads - auto-detected number of cpus to use, mandatory
         int jf_size  - this is mandatory jellyfish hash size -- a safe value is estimated_genome_size*estimated_coverage (e.g., 2000000000)
         bool SOAP_ASSEMBLY - set this to 1 to use SOAPdenovo contigging/scaffolding module.  Assembly will be worse but will run faster. Useful for very large (>5Gbp) genomes
+        bool do_homopolymer_trim - specifies if we do (1) or do not (0) want to trim long runs of homopolymers 
 
         string workspace_name - the name of the workspace from which to take input and store output.
         string output_contigset_name - the name of the output contigset
         list<paired_end_lib> read_libraries - Illumina PairedEndLibrary files to assemble
 
         @optional jump_libraries
-        @optional pacbio
+        @optional pacbio_reads
         @optional other_frg_file
         @optional graph_kmer_size
         @optional use_linking_mates
@@ -69,6 +70,7 @@ module kb_MaSuRCA {
         @optional kmer_count_threshold
         @optional close_gaps
         @optional soap_assembly
+        @optional do_homopolymer_trim
      */
 
     typedef structure {
@@ -78,7 +80,7 @@ module kb_MaSuRCA {
         list<read_lib> read_libraries; 
        
         list<read_lib> jump_libraries;
-        read_lib pacbio;
+        read_lib pacbio_reads;
         string other_frg_file;   
         string graph_kmer_size;
         bool use_linking_mates;
@@ -87,8 +89,10 @@ module kb_MaSuRCA {
         int kmer_count_threshold;
         bool close_gaps;
         bool soap_assembly;
+        bool do_homopolymer_trim;
        
         string output_contigset_name;
+        bool create_report;
     } masurcaParams;
     
     /* Output parameter items for run_masurca
