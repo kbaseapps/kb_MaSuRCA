@@ -73,7 +73,7 @@ class MaSuRCA_Assembler(object):
         pass
 
 
-    def run_masurca(self, params):
+    def run_masurca_app(self, params):
         # 0. create the masurca project folder
         if self.proj_dir is None:
             m_dir = self.create_star_dirs(self.scratch)

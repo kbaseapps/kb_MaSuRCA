@@ -4,6 +4,7 @@ import os  # noqa: F401
 import json  # noqa: F401
 import time
 import requests
+import shutil
 
 from os import environ
 try:
@@ -52,6 +53,13 @@ class MaSuRCATest(unittest.TestCase):
         cls.scratch = cls.cfg['scratch']
         cls.callback_url = os.environ['SDK_CALLBACK_URL']
 
+
+    @classmethod
+    def make_ref(self, object_info):
+        return str(object_info[6]) + '/' + str(object_info[0]) + \
+            '/' + str(object_info[4])
+
+
     @classmethod
     def tearDownClass(cls):
         if hasattr(cls, 'wsName'):
@@ -88,23 +96,63 @@ class MaSuRCATest(unittest.TestCase):
                                                               })
         return assembly_ref
 
+    # borrowed from Megahit - call this method to get the WS object info of a Paired End Library (will
+    # upload the example data if this is the first time the method is called during tests)
+    def loadPairedEndReads(self):
+        if hasattr(self.__class__, 'pairedEndLibInfo'):
+            return self.__class__.pairedEndLibInfo
+        # 1) upload files to shock
+        shared_dir = "/kb/module/work/tmp"
+        forward_data_file = '../work/testReads/small.forward.fq'
+        forward_file = os.path.join(shared_dir, os.path.basename(forward_data_file))
+        shutil.copy(forward_data_file, forward_file)
+        reverse_data_file = '../work/testReads/small.reverse.fq'
+        reverse_file = os.path.join(shared_dir, os.path.basename(reverse_data_file))
+        shutil.copy(reverse_data_file, reverse_file)
+
+        ru = ReadsUtils(os.environ['SDK_CALLBACK_URL'])
+        pe_reads_ref = ru.upload_reads({'fwd_file': forward_file, 'rev_file': reverse_file,
+                                          'sequencing_tech': 'artificial reads',
+                                          'interleaved': 0, 'wsname': self.getWsName(),
+                                          'name': 'test_pe_reads'})['obj_ref']
+
+        self.__class__.pe_reads_ref = pe_reads_ref
+        print('Loaded PairedEndReads: ' + pe_reads_ref)
+        new_obj_info = self.wsClient.get_object_info_new({'objects': [{'ref': pe_reads_ref}]})
+        self.__class__.pairedEndLibInfo = new_obj_info[0]
+        pprint (pformat(new_obj_info))
+        #return new_obj_info[0]
+        return pe_reads_ref
+
+    def loadSEReads(self, reads_file_path):
+        #if hasattr(self.__class__, 'reads_ref'):
+            #return self.__class__.reads_ref
+        se_reads_name = os.path.basename(reads_file_path)
+        fq_path = os.path.join(self.scratch, se_reads_name) #'star_test_reads.fastq')
+        shutil.copy(reads_file_path, fq_path)
+
+        ru = ReadsUtils(self.callback_url)
+        reads_ref = ru.upload_reads({'fwd_file': fq_path,
+                                        'wsname': self.getWsName(),
+                                        'name': se_reads_name.split('.')[0],
+                                        'sequencing_tech': 'rnaseq reads'})['obj_ref']
+        #self.__class__.reads_ref = reads_ref
+        return reads_ref
+
+
+
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
-    def test_filter_contigs_ok(self):
-
+    # Uncomment to skip this test
+    @unittest.skip("skipped test_run_masurca")
+    def test_run_masurca(self):
         # First load a test FASTA file as an KBase Assembly
-        fasta_content = '>seq1 something soemthing asdf\n' \
-                        'agcttttcat\n' \
-                        '>seq2\n' \
-                        'agctt\n' \
-                        '>seq3\n' \
-                        'agcttttcatgg'
-
-        assembly_ref = self.load_fasta_file(os.path.join(self.scratch, 'test1.fasta'),
-                                            'TestAssembly',
-                                            fasta_content)
-
+        m_params = {
+                'fwd_file' = '../work/testReads/small.forward.fq',
+                'rev_file' = '../work/testReads/small.reverse.fq',
+                'workspace_name': self.getWsName(),
+        }
         # Second, call your implementation
-        ret = self.getImpl().filter_contigs(self.getContext(),
+        ret = self.getImpl().run_masurca(self.getContext(),
                                             {'workspace_name': self.getWsName(),
                                              'assembly_input_ref': assembly_ref,
                                              'min_length': 10
@@ -115,17 +163,17 @@ class MaSuRCATest(unittest.TestCase):
         self.assertEqual(ret[0]['n_contigs_removed'], 1)
         self.assertEqual(ret[0]['n_contigs_remaining'], 2)
 
-    def test_filter_contigs_err1(self):
+    def test_run_masurca_err1(self):
         with self.assertRaises(ValueError) as errorContext:
-            self.getImpl().filter_contigs(self.getContext(),
+            self.getImpl().run_masurca(self.getContext(),
                                           {'workspace_name': self.getWsName(),
                                            'assembly_input_ref': '1/fake/3',
                                            'min_length': '-10'})
         self.assertIn('min_length parameter cannot be negative', str(errorContext.exception))
 
-    def test_filter_contigs_err2(self):
+    def test_run_masurca_err2(self):
         with self.assertRaises(ValueError) as errorContext:
-            self.getImpl().filter_contigs(self.getContext(),
+            self.getImpl().run_masurca(self.getContext(),
                                           {'workspace_name': self.getWsName(),
                                            'assembly_input_ref': '1/fake/3',
                                            'min_length': 'ten'})

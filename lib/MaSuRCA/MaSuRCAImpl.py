@@ -34,7 +34,7 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA.git"
-    GIT_COMMIT_HASH = "36dd4b537ef5930be736127841b61efd89a28649"
+    GIT_COMMIT_HASH = "90cbc791ac076c7c5636bcbef011ef9650aca0c4"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
@@ -137,7 +137,7 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
 
         masurca_assembler = MaSuRCA_Assembler(self.config, ctx.provenance())
 
-        output = masurca_assembler.run_masurca(params)
+        output = masurca_assembler.run_masurca_app(params)
         #END run_masurca
 
         # At some point might do deeper type checking...
