@@ -44,26 +44,33 @@ class masurca_utils:
         self.set_api_client = SetAPI(self.srv_wiz_url, service_ver='dev')
         self.eu = ExpressionUtils(self.callback_url, service_ver='beta')
 
-    def _replaceSectionText(self, orig_txt, begin-patn, end-patn, repl_txt, filename):
+    def _replaceSectionText(self, orig_txt, begin_patn, end_patn, repl_txt, filename):
         """
         replace a section of text between lines begin-patn and end-patn with repl_text in file named by filename
+        examples of parameters:
+            begin_patn1 = "DATA\n"
+            begin_patn2 = "PARAMETERS\n"
+            end_patn1 = "END\nPARAMETERS\n"
+            end_patn2 = "END\n"
+            repl_txt1 = begin_patn1 + 'PE= pe 180 20  /kb/module/work/testReads/small.forward.fq  /kb/module/work/testReads/small.reverse.fq\n' + end_patn1
+            repl_txt2 = begin_patn2 + 'GRAPH_KMER_SIZE=auto\nUSE_LINKING_MATES=1\nLIMIT_JUMP_COVERAGE = 60\nCA_PARAMETERS = cgwErrorRate=0.15\nNUM_THREADS= 64\nJF_SIZE=100000000\nDO_HOMOPOLYMER_TRIM=0\n' + end_patn2 
         """
         ret_val = false
         try:
-            # create regular expression pattern
-            repl = re.compile('begin-patn.*?#end-patn', re.DOTALL)
-
             # open file
             f = open(filename, 'r')
-            txt = f.read()
+            orig_txt = f.read()
             f.close()
 
+            # create regular expression pattern
+            repl = re.compile(begin_patn + '.*?' + end_patn, re.DOTALL)
+
             # chop text between #chop-begin and #chop-end
-            txt_replaced = repl.sub(repl_txt, txt)
+            txt_replaced = repl.sub(repl_txt, orig_txt)
             pprint(txt_replaced)
 
             # save result
-            f = open(filename, 'w')
+            f = open(filename,'w')
             f.write(txt_replaced)
             f.close()
         except ValueError as ve:
