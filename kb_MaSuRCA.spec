@@ -61,6 +61,8 @@ module MaSuRCA {
         list<paired_end_lib> read_libraries - Illumina PairedEndLibrary files to assemble
 
         @optional jump_libraries
+        @optional jp_mean
+        @optional jp_stdv
         @optional pacbio_reads
         @optional other_frg_file
         @optional graph_kmer_size
@@ -78,8 +80,12 @@ module MaSuRCA {
         int num_threads;
         int jf_size;
         list<read_lib> read_libraries; 
+        int pe_mean;
+        int pe_stdv;
        
         list<read_lib> jump_libraries;
+        int jp_mean;
+        int jp_stdv;
         read_lib pacbio_reads;
         string other_frg_file;   
         string graph_kmer_size;
@@ -90,7 +96,8 @@ module MaSuRCA {
         bool close_gaps;
         bool soap_assembly;
         bool do_homopolymer_trim;
-       
+
+        string out_folder; 
         string output_contigset_name;
         bool create_report;
     } masurcaParams;
