@@ -80,10 +80,12 @@ module MaSuRCA {
         int num_threads;
         int jf_size;
         list<read_lib> read_libraries; 
+        string pe_prefix;
         int pe_mean;
         int pe_stdv;
        
         list<read_lib> jump_libraries;
+        string jp_prefix;
         int jp_mean;
         int jp_stdv;
         read_lib pacbio_reads;
