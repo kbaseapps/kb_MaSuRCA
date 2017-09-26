@@ -17,6 +17,10 @@ General steps to run the MaSuRCA assemblers:
     First, create a configuration file which contains the location of the compiled assembler (the 
     executable), data and assembly parameters. 
     
+    (The config file consists of two sections: DATA and PARAMETERS. Each section concludes with END statement. 
+    User should copy the sample config file to the directory of choice for running the assembly and 
+    then modify it according to the specifications of the assembly project.)
+    
     Second, run the 'masurca' script which will generate from the configuration file a shell script
     'assemble.sh', which is the main driver of the assembly.
 
