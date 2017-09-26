@@ -98,6 +98,17 @@ parameters :
             do_homopolymer_trim
         short-hint : | 
             <p>specifies if we do (1) or do not (0) want to trim long runs of homopolymers (e.g. GGGGGGGG) from 3' read ends, use it for high GC genomes DO_HOMOPOLYMER_TRIM=0</p>
+parameter-groups :
+    reads_n_details :
+        ui-name : |
+            Reads and its prefix, mean and standard deviation
+        short-hint : |
+parameter-groups :
+    jump_n_details :
+        ui-name : |
+            Jump and its prefix, mean and standard deviation
+        short-hint : |
+                      
 
 description : |
     <p>This is a KBase wrapper for MaSuRCA (Maryland Super Read Cabog Assembler).</p>
