@@ -40,32 +40,32 @@ class masurca_utils:
     PARAM_IN_CS_NAME = 'output_contigset_name'
 
 
-    def __init__(self, scratch_dir, workspace_url, callback_url, srv_wiz_url, provenance):
+    def __init__(self, scratch_dir, workspace_url, callback_url, provenance):
         self.workspace_url = workspace_url
         self.callback_url = callback_url
-        self.srv_wiz_url = srv_wiz_url
         self.au = AssemblyUtil(self.callback_url)
         self.dfu = DataFileUtil(self.callback_url, service_ver='beta')
         self.scratch = scratch_dir
         self.working_dir = scratch_dir
-        self.prog_runner = Program_Runner(self.STAR_BIN, self.scratch)
+        self.prog_runner = Program_Runner(self.MaSuRCA_BIN)
         self.provenance = provenance
         self.ws_client = Workspace(self.workspace_url)
-        kbq = kb_quast(self.callbackURL)
+        self.kbq = kb_quast(self.callbackURL)
+
 
     def validate_params(self, params):
         """
         validate_params: checks params passed to run_masurca_app method and set default values
         """
         log('Start validating run_masurca_app parameters')
-        
+
         # check for mandatory parameters
         if params.get(self.PARAM_IN_WS, None) is None:
             raise ValueError(self.PARAM_IN_WS + ' parameter is required')
         if self.PARAM_IN_THREADN not in params:
             raise ValueError(self.PARAM_IN_THREADN + ' parameter is required')
         params[self.PARAM_IN_THREADN] = min(params.get(self.PARAM_IN_THREADN), psutil.cpu_count())
-        
+
         if params.get(self.PARAM_IN_JF_SIZE, None) is None:
             raise ValueError(self.PARAM_IN_JF_SIZE + ' parameter is required')
         if self.PARAM_IN_READS_LIB not in params:
@@ -83,7 +83,7 @@ class masurca_utils:
         if ('pe_stdv' not in params or type(params['pe_stdv']) != int):
             params['pe_stdv'] = 20
 
-
+        return params
 
     def construct_masurca_config(self, params):
         # STEP 1: get the working folder housing the config.txt file and the masurca results
@@ -144,7 +144,7 @@ class masurca_utils:
                     param_str += '\nDO_HOMOPOLYMER_TRIM==1'
                 else:
                     param_str += '\nDO_HOMOPOLYMER_TRIM==0'
-                    
+
                 begin_patn2 = "PARAMETERS\n"
                 end_patn2 = "END\n"
                 param_str = begin_patn + param_str + + '\n' + end_patn
@@ -159,10 +159,32 @@ class masurca_utils:
         else:
             return config_file_path
 
+    def generate_assemble_script(self, config_file):
+        exit_code = 1
+        if config_file != '':
+            f_dir, f_nm = os.path.split(config_file)
+            m_cmd = [self.MaSuRCA_BIN]
+            m_cmd.append(config_file)
+            exit_code = self.prog_runner.run(m_cmd, f_dir)
+
+        if exit_code == 0:
+            return os.path.join(f_dir, 'assemble.sh')
+        else:
+            return ''
+
+    def run_assemble(self, asmbl_file):
+        exit_code = 1
+        if asmbl_file != '':
+            f_dir, f_nm = os.path.split(asmbl_file)
+            a_cmd = []
+            a_cmd.append('./' + asmbl_file)
+            exit_code = self.prog_runner.run(a_cmd, f_dir)
+
+        return exit_code
 
     def _replaceSectionText(self, orig_txt, begin_patn, end_patn, repl_txt):
         """
-        replace a section of text of orig_txt between lines begin-patn and end-patn with repl_text 
+        replace a section of text of orig_txt between lines begin-patn and end-patn with repl_text
         examples of parameters:
             begin_patn1 = "DATA\n"
             begin_patn2 = "PARAMETERS\n"
@@ -182,6 +204,7 @@ class masurca_utils:
             return txt_replaced
         else:
             return orig_txt
+
 
     def _getKBReadsInfo(self, wsname, reads_refs):
         """

@@ -147,8 +147,8 @@ class MaSuRCATest(unittest.TestCase):
     def test_run_masurca(self):
         # First load a test FASTA file as an KBase Assembly
         m_params = {
-                'fwd_file' = '../work/testReads/small.forward.fq',
-                'rev_file' = '../work/testReads/small.reverse.fq',
+                'fwd_file': '../work/testReads/small.forward.fq',
+                'rev_file': '../work/testReads/small.reverse.fq',
                 'workspace_name': self.getWsName(),
         }
         # Second, call your implementation

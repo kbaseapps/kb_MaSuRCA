@@ -14,10 +14,10 @@ import zipfile
 import multiprocessing
 import psutil
 
-#from DataFileUtil.DataFileUtilClient import DataFileUtil
-#from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
 from MaSuRCA.core.masurca_utils import masurca_utils
 
+from DataFileUtil.DataFileUtilClient import DataFileUtil
+from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
 from KBaseReport.KBaseReportClient import KBaseReport
 from KBaseReport.baseclient import ServerError as _RepError
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
@@ -49,7 +49,6 @@ class MaSuRCA_Assembler(object):
         """
         # BEGIN_CONSTRUCTOR
         self.ws_url = config["workspace-url"]
-        self.ws_url = config["workspace-url"]
         self.callback_url = config['SDK_CALLBACK_URL']
         self.token = config['KB_AUTH_TOKEN']
         self.shock_url = config['shock-url']
@@ -64,6 +63,8 @@ class MaSuRCA_Assembler(object):
         self.proj_dir = None
 
         self.masurca_version = 'MaSuRCA-' + os.environ['M_VERSION']
+        self.m_utils = masurca_utils(self.scratch, self.workspace_url,
+                self.callback_url, self.provenance)
 
         # from the provenance, extract out the version to run by exact hash if possible
         self.my_version = 'release'
@@ -78,27 +79,27 @@ class MaSuRCA_Assembler(object):
     def run_masurca_app(self, params):
         # 0. create the masurca project folder
         if self.proj_dir is None:
-            self.proj_dir = self.scratch
+            self.create_proj_dir(self.scratch)
+
+        # 1. validate & process the input parameters
+        validated_params = self.m_utils.validate_params(params)
+
         wsname = params['workspace_name']
 
         cpus = min(params.get('num_threads'), psutil.cpu_count())
 
-        # 1. validate & process the input parameters
-        validated_params = self.process_params(params)
+        # 2. create the configuration file 
+        config_file = self.m_utils.construct_masurca_config(validated_params)
 
-        # 2. convert the input parameters (from refs to file paths, especially)
-        input_params = self.convert_params(validated_params)
+        # 3. run masurca against the configuration file to generate the assemble.sh script 
+        if config_file != '':
+            assemble_file = self.m_utils.generate_assemble_script(config_file)
 
-        # 3. create the configuratio file 
-        config_file = self.create_config_file(input_params)
+        # 4. run the assemble.sh script to do the heavy-lifting
+        if assemble_file != '':
+            self.m_utils.run_assemble(assemble_file)
 
-        # 4. run masurca against the configuration file to generate the assemble.sh script 
-        assemble_file = self.generate_assemble_script(config_file)
-
-        # 5. run the assemble.sh script to do the heavy-lifting
-        self.run_assemble(assemble_file)
-
-        # 6. save the assembly to KBase if everything has gone well
+        # 5. save the assembly to KBase if everything has gone well
         self.log('Uploading FASTA file to Assembly')
         assemblyUtil = AssemblyUtil(self.callbackURL, token=ctx['token'], service_ver='release')
         output_contigs = os.path.join(self.proj_dir, 'name_of_fa_file')
@@ -120,15 +121,10 @@ class MaSuRCA_Assembler(object):
         return returnVal
 
 
-    def create_config_file(self, params):
-        '''creating the configuration file for MaSuRCA to generate the assemble.sh script'''
-        config_file_with_path = ''
-
-        return config_file_with_path
-
-
     def create_proj_dir(self, home_dir):
-        '''creating the project directory for MaSuRCA'''
+        """
+        creating the project directory for MaSuRCA
+        """
         prjdir = os.path.join(home_dir, self.MaSuRCAR_PROJECT_DIR)
         self._mkdir_p(prjdir)
         self.proj_dir = prjdir
