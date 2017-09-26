@@ -16,6 +16,7 @@ import psutil
 
 #from DataFileUtil.DataFileUtilClient import DataFileUtil
 #from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
+from MaSuRCA.core.masurca_utils import masurca_utils
 
 from KBaseReport.KBaseReportClient import KBaseReport
 from KBaseReport.baseclient import ServerError as _RepError
@@ -60,6 +61,7 @@ class MaSuRCA_Assembler(object):
 
         self.scratch = os.path.join(config['scratch'], str(uuid.uuid4()))
         self._mkdir_p(self.scratch)
+        self.proj_dir = None
 
         self.masurca_version = 'MaSuRCA-' + os.environ['M_VERSION']
 
@@ -76,8 +78,7 @@ class MaSuRCA_Assembler(object):
     def run_masurca_app(self, params):
         # 0. create the masurca project folder
         if self.proj_dir is None:
-            m_dir = self.create_star_dirs(self.scratch)
-            self.proj_dir = m_dir
+            self.proj_dir = self.scratch
         wsname = params['workspace_name']
 
         cpus = min(params.get('num_threads'), psutil.cpu_count())
@@ -91,7 +92,7 @@ class MaSuRCA_Assembler(object):
         # 3. create the configuratio file 
         config_file = self.create_config_file(input_params)
 
-        # 4. run masurca against the configuratio file to generate the assemble.sh script 
+        # 4. run masurca against the configuration file to generate the assemble.sh script 
         assemble_file = self.generate_assemble_script(config_file)
 
         # 5. run the assemble.sh script to do the heavy-lifting
@@ -130,6 +131,7 @@ class MaSuRCA_Assembler(object):
         '''creating the project directory for MaSuRCA'''
         prjdir = os.path.join(home_dir, self.MaSuRCAR_PROJECT_DIR)
         self._mkdir_p(prjdir)
+        self.proj_dir = prjdir
 
         return prjdir
 
