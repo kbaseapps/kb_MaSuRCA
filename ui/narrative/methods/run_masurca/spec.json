@@ -23,10 +23,10 @@
             }
         },
         {
-            "id": "read_libraries",
+            "id": "reads_libraries",
             "optional": false,
             "advanced": false,
-            "allow_multiple": true,
+            "allow_multiple": false,
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
@@ -34,14 +34,73 @@
             }
         },
         {
-            "id": "jump_libraries",
-            "optional": true,
-            "advanced": true,
-            "allow_multiple": true,
+            "id": "read_id",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
                 "valid_ws_types": ["KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+            }
+        },
+        {
+            "id": "pe_mean",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "180" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : "int",
+                "min_int" : 0
+            }
+        },
+        {
+            "id": "pe_stdv",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "20.0" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : "float",
+                "min_float" : 20.0
+            }
+        },
+        {
+            "id": "jump_libraries",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": ["KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+            }
+        },
+        {
+            "id": "jp_mean",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "180" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : "int",
+                "min_int" : 0
+            }
+        },
+        {
+            "id": "jp_stdv",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "20.0" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : "float",
+                "min_float" : 20.0
             }
         },
         {
@@ -173,6 +232,15 @@
                 "validate_as" : ["int"]
             }
         }
+    ],
+    "parameter-groups": [
+      {
+        "id": "reads_n_details",
+        "parameters": ["_id", "condition"],
+        "optional": false,
+        "allow_multiple": true,
+        "with_border": true
+      }
     ],
     "behavior": {
         "service-mapping": {
