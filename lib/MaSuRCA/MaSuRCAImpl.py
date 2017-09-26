@@ -34,7 +34,7 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA.git"
-    GIT_COMMIT_HASH = "c0dc3823b36e84d80b657a13d2bf87013e8893ee"
+    GIT_COMMIT_HASH = "67bde49fd352f78072aa6d6164e7e82c7543bf5c"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
@@ -104,11 +104,12 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
            parameter "jf_size" of Long, parameter "read_libraries" of list of
            type "read_lib" (The workspace object name of a SingleEndLibrary
            or PairedEndLibrary file, whether of the KBaseAssembly or
-           KBaseFile type.), parameter "pe_mean" of Long, parameter "pe_stdv"
-           of Long, parameter "jump_libraries" of list of type "read_lib"
-           (The workspace object name of a SingleEndLibrary or
-           PairedEndLibrary file, whether of the KBaseAssembly or KBaseFile
-           type.), parameter "jp_mean" of Long, parameter "jp_stdv" of Long,
+           KBaseFile type.), parameter "pe_prefix" of String, parameter
+           "pe_mean" of Long, parameter "pe_stdv" of Long, parameter
+           "jump_libraries" of list of type "read_lib" (The workspace object
+           name of a SingleEndLibrary or PairedEndLibrary file, whether of
+           the KBaseAssembly or KBaseFile type.), parameter "jp_prefix" of
+           String, parameter "jp_mean" of Long, parameter "jp_stdv" of Long,
            parameter "pacbio_reads" of type "read_lib" (The workspace object
            name of a SingleEndLibrary or PairedEndLibrary file, whether of
            the KBaseAssembly or KBaseFile type.), parameter "other_frg_file"
