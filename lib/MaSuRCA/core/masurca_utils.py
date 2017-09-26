@@ -117,15 +117,14 @@ class masurca_utils:
                             data_str += '\n'
                         data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' + str(params['jp_stdv']) + ' ' + jp_reads_data['fwd_file'] + ' ' + jp_reads_data['reverse_file']
 
-                    begin_patn = "DATA\n"
-                    end_patn = "END\nPARAMETERS\n"
-                    data_str = begin_patn + data_str + ' ' + end_patn
-                    config_template = self._replaceSectionText(config_template, begin_patn, end_patn, data_str)
+                    begin_patn1 = "DATA\n"
+                    end_patn1 = "END\nPARAMETERS\n"
+                    config_template = self._replaceSectionText(config_template, begin_patn1, end_patn1, data_str)
                     config_file.write(config_template)
 
-            # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_template.txt file 
+            # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
             with open(config_file_path, 'r') as previous_config_file:
-                previous_config = previous_file.read()
+                previous_config = previous_config_file.read()
                 param_str = ''
                 if params['graph_kmer_size']:
                     param_str += 'GRAPH_KMER_SIZE=' + str(params['graph_kmer_size'])
@@ -145,16 +144,17 @@ class masurca_utils:
                     param_str += '\nDO_HOMOPOLYMER_TRIM==1'
                 else:
                     param_str += '\nDO_HOMOPOLYMER_TRIM==0'
-                begin_patn = "PARAMETERS\n"
-                end_patn = "END\n"
-                param_str = begin_patn2 + param_str + + '\n' + end_patn2
-                final_config = self._replaceSectionText(previous_config, begin_patn, end_patn, param_str)
+                    
+                begin_patn2 = "PARAMETERS\n"
+                end_patn2 = "END\n"
+                param_str = begin_patn + param_str + + '\n' + end_patn
+                final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
 
             with open(config_file_path, 'w') as config_file:
                 config_file.write(final_config)
-        except ValueError as ve:
-            log('File modification raised error:\n')
-            pprint(ve)
+        except IOError as ioerr:
+            log('Creation of the config.txt file raised error:\n')
+            pprint(ioerr)
             return ''
         else:
             return config_file_path
@@ -168,23 +168,20 @@ class masurca_utils:
             begin_patn2 = "PARAMETERS\n"
             end_patn1 = "END\nPARAMETERS\n"
             end_patn2 = "END\n"
-            repl_txt1 = begin_patn1 + 'PE= pe 180 20  /kb/module/work/testReads/small.forward.fq  /kb/module/work/testReads/small.reverse.fq\n' + end_patn1
-            repl_txt2 = begin_patn2 + 'GRAPH_KMER_SIZE=auto\nUSE_LINKING_MATES=1\nLIMIT_JUMP_COVERAGE = 60\nCA_PARAMETERS = cgwErrorRate=0.15\nNUM_THREADS= 64\nJF_SIZE=100000000\nDO_HOMOPOLYMER_TRIM=0\n' + end_patn2 
+            repl_txt1 = 'PE= pe 180 20 /kb/module/work/testReads/small.forward.fq /kb/module/work/testReads/small.reverse.fq\n'
+            repl_txt2 = 'GRAPH_KMER_SIZE=auto\nUSE_LINKING_MATES=1\nLIMIT_JUMP_COVERAGE = 60\nCA_PARAMETERS = cgwErrorRate=0.15\nNUM_THREADS= 64\nJF_SIZE=100000000\nDO_HOMOPOLYMER_TRIM=0\n' 
         """
-        try:
+        if repl_txt != '':
             # create regular expression pattern
             repl = re.compile(begin_patn + '.*?' + end_patn, re.DOTALL)
 
-            # chop text between #chop-begin and #chop-end
+            repl_txt = begin_patn + repl_txt + '\n' + end_patn
+            # replace the text between begin_patn and end_patn with repl_txt
             txt_replaced = repl.sub(repl_txt, orig_txt)
             #pprint(txt_replaced)
-        except ValueError as ve:
-            log('File modification raised error:\n')
-            pprint(ve)
-        else: #no exception raised
             return txt_replaced
-
-        return orig_txt
+        else:
+            return orig_txt
 
     def _getKBReadsInfo(self, wsname, reads_refs):
         """
