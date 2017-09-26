@@ -72,6 +72,8 @@ class masurca_utils:
                 not valid_string(params[self.PARAM_IN_CS_NAME])):
             raise ValueError("Parameter output_contigset_name is required and must be a valid Workspace object string, "
                       "not {}".format(params.get(self.PARAM_IN_CS_NAME, None)))
+        if ('pe_prefix' not in params):
+            params['pe_prefix'] = 'pe'
         if ('pe_mean' not in params or type(params['pe_mean']) != int):
             params['pe_mean'] = 180
         if ('pe_stdv' not in params or type(params['pe_stdv']) != int):
@@ -92,8 +94,8 @@ class masurca_utils:
         pe_reads_data = self._getKBReadsInfo(params[self.PARAM_IN_READS_LIBS])
         jp_reads_data = self._getKBReadsInfo(params[self.PARAM_IN_JUMP_LIBS])
 
+        # STEP 3: construct and save the config.txt file for running masurca
         try:
-            # STEP 3: construct and save the config.txt file for running masurca
             # STEP 3.1: replace the 'DATA...END' portion of the config_template.txt file 
             with open(config_file_path, 'w') as config_file:
                 with open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
@@ -101,7 +103,7 @@ class masurca_utils:
                     config_template = config_template_file.read()
                     data_str = ''
                     if pe_reads_data:
-                        data_str += 'PE= pe ' + str(params['pe_mean']) + ' ' + str(params['pe_stdv']) + ' ' + pe_reads_data['fwd_file'] + ' ' + pe_reads_data['reverse_file']
+                        data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + str(params['pe_stdv']) + ' ' + pe_reads_data['fwd_file'] + ' ' + pe_reads_data['reverse_file']
                     if jp_reads_data:
                         if ('jp_mean' not in params or type(params['jp_mean']) != int):
                             params['jp_mean'] = 3600
@@ -109,7 +111,7 @@ class masurca_utils:
                             params['pe_stdv'] = 200
                         if data_str != '':
                             data_str += '\n'
-                        data_str += 'JUMP= sh ' + str(params['jp_mean']) + ' ' + str(params['jp_stdv']) + ' ' + jp_reads_data['fwd_file'] + ' ' + jp_reads_data['reverse_file']
+                        data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' + str(params['jp_stdv']) + ' ' + jp_reads_data['fwd_file'] + ' ' + jp_reads_data['reverse_file']
 
                     begin_patn = "DATA\n"
                     end_patn = "END\nPARAMETERS\n"
