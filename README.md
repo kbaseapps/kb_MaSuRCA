@@ -23,8 +23,12 @@ General steps to run the MaSuRCA assemblers:
     
     Second, run the 'masurca' script which will generate from the configuration file a shell script
     'assemble.sh', which is the main driver of the assembly.
+    
+    (Once you’ve created a configuration file, use the ‘masurca' script from the MaSuRCA bin directory 
+    to generate the 'assemble.sh' shell script that executes the assembly:
+        $ /install_path/ MaSuRCA-X.X.X/bin/masurca config.txt)
 
-    Finally, run the script 'assemble.sh' to assemble the data.
+    Finally, execute the script 'assemble.sh' to assemble the data.
 
 For more help on how to modify, register and deploy the example to KBase, see the
 [KBase SDK documentation](https://github.com/kbase/kb_sdk).
