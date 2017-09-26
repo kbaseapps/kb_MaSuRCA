@@ -34,9 +34,6 @@ parameters :
     reads_id :
         ui-name : Reads object id
         short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
-    jump_libraries :
-        ui-name : Jump Reads
-        short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
     pacbio_reads :
         ui-name : PacBio Reads
         short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
@@ -119,7 +116,6 @@ parameter-groups :
             Jump and its prefix, mean and standard deviation
         short-hint : |
                       
-
 description : |
     <p>This is a KBase wrapper for MaSuRCA (Maryland Super Read Cabog Assembler).</p>
     <p>The MaSuRCA assembler combines the benefits of deBruijn graph and Overlap-Layout-Consensus assembly approaches. Since version 3.2.1 it supports hybrid assembly with short Illumina reads and long high error PacBio/MinION data.</p> 
