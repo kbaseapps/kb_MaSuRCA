@@ -2,6 +2,7 @@ import re
 import time
 import json
 import os
+import psutil
 from pprint import pprint, pformat
 
 from MaSuRCA.core.Program_Runner import Program_Runner
@@ -57,11 +58,14 @@ class masurca_utils:
         validate_params: checks params passed to run_masurca_app method and set default values
         """
         log('Start validating run_masurca_app parameters')
+        
         # check for mandatory parameters
         if params.get(self.PARAM_IN_WS, None) is None:
             raise ValueError(self.PARAM_IN_WS + ' parameter is required')
         if self.PARAM_IN_THREADN not in params:
             raise ValueError(self.PARAM_IN_THREADN + ' parameter is required')
+        params[self.PARAM_IN_THREADN] = min(params.get(self.PARAM_IN_THREADN), psutil.cpu_count())
+        
         if params.get(self.PARAM_IN_JF_SIZE, None) is None:
             raise ValueError(self.PARAM_IN_JF_SIZE + ' parameter is required')
         if self.PARAM_IN_READS_LIB not in params:
