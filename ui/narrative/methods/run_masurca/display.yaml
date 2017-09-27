@@ -96,24 +96,27 @@ parameters :
         short-hint : | 
             <p>specifies if we do (1) or do not (0) want to trim long runs of homopolymers (e.g. GGGGGGGG) from 3' read ends, use it for high GC genomes DO_HOMOPOLYMER_TRIM=0</p>
     reads_prefix :
-        ui-name : prefix for defining the reads
-        short-hint : two-letter prefix for defining reads in the config.txt file
+        ui-name : |
+            prefix for defining the reads
+        short-hint : |
+            two-letter prefix for defining reads in the config.txt file
     reads_mean :
-        ui-name : mean for defining the reads
-        short-hint : the mean for defining reads in the config.txt file
+        ui-name : |
+            mean for defining the reads
+        short-hint : |
+            the mean for defining reads in the config.txt file
     reads_stdv :
-        ui-name : standard deviation for defining the reads
-        short-hint : the standard deviation for defining reads in the config.txt file
+        ui-name : |
+            standard deviation for defining the reads
+        short-hint : |
+            the standard deviation for defining reads in the config.txt file
         
 parameter-groups : 
     reads_libraries :
         ui-name : |
             Reads and its prefix, mean and standard deviation
         short-hint : |
-    jump_libraries :
-        ui-name : |
-            Jump and its prefix, mean and standard deviation
-        short-hint : |
+
                       
 description : |
     <p>This is a KBase wrapper for MaSuRCA (Maryland Super Read Cabog Assembler).</p>
