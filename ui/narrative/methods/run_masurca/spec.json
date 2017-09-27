@@ -313,10 +313,6 @@
                     "target_property": "input_reads_libraries"
                 },
                 {
-                    "input_parameter": "output_contigset_name",
-                    "target_property": "input_output_contigset_name"
-                },
-                {
                     "input_parameter": "jf_size",
                     "target_property": "jf_size"
                 },
