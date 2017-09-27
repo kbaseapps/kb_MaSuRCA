@@ -309,10 +309,6 @@
                     "target_property": "report_window_line_height"
                 },
                 {
-                    "input_parameter": "reads_libraries",
-                    "target_property": "input_reads_libraries"
-                },
-                {
                     "input_parameter": "jf_size",
                     "target_property": "jf_size"
                 },
