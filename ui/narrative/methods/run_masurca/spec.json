@@ -200,7 +200,7 @@
     ],
     "parameter-groups": [
       {
-        "id": "reads_n_details",
+        "id": "reads_libraries",
         "parameters": ["reads_id", "reads_prefix", "reads_mean", "reads_stdv"],
         "optional": false,
         "allow_multiple": false,
@@ -209,7 +209,7 @@
     ],
     "parameter-groups": [
       {
-        "id": "jump_n_details",
+        "id": "jump_libraries",
         "parameters": ["reads_id", "reads_prefix", "reads_mean", "reads_stdv"],
         "optional": true,
         "allow_multiple": false,
@@ -286,12 +286,12 @@
                     "target_property": "do_homopolymer_trim"
                 },
                 {
-                    "input_parameter": "reads_n_details",
-                    "target_property": "reads_n_details"
+                    "input_parameter": "reads_libraries",
+                    "target_property": "reads_libraries"
 	            },
                 {
-                    "input_parameter": "jump_n_details",
-                    "target_property": "jump_n_details"
+                    "input_parameter": "jump_libraries",
+                    "target_property": "jump_libraries"
 	            },
                 {
                     "constant_value": 1,
