@@ -212,7 +212,7 @@
     "parameter-groups": [
       {
         "id": "reads_n_details",
-        "parameters": ["reads_id", "reads_prefix", "reads_mean", "reads_stdv],
+        "parameters": ["reads_id", "reads_prefix", "reads_mean", "reads_stdv"],
         "optional": false,
         "allow_multiple": false,
         "with_border": true
