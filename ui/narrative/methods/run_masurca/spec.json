@@ -227,8 +227,8 @@
                     "target_property": "workspace_name"
                 },
                 {
-                    "input_parameter": "read_libraries",
-                    "target_property": "read_libraries",
+                    "input_parameter": "reads_libraries",
+                    "target_property": "reads_libraries",
                     "target_type_transform": "resolved-ref"
                 },
                 {
