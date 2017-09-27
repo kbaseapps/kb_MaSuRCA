@@ -237,7 +237,11 @@
                 },
                 {
                     "input_parameter": "reads_libraries",
-                    "target_property": "reads_libraries",
+                    "target_property": "reads_libraries"
+                },
+		{
+                    "input_parameter": "jump_libraries",
+                    "target_property": "jump_libraries"
                 },
                 {
                     "input_parameter": "pacbio_reads",
