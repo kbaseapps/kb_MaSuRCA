@@ -12,7 +12,6 @@ from pprint import pprint, pformat
 import traceback
 import zipfile
 import multiprocessing
-import psutil
 
 from MaSuRCA.core.masurca_utils import masurca_utils
 
@@ -49,23 +48,20 @@ class MaSuRCA_Assembler(object):
         __init__
         """
         # BEGIN_CONSTRUCTOR
-        self.ws_url = config["workspace-url"]
+        self.workspace_url = config["workspace-url"]
         self.callback_url = config['SDK_CALLBACK_URL']
         self.token = config['KB_AUTH_TOKEN']
-        self.shock_url = config['shock-url']
-        self.dfu = DataFileUtil(self.callback_url, service_ver='beta')
-        self.gfu = GenomeFileUtil(self.callback_url)
-        self.au = AssemblyUtil(self.callback_url)
-        self.ws = Workspace(self.ws_url, token=self.token)
         self.provenance = provenance
+
+        self.au = AssemblyUtil(self.callback_url)
 
         self.scratch = os.path.join(config['scratch'], str(uuid.uuid4()))
         self._mkdir_p(self.scratch)
-        self.proj_dir = None
+
+        self.proj_dir = self.create_proj_dir(self.scratch)
 
         self.masurca_version = 'MaSuRCA-' + os.environ['M_VERSION']
-        self.m_utils = masurca_utils(self.scratch, self.workspace_url,
-                self.callback_url, self.provenance)
+        self.m_utils = masurca_utils(self.proj_dir, self.config)
 
         # from the provenance, extract out the version to run by exact hash if possible
         self.my_version = 'release'
@@ -78,16 +74,10 @@ class MaSuRCA_Assembler(object):
 
 
     def run_masurca_app(self, params):
-        # 0. create the masurca project folder
-        if self.proj_dir is None:
-            self.create_proj_dir(self.scratch)
-
         # 1. validate & process the input parameters
         validated_params = self.m_utils.validate_params(params)
 
         wsname = params['workspace_name']
-
-        cpus = min(params.get('num_threads'), psutil.cpu_count())
 
         # 2. create the configuration file 
         config_file = self.m_utils.construct_masurca_config(validated_params)
@@ -101,14 +91,7 @@ class MaSuRCA_Assembler(object):
             self.m_utils.run_assemble(assemble_file)
 
         # 5. save the assembly to KBase if everything has gone well
-        self.log('Uploading FASTA file to Assembly')
-        assemblyUtil = AssemblyUtil(self.callbackURL, token=ctx['token'], service_ver='release')
-        output_contigs = os.path.join(self.proj_dir, 'name_of_fa_file')
-        assemblyUtil.save_assembly_from_fasta(
-                        {'file': {'path': output_contigs},
-                        'workspace_name': wsname,
-                        'assembly_name': params[self.PARAM_IN_CS_NAME]
-                        })
+        self.m_utils.save_assembly('sj.cor.ext.reduced.fa', wsname, params[PARAM_IN_CS_NAME])
 
         # 7. report the final results
         returnVal = {
@@ -116,7 +99,7 @@ class MaSuRCA_Assembler(object):
             "report_name": None
         }
 
-        report_name, report_ref = self.generate_report(output_contigs, params, proj_dir, wsname)
+        report_name, report_ref = self.m_utils.generate_reports('sj.cor.ext.reduced.fa', params, self.proj_dir, wsname)
         returnVal = {'report_name': report_name, 'report_ref': report_ref}
 
         return returnVal

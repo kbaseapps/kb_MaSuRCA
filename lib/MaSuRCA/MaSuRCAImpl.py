@@ -47,9 +47,9 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
 
         # Any configuration parameters that are important should be parsed and
         # saved in the constructor.
-        self.callback_url = os.environ['SDK_CALLBACK_URL']
-        self.shared_folder = config['scratch']
-        self.work_folder = config['scratch']
+        self.config = config
+        self.config['SDK_CALLBACK_URL'] = os.environ['SDK_CALLBACK_URL']
+        self.config['KB_AUTH_TOKEN'] = os.environ['KB_AUTH_TOKEN']
         #END_CONSTRUCTOR
         pass
 

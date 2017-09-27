@@ -2,16 +2,19 @@ import re
 import time
 import json
 import os
+import numpy as np
 import psutil
+import zipfile
 from pprint import pprint, pformat
 
 from MaSuRCA.core.Program_Runner import Program_Runner
-from DataFileUtil.DataFileUtilClient import DataFileUtil
 from Workspace.WorkspaceClient import Workspace as Workspace
 from KBaseReport.KBaseReportClient import KBaseReport
-from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from kb_quast.kb_quastClient import kb_quast
+from kb_quast.baseclient import ServerError as QUASTError
+from ReadsUtils.ReadsUtilsClient import ReadsUtils
+from ReadsUtils.baseclient import ServerError
 
 
 def log(message, prefix_newline=False):
@@ -29,17 +32,22 @@ class masurca_utils:
     PARAM_IN_CS_NAME = 'output_contigset_name'
 
 
-    def __init__(self, scratch_dir, workspace_url, callback_url, provenance):
-        self.workspace_url = workspace_url
-        self.callback_url = callback_url
-        self.au = AssemblyUtil(self.callback_url)
-        self.dfu = DataFileUtil(self.callback_url, service_ver='beta')
-        self.scratch = scratch_dir
-        self.working_dir = scratch_dir
+    def __init__(self, prj_dir, config):
+        self.workspace_url = config['workspace-url']
+        self.callback_url = config['callback-url']
+        self.token = config['KB_AUTH_TOKEN']
+        if 'shock-url' in config:
+            self.shock_url = config['shock-url']
+        if 'handle-service-url' in config:
+            self.handle_url = config['handle-service-url']
+
+        self.ws_client = Workspace(self.workspace_url, token=self.token)
+        self.ru = ReadsUtils(self.callback_url, token=self.token)
+        self.au = AssemblyUtil(self.callback_url, token=self.token)
+        self.kbr = KBaseReport(self.callback_url)
+        self.kbq = kb_quast(self.callback_url)
         self.prog_runner = Program_Runner(self.MaSuRCA_BIN)
-        self.provenance = provenance
-        self.ws_client = Workspace(self.workspace_url)
-        self.kbq = kb_quast(self.callbackURL)
+        self.proj_dir = prj_dir
 
 
     def validate_params(self, params):
@@ -53,7 +61,7 @@ class masurca_utils:
             raise ValueError(self.PARAM_IN_WS + ' parameter is required')
         if self.PARAM_IN_THREADN not in params:
             raise ValueError(self.PARAM_IN_THREADN + ' parameter is required')
-        params[self.PARAM_IN_THREADN] = min(params.get(self.PARAM_IN_THREADN), psutil.cpu_count())
+        #params[self.PARAM_IN_THREADN] = min(params.get(self.PARAM_IN_THREADN), psutil.cpu_count())
 
         if params.get(self.PARAM_IN_JF_SIZE, None) is None:
             raise ValueError(self.PARAM_IN_JF_SIZE + ' parameter is required')
@@ -76,16 +84,13 @@ class masurca_utils:
 
     def construct_masurca_config(self, params):
         # STEP 1: get the working folder housing the config.txt file and the masurca results
-        out_folder = params['out_folder']
-        out_dir = os.path.join(self.scratch, out_folder)
-        self._mkdir_p(out_dir)
-
         wsname = params[self.PARAM_IN_WS]
-        config_file_path = os.path.join(out_dir, 'config.txt')
+        config_file_path = os.path.join(self.proj_dir, 'config.txt')
 
         # STEP 2: retrieve the reads data from input parameter
         pe_reads_data = self._getKBReadsInfo(params[self.PARAM_IN_READS_LIBS])
-        jp_reads_data = self._getKBReadsInfo(params[self.PARAM_IN_JUMP_LIBS])
+        if self.PARAM_IN_JUMP_LIB in params:
+            jp_reads_data = self._getKBReadsInfo(params[self.PARAM_IN_JUMP_LIBS])
 
         # STEP 3: construct and save the config.txt file for running masurca
         try:
@@ -171,6 +176,16 @@ class masurca_utils:
 
         return exit_code
 
+    def save_assembly(self, contig_fa, wsname, a_name):
+        self.log('Uploading FASTA file to Assembly')
+        output_contigs = os.path.join(self.proj_dir, contig_fa)
+        self.au.save_assembly_from_fasta(
+                        {'file': {'path': output_contigs},
+                        'workspace_name': wsname,
+                        'assembly_name': a_name
+                        })
+
+
     def _replaceSectionText(self, orig_txt, begin_patn, end_patn, repl_txt):
         """
         replace a section of text of orig_txt between lines begin-patn and end-patn with repl_text
@@ -211,8 +226,7 @@ class masurca_utils:
         for r in reads_refs:
             obj_ids.append({'ref': r if '/' in r else (wsname + '/' + r)})
 
-        ws = workspaceService(self.workspaceURL, token=token)
-        ws_info = ws.get_object_info_new({'objects': obj_ids})
+        ws_info = self.ws_client.get_object_info_new({'objects': obj_ids})
         reads_params = []
 
         reftoname = {}
@@ -227,8 +241,7 @@ class masurca_utils:
                    'KBaseAssembly.SingleEndLibrary ' +
                    'KBaseAssembly.PairedEndLibrary')
         try:
-            readcli = ReadsUtils(self.callbackURL, token=token)
-            reads = readcli.download_reads({'read_libraries': reads_params})['files']
+            reads = self.ru.download_reads({'read_libraries': reads_params})['files']
         except ServerError as se:
             self.log('logging stacktrace from dynamic client error')
             self.log(se.data)
@@ -264,16 +277,126 @@ class masurca_utils:
 
         return reads_data
 
-    def _mkdir_p(self, dir):
-        """
-        _mkdir_p: make directory for given path
-        """
-        log('Creating a new dir: ' + dir)
-        if not dir:
-            return
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-        else:
-            log('{} has existed, so skip creating.'.format(dir))
 
+    def generate_report(self, contig_file_name, params, out_dir, wsname):
+        self.log('Generating and saving report')
+
+        contig_file_with_path = os.path.join(out_dir, contig_file_name)
+        fasta_stats = self.load_statsi(contig_file_with_path)
+        lengths = [fasta_stats[contig_id] for contig_id in fasta_stats]
+
+        assembly_ref = params[self.PARAM_IN_WS] + '/' + params[self.PARAM_IN_CS_NAME]
+
+        report_text = ''
+        report_text += 'MaSuRCA results saved to: ' + wsname + '/' + out_dir + '\n'
+        report_text += 'Assembly saved to: ' + assembly_ref + '\n'
+        report_text += 'Assembled into ' + str(len(lengths)) + ' contigs.\n'
+        report_text += 'Avg Length: ' + str(sum(lengths) / float(len(lengths))) + ' bp.\n'
+
+        # compute a simple contig length distribution
+        bins = 10
+        counts, edges = np.histogram(lengths, bins)
+        report_text += 'Contig Length Distribution (# of contigs -- min to max ' + 'basepairs):\n'
+        for c in range(bins):
+            report_text += '   ' + str(counts[c]) + '\t--\t' + str(edges[c]) + ' to ' + str(edges[c + 1]) + ' bp\n'
+        print('Running QUAST')
+        quastret = self.kbq.run_QUAST({'files': [{'path': contig_file_with_path,
+                                             'label': params[self.PARAM_IN_CS_NAME]}]})
+
+        output_files = self._generate_output_file_list(out_dir)
+
+        print('Saving report')
+        report_output = self.kbr.create_extended_report(
+            {'message': report_text,
+             'objects_created': [{'ref': assembly_ref, 'description': 'Assembled contigs'}],
+             'direct_html_link_index': 0,
+             'file_links': output_files,
+             'html_links': [{'shock_id': quastret['shock_id'],
+                             'name': 'report.html',
+                             'label': 'QUAST report'}
+                            ],
+             'report_object_name': 'kb_masurca_report_' + str(uuid.uuid4()),
+             'workspace_name': params[self.PARAM_IN_WS]
+            })
+        reportName = report_output['name']
+        reportRef = report_output['ref']
+        return report_name, report_ref
+
+    def _generate_output_file_list(self, out_dir):
+        """
+        _generate_output_file_list: zip result files and generate file_links for report
+        """
+
+        log('start packing result files')
+
+        output_files = list()
+
+        output_directory = os.path.join(self.scratch, str(uuid.uuid4()))
+        self._mkdir_p(output_directory)
+        masurca_output = os.path.join(output_directory, 'masurca_output.zip')
+        self.zip_folder(out_dir, masurca_output)
+
+        output_files.append({'path': masurca_output,
+                             'name': os.path.basename(masurca_output),
+                             'label': os.path.basename(masurca_output),
+                             'description': 'Output file(s) generated by MaSuRCA'})
+
+        return output_files
+
+    def _zip_folder(self, folder_path, output_path):
+        """Zip the contents of an entire folder (with that folder included in the archive).
+        Empty subfolders could be included in the archive as well if the commented portion is used.
+        """
+        with zipfile.ZipFile(output_path, 'w',
+                             zipfile.ZIP_DEFLATED,
+                             allowZip64=True) as ziph:
+            for root, folders, files in os.walk(folder_path):
+                for f in files:
+                    absolute_path = os.path.join(root, f)
+                    relative_path = os.path.join(os.path.basename(root), f)
+                    #print "Adding {} to archive.".format(absolute_path)
+                    ziph.write(absolute_path, relative_path)
+
+        print "{} created successfully.".format(output_path)
+
+        #with zipfile.ZipFile(output_path, "r") as f:
+        #    print 'Checking the zipped file......\n'
+        #    for info in f.infolist():
+        #        print info.filename, info.date_time, info.file_size, info.compress_size
+
+
+    def load_stats(self, input_file_name):
+        self.log('Starting conversion of FASTA to KBaseGenomeAnnotations.Assembly')
+        self.log('Building Object.')
+        if not os.path.isfile(input_file_name):
+            raise Exception('The input file name {0} is not a file!'.format(input_file_name))
+        with open(input_file_name, 'r') as input_file_handle:
+            contig_id = None
+            sequence_len = 0
+            fasta_dict = dict()
+            first_header_found = False
+            # Pattern for replacing white space
+            pattern = re.compile(r'\s+')
+            for current_line in input_file_handle:
+                if (current_line[0] == '>'):
+                    # found a header line
+                    # Wrap up previous fasta sequence
+                    if not first_header_found:
+                        first_header_found = True
+                    else:
+                        fasta_dict[contig_id] = sequence_len
+                        sequence_len = 0
+                    fasta_header = current_line.replace('>', '').strip()
+                    try:
+                        contig_id = fasta_header.strip().split(' ', 1)[0]
+                    except:
+                        contig_id = fasta_header.strip()
+                else:
+                    sequence_len += len(re.sub(pattern, '', current_line))
+        # wrap up last fasta sequence
+        if not first_header_found:
+            raise Exception("There are no contigs in this file")
+        else:
+            fasta_dict[contig_id] = sequence_len
+        return fasta_dict
 
