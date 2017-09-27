@@ -128,7 +128,7 @@ class MaSuRCATest(unittest.TestCase):
         #if hasattr(self.__class__, 'reads_ref'):
             #return self.__class__.reads_ref
         se_reads_name = os.path.basename(reads_file_path)
-        fq_path = os.path.join(self.scratch, se_reads_name) #'star_test_reads.fastq')
+        fq_path = os.path.join(self.scratch, se_reads_name) 
         shutil.copy(reads_file_path, fq_path)
 
         ru = ReadsUtils(self.callback_url)
@@ -143,25 +143,29 @@ class MaSuRCATest(unittest.TestCase):
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     # Uncomment to skip this test
-    @unittest.skip("skipped test_run_masurca")
+    # @unittest.skip("skipped test_run_masurca")
     def test_run_masurca(self):
         # First load a test FASTA file as an KBase Assembly
+        se_lib_ref = self.loadSEReads(os.path.join('../work/testReads', 'small.forward.fq'))
+        pe_reads_ref = self.loadPairedEndReads()
         m_params = {
-                'fwd_file': '../work/testReads/small.forward.fq',
-                'rev_file': '../work/testReads/small.reverse.fq',
-                'workspace_name': self.getWsName(),
+                'reads_libraries': pe_lib_ref,
+                'output_contigset_name': 'masurca_cs_',
+                'output_workspace': self.getWsName(),
+                'run_threads': 2,
+                'jf_size': 2000000000,
+                'create_report': 1
+                #'fwd_file': '../work/testReads/small.forward.fq',
+                #'rev_file': '../work/testReads/small.reverse.fq',
+                #'workspace_name': self.getWsName(),
         }
         # Second, call your implementation
-        ret = self.getImpl().run_masurca(self.getContext(),
-                                            {'workspace_name': self.getWsName(),
-                                             'assembly_input_ref': assembly_ref,
-                                             'min_length': 10
-                                             })
+        ret = self.getImpl().run_masurca(self.getContext(), m_params)
 
         # Validate the returned data
-        self.assertEqual(ret[0]['n_initial_contigs'], 3)
-        self.assertEqual(ret[0]['n_contigs_removed'], 1)
-        self.assertEqual(ret[0]['n_contigs_remaining'], 2)
+        #self.assertEqual(ret[0]['n_initial_contigs'], 3)
+        #self.assertEqual(ret[0]['n_contigs_removed'], 1)
+        #self.assertEqual(ret[0]['n_contigs_remaining'], 2)
 
     def test_run_masurca_err1(self):
         with self.assertRaises(ValueError) as errorContext:

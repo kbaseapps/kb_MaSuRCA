@@ -13,15 +13,6 @@ from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from kb_quast.kb_quastClient import kb_quast
 
-from file_util import (
-    valid_string,
-    check_reference,
-    get_unique_names,
-    fetch_fasta_from_object,
-    fetch_reads_refs_from_sampleset,
-    fetch_reads_from_reference,
-    extract_geneCount_matrix
-)
 
 def log(message, prefix_newline=False):
     """Logging function, provides a hook to suppress or redirect log messages."""
@@ -30,11 +21,9 @@ def log(message, prefix_newline=False):
 class masurca_utils:
     MaSuRCA_VERSION = 'MaSuRCA-3.2.3'
     MaSuRCA_BIN = '/kb/module/' + MaSuRCA_VERSION + 'bin/masurca'
-    MaSuRCA_WK_DIR = 'MaSuRCA_work_dir'
-    MaSuRCA_OUT_DIR = 'MaSuRCA_Output'
     PARAM_IN_WS = 'workspace_name'
     PARAM_IN_THREADN = 'num_threads'
-    PARAM_IN_READS_LIBS = 'read_libraries'
+    PARAM_IN_READS_LIBS = 'reads_libraries'
     PARAM_IN_JUMP_LIBS = 'jump_libraries'
     PARAM_IN_JF_SIZE = 'jf_size'
     PARAM_IN_CS_NAME = 'output_contigset_name'

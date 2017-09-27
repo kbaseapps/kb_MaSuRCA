@@ -42,6 +42,7 @@ class MaSuRCA_Assembler(object):
     PARAM_IN_PACBIOS = 'pacbios'
     PARAM_IN_OTHER = 'read_libraries'
     MaSuRCAR_PROJECT_DIR = 'masurca_project_dir'
+    MaSuRCA_OUT_DIR = 'MaSuRCA_Output'
 
     def __init__(self, config, provenance):
         """
