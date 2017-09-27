@@ -105,11 +105,12 @@ parameters :
         ui-name : standard deviation for defining the reads
         short-hint : the standard deviation for defining reads in the config.txt file
         
-parameter-groups :
+parameter-groups : 
     reads_libraries :
         ui-name : |
             Reads and its prefix, mean and standard deviation
         short-hint : |
+        
 parameter-groups :
     jump_libraries :
         ui-name : |
