@@ -34,7 +34,7 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA.git"
-    GIT_COMMIT_HASH = "67bde49fd352f78072aa6d6164e7e82c7543bf5c"
+    GIT_COMMIT_HASH = "4805abf027681b53d9c597b55b502861d0fd7898"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
@@ -101,14 +101,17 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
            kmer_count_threshold @optional close_gaps @optional soap_assembly
            @optional do_homopolymer_trim) -> structure: parameter
            "workspace_name" of String, parameter "num_threads" of Long,
-           parameter "jf_size" of Long, parameter "read_libraries" of list of
-           type "read_lib" (The workspace object name of a SingleEndLibrary
-           or PairedEndLibrary file, whether of the KBaseAssembly or
-           KBaseFile type.), parameter "pe_prefix" of String, parameter
-           "pe_mean" of Long, parameter "pe_stdv" of Long, parameter
-           "jump_libraries" of list of type "read_lib" (The workspace object
-           name of a SingleEndLibrary or PairedEndLibrary file, whether of
-           the KBaseAssembly or KBaseFile type.), parameter "jp_prefix" of
+           parameter "jf_size" of Long, parameter "reads_libraries" of list
+           of type "read_lib" (The workspace object name of a
+           SingleEndLibrary or PairedEndLibrary file, whether of the
+           KBaseAssembly or KBaseFile type.), parameter "pe_prefix" of
+           String, parameter "pe_mean" of Long, parameter "pe_stdv" of Long,
+           parameter "reads_id" of type "read_lib" (The workspace object name
+           of a SingleEndLibrary or PairedEndLibrary file, whether of the
+           KBaseAssembly or KBaseFile type.), parameter "jump_libraries" of
+           list of type "read_lib" (The workspace object name of a
+           SingleEndLibrary or PairedEndLibrary file, whether of the
+           KBaseAssembly or KBaseFile type.), parameter "jp_prefix" of
            String, parameter "jp_mean" of Long, parameter "jp_stdv" of Long,
            parameter "pacbio_reads" of type "read_lib" (The workspace object
            name of a SingleEndLibrary or PairedEndLibrary file, whether of
