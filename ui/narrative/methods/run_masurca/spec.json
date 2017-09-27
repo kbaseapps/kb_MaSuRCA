@@ -297,6 +297,14 @@
                     "target_property": "do_homopolymer_trim"
                 },
                 {
+                    "input_parameter": "reads_n_details",
+                    "target_property": "reads_n_details"
+	            },
+                {
+                    "input_parameter": "jump_n_details",
+                    "target_property": "jump_n_details"
+	            },
+                {
                     "constant_value": 1,
                     "target_property": "create_report"
                 },
