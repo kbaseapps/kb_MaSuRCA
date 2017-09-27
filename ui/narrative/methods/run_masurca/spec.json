@@ -203,7 +203,7 @@
         "id": "reads_libraries",
         "parameters": ["reads_id", "reads_prefix", "reads_mean", "reads_stdv"],
         "optional": false,
-        "allow_multiple": false,
+        "allow_multiple": true,
         "with_border": true
       }
     ],
@@ -212,7 +212,7 @@
         "id": "jump_libraries",
         "parameters": ["reads_id", "reads_prefix", "reads_mean", "reads_stdv"],
         "optional": true,
-        "allow_multiple": false,
+        "allow_multiple": true,
         "with_border": true
       }
     ],
