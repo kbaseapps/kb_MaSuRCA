@@ -104,10 +104,10 @@ class MaSuRCATest(unittest.TestCase):
             return self.__class__.pairedEndLibInfo
         # 1) upload files to shock
         shared_dir = "/kb/module/work/tmp"
-        forward_data_file = '../work/testReads/small.forward.fq'
+        forward_data_file = './testReads/small.forward.fq'
         forward_file = os.path.join(shared_dir, os.path.basename(forward_data_file))
         shutil.copy(forward_data_file, forward_file)
-        reverse_data_file = '../work/testReads/small.reverse.fq'
+        reverse_data_file = './testReads/small.reverse.fq'
         reverse_file = os.path.join(shared_dir, os.path.basename(reverse_data_file))
         shutil.copy(reverse_data_file, reverse_file)
 
@@ -136,10 +136,9 @@ class MaSuRCATest(unittest.TestCase):
         reads_ref = ru.upload_reads({'fwd_file': fq_path,
                                         'wsname': self.getWsName(),
                                         'name': se_reads_name.split('.')[0],
-                                        'sequencing_tech': 'rnaseq reads'})['obj_ref']
+                                        'sequencing_tech': 'kb reads'})['obj_ref']
         #self.__class__.reads_ref = reads_ref
         return reads_ref
-
 
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
@@ -147,7 +146,7 @@ class MaSuRCATest(unittest.TestCase):
     # @unittest.skip("skipped test_run_masurca")
     def test_run_masurca(self):
         # First load a test FASTA file as an KBase Assembly
-        se_lib_ref = self.loadSEReads(os.path.join('../work/testReads', 'small.forward.fq'))
+        se_lib_ref = self.loadSEReads(os.path.join('./testReads', 'small.forward.fq'))
         pe_lib_ref = self.loadPairedEndReads()
         m_params = {
                 'reads_libraries': pe_lib_ref,
@@ -168,6 +167,7 @@ class MaSuRCATest(unittest.TestCase):
         #self.assertEqual(ret[0]['n_contigs_removed'], 1)
         #self.assertEqual(ret[0]['n_contigs_remaining'], 2)
 
+    @unittest.skip("skipped test_run_masurca_err1")
     def test_run_masurca_err1(self):
         with self.assertRaises(ValueError) as errorContext:
             self.getImpl().run_masurca(self.getContext(),
@@ -176,6 +176,7 @@ class MaSuRCATest(unittest.TestCase):
                                            'min_length': '-10'})
         self.assertIn('min_length parameter cannot be negative', str(errorContext.exception))
 
+    @unittest.skip("skipped test_run_masurca_err2")
     def test_run_masurca_err2(self):
         with self.assertRaises(ValueError) as errorContext:
             self.getImpl().run_masurca(self.getContext(),
