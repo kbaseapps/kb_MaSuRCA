@@ -28,7 +28,6 @@ class MaSuRCATest(unittest.TestCase):
     def setUpClass(cls):
         token = environ.get('KB_AUTH_TOKEN', None)
         config_file = environ.get('KB_DEPLOYMENT_CONFIG', None)
-        print "Name of the config_file: " + config_file
         cls.cfg = {}
         config = ConfigParser()
         config.read(config_file)
