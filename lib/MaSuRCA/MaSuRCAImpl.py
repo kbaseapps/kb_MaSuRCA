@@ -2,6 +2,7 @@
 #BEGIN_HEADER
 # The header block is where all import statments should live
 import os
+import json 
 import time
 from pprint import pprint, pformat
 from MaSuRCA.core.masurca_assembler import MaSuRCA_Assembler
@@ -141,7 +142,8 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
         # ctx is the context object
         # return variables are: output
         #BEGIN run_masurca
-        self.log('Running run_masurca with params:\n' + pformat(params))
+        self.log('Running run_masurca with params:\n{}'.format(json.dumps(params, indent=1)))
+
         for key, value in params.iteritems():
             if isinstance(value, basestring):
                 params[key] = value.strip()
