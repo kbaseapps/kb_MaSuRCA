@@ -102,7 +102,7 @@ class masurca_utils:
                     if pe_reads_data:
                         log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
                         data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + str(params['pe_stdv']) + ' ' + pe_reads_data[0]['fwd_file']
-                        if pe_reads_data[0]['rev_file']:
+                        if pe_reads_data[0].get('rev_file', None) is not None:
                             data_str += ' ' + pe_reads_data[0]['rev_file']
                     if jp_reads_data:
                         if ('jp_mean' not in params or type(params['jp_mean']) != int):
@@ -112,7 +112,7 @@ class masurca_utils:
                         if data_str != '':
                             data_str += '\n'
                         data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' + str(params['jp_stdv']) + ' ' + jp_reads_data[0]['fwd_file']
-                        if jp_reads_data[0]['rev_file']:
+                        if jp_reads_data[0].get('rev_file', None) is not None:
                             data_str += ' ' + jp_reads_data[0]['rev_file']
 
                     begin_patn1 = "DATA\n"
