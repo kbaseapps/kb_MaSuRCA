@@ -153,7 +153,7 @@ class MaSuRCATest(unittest.TestCase):
                 'workspace_name': self.getWsName(),
                 'reads_libraries': pe_lib_ref,
                 'output_contigset_name': 'masurca_cs_',
-                'run_threads': 2,
+                'num_threads': 2,
                 'jf_size': 2000000000,
                 'create_report': 1
                 #'fwd_file': '../work/testReads/small.forward.fq',
