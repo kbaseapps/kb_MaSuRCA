@@ -31,7 +31,6 @@ class masurca_utils:
     PARAM_IN_JF_SIZE = 'jf_size'
     PARAM_IN_CS_NAME = 'output_contigset_name'
 
-
     def __init__(self, prj_dir, config):
         self.workspace_url = config['workspace-url']
         self.callback_url = config['SDK_CALLBACK_URL']
@@ -54,7 +53,7 @@ class masurca_utils:
         """
         validate_params: checks params passed to run_masurca_app method and set default values
         """
-        log('Start validating run_masurca_app parameters')
+        #log('Start validating run_masurca_app parameters:\n{}'.format(json.dumps(params, indent=1)))
 
         # check for mandatory parameters
         if params.get(self.PARAM_IN_WS, None) is None:
@@ -70,7 +69,7 @@ class masurca_utils:
         if type(params[self.PARAM_IN_READS_LIBS]) != list:
             raise ValueError(self.PARAM_IN_READS_LIBS + ' must be a list')
         if (params.get(self.PARAM_IN_CS_NAME, None) is None or
-                not valid_string(params[self.PARAM_IN_CS_NAME])):
+                not self.valid_string(params[self.PARAM_IN_CS_NAME])):
             raise ValueError("Parameter output_contigset_name is required and must be a valid Workspace object string, "
                       "not {}".format(params.get(self.PARAM_IN_CS_NAME, None)))
         if ('pe_prefix' not in params):
@@ -88,9 +87,9 @@ class masurca_utils:
         config_file_path = os.path.join(self.proj_dir, 'config.txt')
 
         # STEP 2: retrieve the reads data from input parameter
-        pe_reads_data = self._getKBReadsInfo(params[self.PARAM_IN_READS_LIBS])
+        pe_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_READS_LIBS])
         if self.PARAM_IN_JUMP_LIBS in params:
-            jp_reads_data = self._getKBReadsInfo(params[self.PARAM_IN_JUMP_LIBS])
+            jp_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_JUMP_LIBS])
 
         # STEP 3: construct and save the config.txt file for running masurca
         try:
@@ -101,7 +100,10 @@ class masurca_utils:
                     config_template = config_template_file.read()
                     data_str = ''
                     if pe_reads_data:
-                        data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + str(params['pe_stdv']) + ' ' + pe_reads_data['fwd_file'] + ' ' + pe_reads_data['reverse_file']
+                        log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
+                        data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + str(params['pe_stdv']) + ' ' + pe_reads_data[0]['fwd_file']
+                        if pe_reads_data[0]['rev_file']:
+                            data_str += ' ' + pe_reads_data[0]['rev_file']
                     if jp_reads_data:
                         if ('jp_mean' not in params or type(params['jp_mean']) != int):
                             params['jp_mean'] = 3600
@@ -109,7 +111,9 @@ class masurca_utils:
                             params['pe_stdv'] = 200
                         if data_str != '':
                             data_str += '\n'
-                        data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' + str(params['jp_stdv']) + ' ' + jp_reads_data['fwd_file'] + ' ' + jp_reads_data['reverse_file']
+                        data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' + str(params['jp_stdv']) + ' ' + jp_reads_data[0]['fwd_file']
+                        if jp_reads_data[0]['rev_file']:
+                            data_str += ' ' + jp_reads_data[0]['rev_file']
 
                     begin_patn1 = "DATA\n"
                     end_patn1 = "END\nPARAMETERS\n"
@@ -177,7 +181,7 @@ class masurca_utils:
         return exit_code
 
     def save_assembly(self, contig_fa, wsname, a_name):
-        self.log('Uploading FASTA file to Assembly')
+        log('Uploading FASTA file to Assembly')
         output_contigs = os.path.join(self.proj_dir, contig_fa)
         self.au.save_assembly_from_fasta(
                         {'file': {'path': output_contigs},
@@ -243,8 +247,8 @@ class masurca_utils:
         try:
             reads = self.ru.download_reads({'read_libraries': reads_params})['files']
         except ServerError as se:
-            self.log('logging stacktrace from dynamic client error')
-            self.log(se.data)
+            log('logging stacktrace from dynamic client error')
+            log(se.data)
             if typeerr in se.message:
                 prefix = se.message.split('.')[0]
                 raise ValueError(
@@ -256,8 +260,7 @@ class masurca_utils:
             else:
                 raise
 
-        self.log('Got reads data from converter:\n' + pformat(reads))
-
+        #log('Got reads data from converter:\n' + pformat(reads))
         reads_data = []
         for ref in reads:
             reads_name = reftoname[ref]
@@ -279,7 +282,7 @@ class masurca_utils:
 
 
     def generate_report(self, contig_file_name, params, out_dir, wsname):
-        self.log('Generating and saving report')
+        log('Generating and saving report')
 
         contig_file_with_path = os.path.join(out_dir, contig_file_name)
         fasta_stats = self.load_statsi(contig_file_with_path)
@@ -366,8 +369,8 @@ class masurca_utils:
 
 
     def load_stats(self, input_file_name):
-        self.log('Starting conversion of FASTA to KBaseGenomeAnnotations.Assembly')
-        self.log('Building Object.')
+        log('Starting conversion of FASTA to KBaseGenomeAnnotations.Assembly')
+        log('Building Object.')
         if not os.path.isfile(input_file_name):
             raise Exception('The input file name {0} is not a file!'.format(input_file_name))
         with open(input_file_name, 'r') as input_file_handle:
@@ -400,3 +403,20 @@ class masurca_utils:
             fasta_dict[contig_id] = sequence_len
         return fasta_dict
 
+    def valid_string(self, s_str, is_ref=False):
+        is_valid = isinstance(s_str, basestring) and len(s_str.strip()) > 0
+        if is_valid and is_ref:
+            is_valid = check_reference(s_str)
+        return is_valid
+
+    def check_reference(self, ref):
+        """
+        Tests the given ref string to make sure it conforms to the expected
+        object reference format. Returns True if it passes, False otherwise.
+        """
+        obj_ref_regex = re.compile("^(?P<wsid>\d+)\/(?P<objid>\d+)(\/(?P<ver>\d+))?$")
+        ref_path = ref.strip().split(";")
+        for step in ref_path:
+            if not obj_ref_regex.match(step):
+                return False
+        return True
