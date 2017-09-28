@@ -65,10 +65,10 @@ class masurca_utils:
 
         if params.get(self.PARAM_IN_JF_SIZE, None) is None:
             raise ValueError(self.PARAM_IN_JF_SIZE + ' parameter is required')
-        if self.PARAM_IN_READS_LIB not in params:
-            raise ValueError(self.PARAM_IN_READS_LIB + ' parameter is required')
-        if type(params[self.PARAM_IN_READS_LIB]) != list:
-            raise ValueError(self.PARAM_IN_READS_LIB + ' must be a list')
+        if self.PARAM_IN_READS_LIBS not in params:
+            raise ValueError(self.PARAM_IN_READS_LIBS + ' parameter is required')
+        if type(params[self.PARAM_IN_READS_LIBS]) != list:
+            raise ValueError(self.PARAM_IN_READS_LIBS + ' must be a list')
         if (params.get(self.PARAM_IN_CS_NAME, None) is None or
                 not valid_string(params[self.PARAM_IN_CS_NAME])):
             raise ValueError("Parameter output_contigset_name is required and must be a valid Workspace object string, "
@@ -89,7 +89,7 @@ class masurca_utils:
 
         # STEP 2: retrieve the reads data from input parameter
         pe_reads_data = self._getKBReadsInfo(params[self.PARAM_IN_READS_LIBS])
-        if self.PARAM_IN_JUMP_LIB in params:
+        if self.PARAM_IN_JUMP_LIBS in params:
             jp_reads_data = self._getKBReadsInfo(params[self.PARAM_IN_JUMP_LIBS])
 
         # STEP 3: construct and save the config.txt file for running masurca
