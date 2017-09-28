@@ -4,8 +4,8 @@ import subprocess
 
 class Program_Runner:
 
-    def __init__(self, cmd, scratch_dir):
-        self.scratch_dir = scratch_dir
+    def __init__(self, cmd, work_dir):
+        self.work_dir = work_dir
         self.executableName = cmd
 
     def run(self, command, cwd_dir=None):
@@ -13,7 +13,7 @@ class Program_Runner:
         cmmd = command
 
         if not cwd_dir:
-          cwd_dir = self.scratch_dir
+          cwd_dir = self.work_dir
 
         #print('\nRunning: ' + ' '.join(cmmd))
         p = subprocess.Popen(cmmd, cwd=cwd_dir, shell=False)

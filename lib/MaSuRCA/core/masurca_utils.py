@@ -46,8 +46,8 @@ class masurca_utils:
         self.au = AssemblyUtil(self.callback_url, token=self.token)
         self.kbr = KBaseReport(self.callback_url)
         self.kbq = kb_quast(self.callback_url)
-        self.prog_runner = Program_Runner(self.MaSuRCA_BIN)
         self.proj_dir = prj_dir
+        self.prog_runner = Program_Runner(self.MaSuRCA_BIN, self.proj_dir)
 
 
     def validate_params(self, params):
