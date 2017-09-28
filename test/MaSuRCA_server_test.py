@@ -149,9 +149,9 @@ class MaSuRCATest(unittest.TestCase):
         se_lib_ref = self.loadSEReads(os.path.join('./testReads', 'small.forward.fq'))
         pe_lib_ref = self.loadPairedEndReads()
         m_params = {
+                'workspace_name': self.getWsName(),
                 'reads_libraries': pe_lib_ref,
                 'output_contigset_name': 'masurca_cs_',
-                'output_workspace': self.getWsName(),
                 'run_threads': 2,
                 'jf_size': 2000000000,
                 'create_report': 1
