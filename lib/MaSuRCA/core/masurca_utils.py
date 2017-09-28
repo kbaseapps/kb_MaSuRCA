@@ -34,7 +34,7 @@ class masurca_utils:
 
     def __init__(self, prj_dir, config):
         self.workspace_url = config['workspace-url']
-        self.callback_url = config['callback-url']
+        self.callback_url = config['SDK_CALLBACK_URL']
         self.token = config['KB_AUTH_TOKEN']
         if 'shock-url' in config:
             self.shock_url = config['shock-url']

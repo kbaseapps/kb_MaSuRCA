@@ -12,13 +12,14 @@ try:
 except:
     from configparser import ConfigParser  # py3
 
-from pprint import pprint  # noqa: F401
+from pprint import pprint, pformat  # noqa: F401
 
 from biokbase.workspace.client import Workspace as workspaceService
 from MaSuRCA.MaSuRCAImpl import MaSuRCA
 from MaSuRCA.MaSuRCAServer import MethodContext
 from MaSuRCA.authclient import KBaseAuth as _KBaseAuth
-
+from ReadsUtils.baseclient import ServerError
+from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 
 class MaSuRCATest(unittest.TestCase):

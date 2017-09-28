@@ -61,7 +61,7 @@ class MaSuRCA_Assembler(object):
         self.proj_dir = self.create_proj_dir(self.scratch)
 
         self.masurca_version = 'MaSuRCA-' + os.environ['M_VERSION']
-        self.m_utils = masurca_utils(self.proj_dir, self.config)
+        self.m_utils = masurca_utils(self.proj_dir, config)
 
         # from the provenance, extract out the version to run by exact hash if possible
         self.my_version = 'release'

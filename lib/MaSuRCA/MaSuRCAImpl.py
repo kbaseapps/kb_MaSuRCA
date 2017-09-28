@@ -2,7 +2,7 @@
 #BEGIN_HEADER
 # The header block is where all import statments should live
 import os
-
+import time
 from pprint import pprint, pformat
 from MaSuRCA.core.masurca_assembler import MaSuRCA_Assembler
 #END_HEADER
@@ -34,10 +34,14 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA.git"
-    GIT_COMMIT_HASH = "6cb212e1c35e96aae9e64f0a3d028e486e6cf694"
+    GIT_COMMIT_HASH = "6be5006ea4748490608cdd34f775e63a88a94dad"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
+
+    def log(self, message, prefix_newline=False):
+                print(('\n' if prefix_newline else '') +
+                                str(time.time()) + ': ' + str(message))
     #END_CLASS_HEADER
 
     # config contains contents of config file in a hash or None if it couldn't
