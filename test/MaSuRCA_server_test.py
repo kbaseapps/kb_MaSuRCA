@@ -149,7 +149,7 @@ class MaSuRCATest(unittest.TestCase):
     def test_run_masurca(self):
         # First load a test FASTA file as an KBase Assembly
         se_lib_ref = self.loadSEReads(os.path.join('../work/testReads', 'small.forward.fq'))
-        pe_reads_ref = self.loadPairedEndReads()
+        pe_lib_ref = self.loadPairedEndReads()
         m_params = {
                 'reads_libraries': pe_lib_ref,
                 'output_contigset_name': 'masurca_cs_',
