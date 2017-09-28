@@ -104,10 +104,10 @@ class MaSuRCATest(unittest.TestCase):
             return self.__class__.pairedEndLibInfo
         # 1) upload files to shock
         shared_dir = "/kb/module/work/tmp"
-        forward_data_file = './testReads/small.forward.fq'
+        forward_data_file = '../test/testReads/small.forward.fq'
         forward_file = os.path.join(shared_dir, os.path.basename(forward_data_file))
         shutil.copy(forward_data_file, forward_file)
-        reverse_data_file = './testReads/small.reverse.fq'
+        reverse_data_file = '../test/testReads/small.reverse.fq'
         reverse_file = os.path.join(shared_dir, os.path.basename(reverse_data_file))
         shutil.copy(reverse_data_file, reverse_file)
 
@@ -147,7 +147,7 @@ class MaSuRCATest(unittest.TestCase):
     # @unittest.skip("skipped test_run_masurca")
     def test_run_masurca(self):
         # First load a test FASTA file as an KBase Assembly
-        se_lib_ref = self.loadSEReads(os.path.join('./testReads', 'small.forward.fq'))
+        se_lib_ref = self.loadSEReads(os.path.join('../test/testReads', 'small.forward.fq'))
         pe_lib_ref = self.loadPairedEndReads()
         m_params = {
                 'workspace_name': self.getWsName(),
@@ -158,7 +158,6 @@ class MaSuRCATest(unittest.TestCase):
                 'create_report': 1
                 #'fwd_file': '../work/testReads/small.forward.fq',
                 #'rev_file': '../work/testReads/small.reverse.fq',
-                #'workspace_name': self.getWsName(),
         }
         # Second, call your implementation
         ret = self.getImpl().run_masurca(self.getContext(), m_params)
