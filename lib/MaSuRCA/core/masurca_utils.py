@@ -6,6 +6,7 @@ import numpy as np
 import psutil
 import zipfile
 from pprint import pprint, pformat
+import codecs
 
 from MaSuRCA.core.Program_Runner import Program_Runner
 from Workspace.WorkspaceClient import Workspace as Workspace
@@ -88,15 +89,16 @@ class masurca_utils:
 
         # STEP 2: retrieve the reads data from input parameter
         pe_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_READS_LIBS])
+        jp_reads_data = []
         if self.PARAM_IN_JUMP_LIBS in params:
             jp_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_JUMP_LIBS])
 
         # STEP 3: construct and save the config.txt file for running masurca
         try:
             # STEP 3.1: replace the 'DATA...END' portion of the config_template.txt file 
-            with open(config_file_path, 'w') as config_file:
-                with open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
-                          'r') as config_template_file:
+            with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
+                with codecs.open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
+                          mode='r', encoding='utf-8') as config_template_file:
                     config_template = config_template_file.read()
                     data_str = ''
                     if pe_reads_data:
@@ -117,11 +119,11 @@ class masurca_utils:
 
                     begin_patn1 = "DATA\n"
                     end_patn1 = "END\nPARAMETERS\n"
-                    config_template = self._replaceSectionText(config_template, begin_patn1, end_patn1, data_str)
-                    config_file.write(config_template)
+                    config_template = self._replaceSectionText(config_template.encoding('utf-8'), begin_patn1, end_patn1, data_str.encoding('utf-8'))
+                    config_file.write(config_template.encoding('utf-8'))
 
             # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
-            with open(config_file_path, 'r') as previous_config_file:
+            with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
                 previous_config = previous_config_file.read()
                 param_str = ''
                 if params['graph_kmer_size']:
@@ -148,8 +150,8 @@ class masurca_utils:
                 param_str = begin_patn + param_str + + '\n' + end_patn
                 final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
 
-            with open(config_file_path, 'w') as config_file:
-                config_file.write(final_config)
+            with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
+                config_file.write(final_config.encoding('utf-8'))
         except IOError as ioerr:
             log('Creation of the config.txt file raised error:\n')
             pprint(ioerr)
@@ -200,15 +202,22 @@ class masurca_utils:
             end_patn2 = "END\n"
             repl_txt1 = 'PE= pe 180 20 /kb/module/work/testReads/small.forward.fq /kb/module/work/testReads/small.reverse.fq\n'
             repl_txt2 = 'GRAPH_KMER_SIZE=auto\nUSE_LINKING_MATES=1\nLIMIT_JUMP_COVERAGE = 60\nCA_PARAMETERS = cgwErrorRate=0.15\nNUM_THREADS= 64\nJF_SIZE=100000000\nDO_HOMOPOLYMER_TRIM=0\n' 
+
+        Note: Python’s default ASCII encoding will be used, so characters greater than 127 will cause an exception:
+        UnicodeDecodeError: 'ascii' codec can't decode character in position 2308: ordinal not in range(128)
         """
+        log ("original text: {} with replacement: {}".format(orig_txt.encode('utf-8'), repl_txt.encode('utf-8')))
+
         if repl_txt != '':
+            orig_txt = orig.encode('utf-8')
+            repl_txt = repl_txt.encode('utf-8')
             # create regular expression pattern
             repl = re.compile(begin_patn + '.*?' + end_patn, re.DOTALL)
 
             repl_txt = begin_patn + repl_txt + '\n' + end_patn
             # replace the text between begin_patn and end_patn with repl_txt
             txt_replaced = repl.sub(repl_txt, orig_txt)
-            #pprint(txt_replaced)
+            pprint(txt_replaced)
             return txt_replaced
         else:
             return orig_txt
