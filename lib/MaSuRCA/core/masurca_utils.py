@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 import time
 import json
@@ -24,7 +25,7 @@ def log(message, prefix_newline=False):
 
 class masurca_utils:
     MaSuRCA_VERSION = 'MaSuRCA-3.2.3'
-    MaSuRCA_BIN = '/kb/module/' + MaSuRCA_VERSION + 'bin/masurca'
+    MaSuRCA_BIN = '/kb/module/' + MaSuRCA_VERSION + '/bin/masurca'
     PARAM_IN_WS = 'workspace_name'
     PARAM_IN_THREADN = 'num_threads'
     PARAM_IN_READS_LIBS = 'reads_libraries'
@@ -119,39 +120,55 @@ class masurca_utils:
 
                     begin_patn1 = "DATA\n"
                     end_patn1 = "END\nPARAMETERS\n"
-                    config_template = self._replaceSectionText(config_template.encoding('utf-8'), begin_patn1, end_patn1, data_str.encoding('utf-8'))
-                    config_file.write(config_template.encoding('utf-8'))
+                    config_with_data = self._replaceSectionText(config_template, begin_patn1, end_patn1, data_str)
+                    config_file.write(config_with_data)
+                    #log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
 
             # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
             with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
                 previous_config = previous_config_file.read()
                 param_str = ''
-                if params['graph_kmer_size']:
+                if params.get('graph_kmer_size', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
                     param_str += 'GRAPH_KMER_SIZE=' + str(params['graph_kmer_size'])
-                if params['use_linking_mates'] == 1:
-                    param_str += '\nUSE_LINKING_MATES=1'
-                else:
-                    param_str += '\nUSE_LINKING_MATES=0'
-                if params['limit_jump_coverage']:
-                    param_str += '\nLIMIT_JUMP_COVERAGE = ' + str(params['limit_jump_coverage'])
-                if params['cgwErrorRate']:
-                    param_str += '\nCA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
-                if params['num_threads']:
-                    param_str += '\nNUM_THREADS=' + str(params['num_threads'])
-                if params['jf_size']:
-                    param_str += '\nJF_SIZE=' + str(params['jf_size'])
-                if params['do_homopolymer_trim'] == 1:
-                    param_str += '\nDO_HOMOPOLYMER_TRIM==1'
-                else:
-                    param_str += '\nDO_HOMOPOLYMER_TRIM==0'
+                if params.get('use_linking_mates', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    if params['use_linking_mates'] == 1:
+                        param_str += 'USE_LINKING_MATES=1'
+                    else:
+                        param_str += 'USE_LINKING_MATES=0'
+                if params.get('limit_jump_coverage', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    param_str += 'LIMIT_JUMP_COVERAGE = ' + str(params['limit_jump_coverage'])
+                if params.get('cgwErrorRate', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    param_str += 'CA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
+                if params.get('num_threads', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    param_str += 'NUM_THREADS=' + str(params['num_threads'])
+                if params.get('jf_size', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    param_str += 'JF_SIZE=' + str(params['jf_size'])
+                if params.get('do_homopolymer_trim', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    if params['do_homopolymer_trim'] == 1:
+                        param_str += 'DO_HOMOPOLYMER_TRIM==1'
+                    else:
+                        param_str += 'DO_HOMOPOLYMER_TRIM==0'
 
-                begin_patn2 = "PARAMETERS\n"
-                end_patn2 = "END\n"
-                param_str = begin_patn + param_str + + '\n' + end_patn
-                final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
-
+            begin_patn2 = "PARAMETERS\n"
+            end_patn2 = "END\n"
+            final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
-                config_file.write(final_config.encoding('utf-8'))
+                config_file.write(final_config)
+            log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(final_config.encode('utf-8').decode('utf-8'), config_file_path))
         except IOError as ioerr:
             log('Creation of the config.txt file raised error:\n')
             pprint(ioerr)
@@ -161,36 +178,50 @@ class masurca_utils:
 
     def generate_assemble_script(self, config_file):
         exit_code = 1
-        if config_file != '':
+        if os.path.isfile(config_file):
             f_dir, f_nm = os.path.split(config_file)
             m_cmd = [self.MaSuRCA_BIN]
             m_cmd.append(config_file)
             exit_code = self.prog_runner.run(m_cmd, f_dir)
 
-        if exit_code == 0:
-            return os.path.join(f_dir, 'assemble.sh')
+            if exit_code == 0:
+                log('Created the assemble.sh file at {}.\n'.format(os.path.join(f_dir, 'assemble.sh')))
+                return os.path.join(f_dir, 'assemble.sh')
+            else:
+                log('Creation of the assemble.sh file failed.\n')
+                return ''
         else:
-            return ''
+            log("The config file {} is not found.\n".format(config_file))
+            log('NO assemble.sh file created.\n')
+        return ''
 
     def run_assemble(self, asmbl_file):
         exit_code = 1
-        if asmbl_file != '':
+        if os.path.isfile(asmbl_file):
+            #try to open the file to check its content
+            with codecs.open(asmbl_file, mode='r', encoding='utf-8') as a_file:
+                afile_content = a_file.read()
+                log("*******************\nThe assemble.sh file content if any:\n{}\n****************".format(afile_content.encode('utf-8','replace').decode('utf-8')))
+            log("assemble shell file name with path: {}".format(asmbl_file))
             f_dir, f_nm = os.path.split(asmbl_file)
-            a_cmd = []
-            a_cmd.append('./' + asmbl_file)
+            a_cmd = ['source']
+            a_cmd.append(asmbl_file)
             exit_code = self.prog_runner.run(a_cmd, f_dir)
-
+        else:
+            log("The assemble.sh file {} is not found.".format(asmbl_file))
         return exit_code
 
     def save_assembly(self, contig_fa, wsname, a_name):
-        log('Uploading FASTA file to Assembly')
-        output_contigs = os.path.join(self.proj_dir, contig_fa)
-        self.au.save_assembly_from_fasta(
-                        {'file': {'path': output_contigs},
-                        'workspace_name': wsname,
-                        'assembly_name': a_name
-                        })
-
+        if os.path.isfile(contig_fa):
+            log('Uploading FASTA file to Assembly...')
+            output_contigs = os.path.join(self.proj_dir, contig_fa)
+            self.au.save_assembly_from_fasta(
+                            {'file': {'path': output_contigs},
+                            'workspace_name': wsname,
+                            'assembly_name': a_name
+                            })
+        else:
+            log("The contig file {} is not found.".format(contig_fa))
 
     def _replaceSectionText(self, orig_txt, begin_patn, end_patn, repl_txt):
         """
@@ -202,22 +233,15 @@ class masurca_utils:
             end_patn2 = "END\n"
             repl_txt1 = 'PE= pe 180 20 /kb/module/work/testReads/small.forward.fq /kb/module/work/testReads/small.reverse.fq\n'
             repl_txt2 = 'GRAPH_KMER_SIZE=auto\nUSE_LINKING_MATES=1\nLIMIT_JUMP_COVERAGE = 60\nCA_PARAMETERS = cgwErrorRate=0.15\nNUM_THREADS= 64\nJF_SIZE=100000000\nDO_HOMOPOLYMER_TRIM=0\n' 
-
-        Note: Python’s default ASCII encoding will be used, so characters greater than 127 will cause an exception:
-        UnicodeDecodeError: 'ascii' codec can't decode character in position 2308: ordinal not in range(128)
         """
-        log ("original text: {} with replacement: {}".format(orig_txt.encode('utf-8'), repl_txt.encode('utf-8')))
-
         if repl_txt != '':
-            orig_txt = orig.encode('utf-8')
-            repl_txt = repl_txt.encode('utf-8')
             # create regular expression pattern
             repl = re.compile(begin_patn + '.*?' + end_patn, re.DOTALL)
 
             repl_txt = begin_patn + repl_txt + '\n' + end_patn
             # replace the text between begin_patn and end_patn with repl_txt
             txt_replaced = repl.sub(repl_txt, orig_txt)
-            pprint(txt_replaced)
+            #pprint(txt_replaced)
             return txt_replaced
         else:
             return orig_txt

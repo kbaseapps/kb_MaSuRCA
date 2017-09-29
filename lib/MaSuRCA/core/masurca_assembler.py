@@ -83,24 +83,29 @@ class MaSuRCA_Assembler(object):
         config_file = self.m_utils.construct_masurca_config(validated_params)
 
         # 3. run masurca against the configuration file to generate the assemble.sh script 
-        if config_file != '':
+        if os.path.isfile(config_file):
             assemble_file = self.m_utils.generate_assemble_script(config_file)
 
         # 4. run the assemble.sh script to do the heavy-lifting
-        if assemble_file != '':
-            self.m_utils.run_assemble(assemble_file)
+        assemble_ok = 1
+        if os.path.isfile(assemble_file):
+            assemble_ok = self.m_utils.run_assemble(assemble_file)
 
-        # 5. save the assembly to KBase if everything has gone well
-        self.m_utils.save_assembly('sj.cor.ext.reduced.fa', wsname, params[PARAM_IN_CS_NAME])
-
-        # 7. report the final results
+        # 5. report the final results
         returnVal = {
             "report_ref": None,
             "report_name": None
         }
 
-        report_name, report_ref = self.m_utils.generate_reports('sj.cor.ext.reduced.fa', params, self.proj_dir, wsname)
-        returnVal = {'report_name': report_name, 'report_ref': report_ref}
+        # 6. save the assembly to KBase if everything has gone well
+        if assemble_ok == 0:
+            self.m_utils.save_assembly('sj.cor.ext.reduced.fa', wsname, params[self.PARAM_IN_CS_NAME])
+
+
+            report_name, report_ref = self.m_utils.generate_reports('sj.cor.ext.reduced.fa', params, self.proj_dir, wsname)
+            returnVal = {'report_name': report_name, 'report_ref': report_ref}
+        else:
+            log("run_assemble process failed.")
 
         return returnVal
 
