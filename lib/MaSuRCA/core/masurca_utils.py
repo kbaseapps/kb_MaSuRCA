@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 import time
 import json
@@ -5,7 +6,9 @@ import os
 import numpy as np
 import psutil
 import zipfile
+import subprocess
 from pprint import pprint, pformat
+import codecs
 
 from MaSuRCA.core.Program_Runner import Program_Runner
 from Workspace.WorkspaceClient import Workspace as Workspace
@@ -23,7 +26,7 @@ def log(message, prefix_newline=False):
 
 class masurca_utils:
     MaSuRCA_VERSION = 'MaSuRCA-3.2.3'
-    MaSuRCA_BIN = '/kb/module/' + MaSuRCA_VERSION + 'bin/masurca'
+    MaSuRCA_BIN = '/kb/module/' + MaSuRCA_VERSION + '/bin/masurca'
     PARAM_IN_WS = 'workspace_name'
     PARAM_IN_THREADN = 'num_threads'
     PARAM_IN_READS_LIBS = 'reads_libraries'
@@ -57,15 +60,15 @@ class masurca_utils:
 
         # check for mandatory parameters
         if params.get(self.PARAM_IN_WS, None) is None:
-            raise ValueError(self.PARAM_IN_WS + ' parameter is required')
+            raise ValueError(self.PARAM_IN_WS + ' parameter is mandatory')
         if self.PARAM_IN_THREADN not in params:
-            raise ValueError(self.PARAM_IN_THREADN + ' parameter is required')
+            raise ValueError(self.PARAM_IN_THREADN + ' parameter is mandatory')
         #params[self.PARAM_IN_THREADN] = min(params.get(self.PARAM_IN_THREADN), psutil.cpu_count())
 
         if params.get(self.PARAM_IN_JF_SIZE, None) is None:
-            raise ValueError(self.PARAM_IN_JF_SIZE + ' parameter is required')
-        if self.PARAM_IN_READS_LIBS not in params:
-            raise ValueError(self.PARAM_IN_READS_LIBS + ' parameter is required')
+            raise ValueError(self.PARAM_IN_JF_SIZE + ' parameter is mandatory')
+        if params.get(self.PARAM_IN_READS_LIBS, None) is None:
+            raise ValueError(self.PARAM_IN_READS_LIBS + ' parameter is mandatory')
         if type(params[self.PARAM_IN_READS_LIBS]) != list:
             raise ValueError(self.PARAM_IN_READS_LIBS + ' must be a list')
         if (params.get(self.PARAM_IN_CS_NAME, None) is None or
@@ -76,8 +79,11 @@ class masurca_utils:
             params['pe_prefix'] = 'pe'
         if ('pe_mean' not in params or type(params['pe_mean']) != int):
             params['pe_mean'] = 180
-        if ('pe_stdv' not in params or type(params['pe_stdv']) != int):
-            params['pe_stdv'] = 20
+        if ('pe_stdev' not in params or type(params['pe_stdev']) != int):
+            params['pe_stdev'] = 20
+
+        if params.get('create_report', None) is None:
+            params['create_report'] = 0
 
         return params
 
@@ -88,68 +94,85 @@ class masurca_utils:
 
         # STEP 2: retrieve the reads data from input parameter
         pe_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_READS_LIBS])
+        jp_reads_data = []
         if self.PARAM_IN_JUMP_LIBS in params:
             jp_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_JUMP_LIBS])
 
         # STEP 3: construct and save the config.txt file for running masurca
         try:
             # STEP 3.1: replace the 'DATA...END' portion of the config_template.txt file 
-            with open(config_file_path, 'w') as config_file:
-                with open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
-                          'r') as config_template_file:
+            with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
+                with codecs.open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
+                          mode='r', encoding='utf-8') as config_template_file:
                     config_template = config_template_file.read()
                     data_str = ''
                     if pe_reads_data:
                         log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
-                        data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + str(params['pe_stdv']) + ' ' + pe_reads_data[0]['fwd_file']
+                        data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + str(params['pe_stdev']) + ' ' + pe_reads_data[0]['fwd_file']
                         if pe_reads_data[0].get('rev_file', None) is not None:
                             data_str += ' ' + pe_reads_data[0]['rev_file']
                     if jp_reads_data:
                         if ('jp_mean' not in params or type(params['jp_mean']) != int):
                             params['jp_mean'] = 3600
-                        if ('pe_stdv' not in params or type(params['jp_stdv']) != int):
-                            params['pe_stdv'] = 200
+                        if ('pe_stdev' not in params or type(params['jp_stdev']) != int):
+                            params['pe_stdev'] = 200
                         if data_str != '':
                             data_str += '\n'
-                        data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' + str(params['jp_stdv']) + ' ' + jp_reads_data[0]['fwd_file']
+                        data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' + str(params['jp_stdev']) + ' ' + jp_reads_data[0]['fwd_file']
                         if jp_reads_data[0].get('rev_file', None) is not None:
                             data_str += ' ' + jp_reads_data[0]['rev_file']
 
                     begin_patn1 = "DATA\n"
                     end_patn1 = "END\nPARAMETERS\n"
-                    config_template = self._replaceSectionText(config_template, begin_patn1, end_patn1, data_str)
-                    config_file.write(config_template)
+                    config_with_data = self._replaceSectionText(config_template, begin_patn1, end_patn1, data_str)
+                    config_file.write(config_with_data)
+                    #log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
 
             # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
-            with open(config_file_path, 'r') as previous_config_file:
+            with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
                 previous_config = previous_config_file.read()
                 param_str = ''
-                if params['graph_kmer_size']:
+                if params.get('graph_kmer_size', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
                     param_str += 'GRAPH_KMER_SIZE=' + str(params['graph_kmer_size'])
-                if params['use_linking_mates'] == 1:
-                    param_str += '\nUSE_LINKING_MATES=1'
-                else:
-                    param_str += '\nUSE_LINKING_MATES=0'
-                if params['limit_jump_coverage']:
-                    param_str += '\nLIMIT_JUMP_COVERAGE = ' + str(params['limit_jump_coverage'])
-                if params['cgwErrorRate']:
-                    param_str += '\nCA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
-                if params['num_threads']:
-                    param_str += '\nNUM_THREADS=' + str(params['num_threads'])
-                if params['jf_size']:
-                    param_str += '\nJF_SIZE=' + str(params['jf_size'])
-                if params['do_homopolymer_trim'] == 1:
-                    param_str += '\nDO_HOMOPOLYMER_TRIM==1'
-                else:
-                    param_str += '\nDO_HOMOPOLYMER_TRIM==0'
+                if params.get('use_linking_mates', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    if params['use_linking_mates'] == 1:
+                        param_str += 'USE_LINKING_MATES=1'
+                    else:
+                        param_str += 'USE_LINKING_MATES=0'
+                if params.get('limit_jump_coverage', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    param_str += 'LIMIT_JUMP_COVERAGE = ' + str(params['limit_jump_coverage'])
+                if params.get('cgwErrorRate', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    param_str += 'CA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
+                if params.get('num_threads', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    param_str += 'NUM_THREADS=' + str(params['num_threads'])
+                if params.get('jf_size', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    param_str += 'JF_SIZE=' + str(params['jf_size'])
+                if params.get('do_homopolymer_trim', None) is not None:
+                    if param_str != '':
+                        param_str += '\n'
+                    if params['do_homopolymer_trim'] == 1:
+                        param_str += 'DO_HOMOPOLYMER_TRIM==1'
+                    else:
+                        param_str += 'DO_HOMOPOLYMER_TRIM==0'
 
-                begin_patn2 = "PARAMETERS\n"
-                end_patn2 = "END\n"
-                param_str = begin_patn + param_str + + '\n' + end_patn
-                final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
-
-            with open(config_file_path, 'w') as config_file:
+            begin_patn2 = "PARAMETERS\n"
+            end_patn2 = "END\n"
+            final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
+            with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
                 config_file.write(final_config)
+            log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(final_config.encode('utf-8').decode('utf-8'), config_file_path))
         except IOError as ioerr:
             log('Creation of the config.txt file raised error:\n')
             pprint(ioerr)
@@ -159,36 +182,65 @@ class masurca_utils:
 
     def generate_assemble_script(self, config_file):
         exit_code = 1
-        if config_file != '':
+        if os.path.isfile(config_file):
             f_dir, f_nm = os.path.split(config_file)
             m_cmd = [self.MaSuRCA_BIN]
             m_cmd.append(config_file)
             exit_code = self.prog_runner.run(m_cmd, f_dir)
 
-        if exit_code == 0:
-            return os.path.join(f_dir, 'assemble.sh')
+            if exit_code == 0:
+                log('Created the assemble.sh file at {}.\n'.format(os.path.join(f_dir, 'assemble.sh')))
+                return os.path.join(f_dir, 'assemble.sh')
+            else:
+                log('Creation of the assemble.sh file failed.\n')
+                return ''
         else:
-            return ''
+            log("The config file {} is not found.\n".format(config_file))
+            log('NO assemble.sh file created.\n')
+        return ''
+
+    def checkAssembleFile(self, asmbl_file):
+        """
+        try to open the file to check its content
+        """
+        with codecs.open(asmbl_file, mode='r', encoding='utf-8') as a_file:
+            afile_content = a_file.read()
+            log("\n*******************\nThe assemble.sh file content if any:\n")
+            log("{}\n****************".format(afile_content.encode('utf-8','replace').decode('utf-8')))
+
 
     def run_assemble(self, asmbl_file):
         exit_code = 1
-        if asmbl_file != '':
+        if os.path.isfile(asmbl_file):
+            log("The assemble.sh file exists at {}\n".format(asmbl_file))
             f_dir, f_nm = os.path.split(asmbl_file)
-            a_cmd = []
-            a_cmd.append('./' + asmbl_file)
-            exit_code = self.prog_runner.run(a_cmd, f_dir)
+            a_cmd = ['source']
+            a_cmd.append(asmbl_file)
+            log("The working directory is supposed to be {}\n".format(f_dir))
+            p = subprocess.Popen(a_cmd, cwd=f_dir, shell=False)
+            exit_code = p.wait()
+            self.log('Return code: ' + str(exit_code))
 
+            if p.returncode != 0:
+                raise ValueError('Error running assemble.sh, return code: ' + str(p.returncode) + '\n')
+            else:
+                exit_code = p.returncode
+            #exit_code = self.prog_runner.run(a_cmd, f_dir)
+        else:
+            log("The assemble.sh file {} is not found.".format(asmbl_file))
         return exit_code
 
     def save_assembly(self, contig_fa, wsname, a_name):
-        log('Uploading FASTA file to Assembly')
-        output_contigs = os.path.join(self.proj_dir, contig_fa)
-        self.au.save_assembly_from_fasta(
-                        {'file': {'path': output_contigs},
-                        'workspace_name': wsname,
-                        'assembly_name': a_name
-                        })
-
+        if os.path.isfile(contig_fa):
+            log('Uploading FASTA file to Assembly...')
+            output_contigs = os.path.join(self.proj_dir, contig_fa)
+            self.au.save_assembly_from_fasta(
+                            {'file': {'path': output_contigs},
+                            'workspace_name': wsname,
+                            'assembly_name': a_name
+                            })
+        else:
+            log("The contig file {} is not found.".format(contig_fa))
 
     def _replaceSectionText(self, orig_txt, begin_patn, end_patn, repl_txt):
         """
@@ -216,14 +268,15 @@ class masurca_utils:
 
     def _getKBReadsInfo(self, wsname, reads_refs):
         """
-        _getKBReadsInfo--from a set of given KBase reads refs, fetch the corresponding reads info
-        and return the results in the following structure:
-        reads_date = {
+        _getKBReadsInfo--from a set of given KBase reads refs, fetches the corresponding reads info
+        with as deinterleaved fastq files and returns a list of reads data in the following structure:
+        reads_data = {
                 'fwd_file': path_to_fastq_file,
                 'type': reads_type, #('interleaved', 'paired', or 'single'
-                'rev_file': path_to_fastq_file, #only if paired end
                 'seq_tech': sequencing_tech,
-                'reads_ref': KBase object ref for downstream convenience
+                'reads_ref': KBase object ref for downstream convenience,
+                'reads_name': KBase object name for downstream convenience,
+                'rev_file': path_to_fastq_file, #only if paired end
         }
         """
         obj_ids = []
@@ -245,7 +298,10 @@ class masurca_utils:
                    'KBaseAssembly.SingleEndLibrary ' +
                    'KBaseAssembly.PairedEndLibrary')
         try:
-            reads = self.ru.download_reads({'read_libraries': reads_params})['files']
+            reads = self.ru.download_reads({
+                        'read_libraries': reads_params,
+                        'interleaved': 'false'
+                        })['files']
         except ServerError as se:
             log('logging stacktrace from dynamic client error')
             log(se.data)
@@ -260,23 +316,22 @@ class masurca_utils:
             else:
                 raise
 
-        #log('Got reads data from converter:\n' + pformat(reads))
+        #log('Downloaded reads data from KBase:\n' + pformat(reads))
         reads_data = []
-        for ref in reads:
+        for ref in reads_refs:
             reads_name = reftoname[ref]
             f = reads[ref]['files']
-            seq_tech = reads[ref]["sequencing_tech"]
-            if f['type'] == 'interleaved':
-                reads_data.append({'fwd_file': f['fwd'], 'type':'interleaved',
-                                   'seq_tech': seq_tech, 'reads_ref': ref})
-            elif f['type'] == 'paired':
-                reads_data.append({'fwd_file': f['fwd'], 'rev_file': f['rev'],
-                                   'type':'paired', 'seq_tech': seq_tech, 'reads_ref': ref})
-            elif f['type'] == 'single':
-                reads_data.append({'fwd_file': f['fwd'], 'type':'single',
-                                   'seq_tech': seq_tech, 'reads_ref': ref})
-            else:
-                raise ValueError('Something is very wrong with read lib' + reads_name)
+            seq_tech = reads[ref]['sequencing_tech']
+            rds_info = {
+                'reads_ref': ref,
+                'type': f['type'],
+                'fwd_file': f['fwd'],
+                'seq_tech': seq_tech,
+                'reads_name': reads_name
+            }
+            if f.get('rev', None) is not None:
+                rds_info['rev_file'] = f['rev']
+            reads_data.append(rds_info)
 
         return reads_data
 
