@@ -6,6 +6,7 @@ import os
 import numpy as np
 import psutil
 import zipfile
+import subprocess
 from pprint import pprint, pformat
 import codecs
 
@@ -59,15 +60,15 @@ class masurca_utils:
 
         # check for mandatory parameters
         if params.get(self.PARAM_IN_WS, None) is None:
-            raise ValueError(self.PARAM_IN_WS + ' parameter is required')
+            raise ValueError(self.PARAM_IN_WS + ' parameter is mandatory')
         if self.PARAM_IN_THREADN not in params:
-            raise ValueError(self.PARAM_IN_THREADN + ' parameter is required')
+            raise ValueError(self.PARAM_IN_THREADN + ' parameter is mandatory')
         #params[self.PARAM_IN_THREADN] = min(params.get(self.PARAM_IN_THREADN), psutil.cpu_count())
 
         if params.get(self.PARAM_IN_JF_SIZE, None) is None:
-            raise ValueError(self.PARAM_IN_JF_SIZE + ' parameter is required')
-        if self.PARAM_IN_READS_LIBS not in params:
-            raise ValueError(self.PARAM_IN_READS_LIBS + ' parameter is required')
+            raise ValueError(self.PARAM_IN_JF_SIZE + ' parameter is mandatory')
+        if params.get(self.PARAM_IN_READS_LIBS, None) is None:
+            raise ValueError(self.PARAM_IN_READS_LIBS + ' parameter is mandatory')
         if type(params[self.PARAM_IN_READS_LIBS]) != list:
             raise ValueError(self.PARAM_IN_READS_LIBS + ' must be a list')
         if (params.get(self.PARAM_IN_CS_NAME, None) is None or
@@ -80,6 +81,9 @@ class masurca_utils:
             params['pe_mean'] = 180
         if ('pe_stdv' not in params or type(params['pe_stdv']) != int):
             params['pe_stdv'] = 20
+
+        if params.get('create_report', None) is None:
+            params['create_report'] = 0
 
         return params
 
@@ -195,18 +199,33 @@ class masurca_utils:
             log('NO assemble.sh file created.\n')
         return ''
 
+    def checkAssembleFile(self, asmbl_file):
+        """
+        try to open the file to check its content
+        """
+        with codecs.open(asmbl_file, mode='r', encoding='utf-8') as a_file:
+            afile_content = a_file.read()
+            log("\n*******************\nThe assemble.sh file content if any:\n")
+            log("{}\n****************".format(afile_content.encode('utf-8','replace').decode('utf-8')))
+
+
     def run_assemble(self, asmbl_file):
         exit_code = 1
         if os.path.isfile(asmbl_file):
-            #try to open the file to check its content
-            with codecs.open(asmbl_file, mode='r', encoding='utf-8') as a_file:
-                afile_content = a_file.read()
-                log("*******************\nThe assemble.sh file content if any:\n{}\n****************".format(afile_content.encode('utf-8','replace').decode('utf-8')))
-            log("assemble shell file name with path: {}".format(asmbl_file))
+            log("The assemble.sh file exists at {}\n".format(asmbl_file))
             f_dir, f_nm = os.path.split(asmbl_file)
             a_cmd = ['source']
             a_cmd.append(asmbl_file)
-            exit_code = self.prog_runner.run(a_cmd, f_dir)
+
+            p = subprocess.Popen(a_cmd, cwd=f_dir, shell=False)
+            exit_code = p.wait()
+            self.log('Return code: ' + str(exit_code))
+
+            if p.returncode != 0:
+                raise ValueError('Error running assemble.sh, return code: ' + str(p.returncode) + '\n')
+            else:
+                exit_code = p.returncode
+            #exit_code = self.prog_runner.run(a_cmd, f_dir)
         else:
             log("The assemble.sh file {} is not found.".format(asmbl_file))
         return exit_code
@@ -249,14 +268,15 @@ class masurca_utils:
 
     def _getKBReadsInfo(self, wsname, reads_refs):
         """
-        _getKBReadsInfo--from a set of given KBase reads refs, fetch the corresponding reads info
-        and return the results in the following structure:
-        reads_date = {
+        _getKBReadsInfo--from a set of given KBase reads refs, fetches the corresponding reads info
+        with as deinterleaved fastq files and returns a list of reads data in the following structure:
+        reads_data = {
                 'fwd_file': path_to_fastq_file,
                 'type': reads_type, #('interleaved', 'paired', or 'single'
-                'rev_file': path_to_fastq_file, #only if paired end
                 'seq_tech': sequencing_tech,
-                'reads_ref': KBase object ref for downstream convenience
+                'reads_ref': KBase object ref for downstream convenience,
+                'reads_name': KBase object name for downstream convenience,
+                'rev_file': path_to_fastq_file, #only if paired end
         }
         """
         obj_ids = []
@@ -278,7 +298,10 @@ class masurca_utils:
                    'KBaseAssembly.SingleEndLibrary ' +
                    'KBaseAssembly.PairedEndLibrary')
         try:
-            reads = self.ru.download_reads({'read_libraries': reads_params})['files']
+            reads = self.ru.download_reads({
+                        'read_libraries': reads_params,
+                        'interleaved': 'false'
+                        })['files']
         except ServerError as se:
             log('logging stacktrace from dynamic client error')
             log(se.data)
@@ -293,23 +316,22 @@ class masurca_utils:
             else:
                 raise
 
-        #log('Got reads data from converter:\n' + pformat(reads))
+        #log('Downloaded reads data from KBase:\n' + pformat(reads))
         reads_data = []
-        for ref in reads:
+        for ref in reads_refs:
             reads_name = reftoname[ref]
             f = reads[ref]['files']
-            seq_tech = reads[ref]["sequencing_tech"]
-            if f['type'] == 'interleaved':
-                reads_data.append({'fwd_file': f['fwd'], 'type':'interleaved',
-                                   'seq_tech': seq_tech, 'reads_ref': ref})
-            elif f['type'] == 'paired':
-                reads_data.append({'fwd_file': f['fwd'], 'rev_file': f['rev'],
-                                   'type':'paired', 'seq_tech': seq_tech, 'reads_ref': ref})
-            elif f['type'] == 'single':
-                reads_data.append({'fwd_file': f['fwd'], 'type':'single',
-                                   'seq_tech': seq_tech, 'reads_ref': ref})
-            else:
-                raise ValueError('Something is very wrong with read lib' + reads_name)
+            seq_tech = reads[ref]['sequencing_tech']
+            rds_info = {
+                'reads_ref': ref,
+                'type': f['type'],
+                'fwd_file': f['fwd'],
+                'seq_tech': seq_tech,
+                'reads_name': reads_name
+            }
+            if f.get('rev', None) is not None:
+                rds_info['rev_file'] = f['rev']
+            reads_data.append(rds_info)
 
         return reads_data
 

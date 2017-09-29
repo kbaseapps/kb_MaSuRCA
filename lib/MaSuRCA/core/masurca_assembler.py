@@ -87,9 +87,7 @@ class MaSuRCA_Assembler(object):
             assemble_file = self.m_utils.generate_assemble_script(config_file)
 
         # 4. run the assemble.sh script to do the heavy-lifting
-        assemble_ok = 1
-        if os.path.isfile(assemble_file):
-            assemble_ok = self.m_utils.run_assemble(assemble_file)
+        assemble_ok = self.m_utils.run_assemble(assemble_file)
 
         # 5. report the final results
         returnVal = {
