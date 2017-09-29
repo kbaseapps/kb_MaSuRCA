@@ -163,9 +163,9 @@ class masurca_utils:
                     if param_str != '':
                         param_str += '\n'
                     if params['do_homopolymer_trim'] == 1:
-                        param_str += 'DO_HOMOPOLYMER_TRIM==1'
+                        param_str += 'DO_HOMOPOLYMER_TRIM=1'
                     else:
-                        param_str += 'DO_HOMOPOLYMER_TRIM==0'
+                        param_str += 'DO_HOMOPOLYMER_TRIM=0'
 
             begin_patn2 = "PARAMETERS\n"
             end_patn2 = "END\n"

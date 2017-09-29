@@ -71,7 +71,7 @@
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": [ "20.0" ],
+            "default_values": [ "20" ],
             "field_type": "text",
             "text_options": {
                 "validate_as" : "int",
@@ -152,10 +152,10 @@
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "auto", "int" ],
+            "default_values": [ "auto"],
             "field_type": "text",
             "text_options": {
-                "validate_as" : "text",
+                "validate_as" : ["text", "int"],
                 "min_int" : 1 
             }
         },
