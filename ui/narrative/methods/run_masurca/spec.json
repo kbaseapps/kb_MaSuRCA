@@ -11,22 +11,10 @@
     },
     "parameters": [ 
         {
-            "id": "jf_size",
+            "id": "reads_libraries",
             "optional": false,
             "advanced": false,
-            "allow_multiple": false,
-            "default_values": ["2000000000"],
-            "field_type": "text",
-            "text_options": {
-                "validate_as": "int",
-                "min_int" : 2000000000
-            }
-        },
-        {
-            "id": "reads_id",
-            "optional": false,
-            "advanced": false,
-            "allow_multiple": false,
+            "allow_multiple": true,
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
@@ -34,7 +22,29 @@
             }
         },
         {
-            "id": "reads_prefix",
+            "id": "jump_libraries",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": true,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": ["KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+            }
+        },
+        {
+            "id": "jf_size",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": ["100000000"],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int"
+            }
+        },
+        {
+            "id": "pe_prefix",
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
@@ -45,7 +55,7 @@
             }
         },
         {
-            "id": "reads_mean",
+            "id": "pe_mean",
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
@@ -57,15 +67,50 @@
             }
         },
         {
-            "id": "reads_stdv",
+            "id": "pe_stdev",
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
             "default_values": [ "20.0" ],
             "field_type": "text",
             "text_options": {
-                "validate_as" : "float",
-                "min_float" : 20.0
+                "validate_as" : "int",
+                "min_int" : 0
+            }
+        },
+        {
+            "id": "jp_prefix",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "sh" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : "text"
+            }
+        },
+        {
+            "id": "jp_mean",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "3600" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : "int",
+                "min_int" : 200
+            }
+        },
+        {
+            "id": "jp_stdev",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "200" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as" : "int",
+                "min_int" : 20
             }
         },
         {
@@ -198,22 +243,6 @@
             }
         }
     ],
-    "parameter-groups": [
-      {
-        "id": "reads_libraries",
-        "parameters": ["reads_id", "reads_prefix", "reads_mean", "reads_stdv"],
-        "optional": false,
-        "allow_multiple": true,
-        "with_border": true
-      },
-      {
-        "id": "jump_libraries",
-        "parameters": ["reads_id", "reads_prefix", "reads_mean", "reads_stdv"],
-        "optional": true,
-        "allow_multiple": true,
-        "with_border": true
-      }
-    ],
     "behavior": {
         "service-mapping": {
             "url": "",
@@ -225,21 +254,42 @@
                     "target_property": "workspace_name"
                 },
                 {
-                    "input_parameter": "reads_id",
-                    "target_property": "reads_id",
-                    "target_type_transform": "resolved-ref"
-                },
-                {
                     "input_parameter": "jf_size",
                     "target_property": "jf_size"
                 },
                 {
                     "input_parameter": "reads_libraries",
-                    "target_property": "reads_libraries"
+                    "target_property": "reads_libraries",
+                    "target_type_transform": ["resolved-ref"]
                 },
 		{
                     "input_parameter": "jump_libraries",
-                    "target_property": "jump_libraries"
+                    "target_property": "jump_libraries",
+                    "target_type_transform": ["resolved-ref"]
+                },
+                {
+                    "input_parameter": "pe_prefix",
+                    "target_property": "pe_prefix"
+                },
+                {
+                    "input_parameter": "pe_mean",
+                    "target_property": "pe_mean"
+                },
+                {
+                    "input_parameter": "pe_stdev",
+                    "target_property": "pe_stdev"
+                },
+                {
+                    "input_parameter": "jp_prefix",
+                    "target_property": "jp_prefix"
+                },
+                {
+                    "input_parameter": "jp_mean",
+                    "target_property": "jp_mean"
+                },
+                {
+                    "input_parameter": "jp_stdev",
+                    "target_property": "jp_stdev"
                 },
                 {
                     "input_parameter": "pacbio_reads",
@@ -307,10 +357,6 @@
                 {
                     "constant_value": "16",
                     "target_property": "report_window_line_height"
-                },
-                {
-                    "input_parameter": "jf_size",
-                    "target_property": "jf_size"
                 },
                 {
                     "service_method_output_path": [0],

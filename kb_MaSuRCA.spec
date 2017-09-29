@@ -62,7 +62,7 @@ module MaSuRCA {
 
         @optional jump_libraries
         @optional jp_mean
-        @optional jp_stdv
+        @optional jp_stdev
         @optional pacbio_reads
         @optional other_frg_file
         @optional graph_kmer_size
@@ -82,13 +82,13 @@ module MaSuRCA {
         list<read_lib> reads_libraries; 
         string pe_prefix;
         int pe_mean;
-        int pe_stdv;
+        int pe_stdev;
        
         read_lib reads_id; 
         list<read_lib> jump_libraries;
         string jp_prefix;
         int jp_mean;
-        int jp_stdv;
+        int jp_stdev;
         read_lib pacbio_reads;
         string other_frg_file;   
         string graph_kmer_size;
@@ -100,7 +100,6 @@ module MaSuRCA {
         bool soap_assembly;
         bool do_homopolymer_trim;
 
-        string out_folder; 
         string output_contigset_name;
         bool create_report;
     } masurcaParams;

@@ -79,8 +79,8 @@ class masurca_utils:
             params['pe_prefix'] = 'pe'
         if ('pe_mean' not in params or type(params['pe_mean']) != int):
             params['pe_mean'] = 180
-        if ('pe_stdv' not in params or type(params['pe_stdv']) != int):
-            params['pe_stdv'] = 20
+        if ('pe_stdev' not in params or type(params['pe_stdv']) != int):
+            params['pe_stdev'] = 20
 
         if params.get('create_report', None) is None:
             params['create_report'] = 0
@@ -108,17 +108,17 @@ class masurca_utils:
                     data_str = ''
                     if pe_reads_data:
                         log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
-                        data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + str(params['pe_stdv']) + ' ' + pe_reads_data[0]['fwd_file']
+                        data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + str(params['pe_stdev']) + ' ' + pe_reads_data[0]['fwd_file']
                         if pe_reads_data[0].get('rev_file', None) is not None:
                             data_str += ' ' + pe_reads_data[0]['rev_file']
                     if jp_reads_data:
                         if ('jp_mean' not in params or type(params['jp_mean']) != int):
                             params['jp_mean'] = 3600
-                        if ('pe_stdv' not in params or type(params['jp_stdv']) != int):
-                            params['pe_stdv'] = 200
+                        if ('pe_stdev' not in params or type(params['jp_stdev']) != int):
+                            params['pe_stdev'] = 200
                         if data_str != '':
                             data_str += '\n'
-                        data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' + str(params['jp_stdv']) + ' ' + jp_reads_data[0]['fwd_file']
+                        data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' + str(params['jp_stdev']) + ' ' + jp_reads_data[0]['fwd_file']
                         if jp_reads_data[0].get('rev_file', None) is not None:
                             data_str += ' ' + jp_reads_data[0]['rev_file']
 
@@ -216,7 +216,7 @@ class masurca_utils:
             f_dir, f_nm = os.path.split(asmbl_file)
             a_cmd = ['source']
             a_cmd.append(asmbl_file)
-
+            log("The working directory is supposed to be {}\n".format(f_dir))
             p = subprocess.Popen(a_cmd, cwd=f_dir, shell=False)
             exit_code = p.wait()
             self.log('Return code: ' + str(exit_code))

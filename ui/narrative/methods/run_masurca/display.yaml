@@ -94,31 +94,44 @@ parameters :
         ui-name : |
             do_homopolymer_trim
         short-hint : | 
-            <p>specifies if we do (1) or do not (0) want to trim long runs of homopolymers (e.g. GGGGGGGG) from 3' read ends, use it for high GC genomes DO_HOMOPOLYMER_TRIM=0</p>
-    reads_prefix :
+            <p>specifies if we do (1) or do not (0) want to trim long runs of homopolymers (e.g. GGGGGGGG) from 3 prime read ends, use it for high GC genomes DO_HOMOPOLYMER_TRIM=0</p>
+    pe_prefix :
         ui-name : |
             prefix for defining the reads
         short-hint : |
             two-letter prefix for defining reads in the config.txt file
-    reads_mean :
+    pe_mean :
         ui-name : |
             mean for defining the reads
         short-hint : |
             the mean for defining reads in the config.txt file
-    reads_stdv :
+    pe_stdev :
         ui-name : |
             standard deviation for defining the reads
         short-hint : |
             the standard deviation for defining reads in the config.txt file
-        
-parameter-groups : 
+    jp_prefix :
+        ui-name : |
+            prefix for defining the reads
+        short-hint : |
+            two-letter prefix for defining reads in the config.txt file
+    jp_mean :
+        ui-name : |
+            mean for defining the reads
+        short-hint : |
+            the mean for defining reads in the config.txt file
+    jp_stdev :
+        ui-name : |
+            standard deviation for defining the reads
+        short-hint : |
+            the standard deviation for defining reads in the config.txt file
     reads_libraries :
         ui-name : |
-            Reads and its prefix, mean and standard deviation
+            Reads to be assembled
         short-hint : |
     jump_libraries :
         ui-name : | 
-            Jump and its prefix, mean and standard deviation
+            Jump reads to be assembled
         short-hint : | 
 
                       
