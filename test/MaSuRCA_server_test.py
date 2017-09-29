@@ -129,7 +129,7 @@ class MaSuRCATest(unittest.TestCase):
         #if hasattr(self.__class__, 'reads_ref'):
             #return self.__class__.reads_ref
         se_reads_name = os.path.basename(reads_file_path)
-        fq_path = os.path.join(self.scratch, se_reads_name) 
+        fq_path = os.path.join(self.scratch, se_reads_name)
         shutil.copy(reads_file_path, fq_path)
 
         ru = ReadsUtils(self.callback_url)
@@ -152,12 +152,26 @@ class MaSuRCATest(unittest.TestCase):
         m_params = {
                 'workspace_name': self.getWsName(),
                 'reads_libraries': [pe_lib_ref],
-                'output_contigset_name': 'masurca_contig',
+                "jf_size": 100000000,
+                "pe_prefix": "pe",
+                "pe_mean": 180,
+                "pe_stdev": 20,
+                #"jp_prefix": "sh",
+                #"jp_mean": 3600,
+                #"jp_stdev": 200,
+                "pacbio_reads": None,
+                "other_frg_file": None,
+                "output_contigset_name": "masurca.contigs",
+                "graph_kmer_size": "auto",
+                "use_linking_mates": 1,
+                "limit_jump_coverage": 60,
+                "cgwErrorRate": 0.25,
+                "close_gaps": 0,
+                "soap_assembly": 0,
+                "do_homopolymer_trim": 0,
+                "kmer_count_threshold": 1,
                 'num_threads': 2,
-                'jf_size': 2000000000,
                 'create_report': 1
-                #'fwd_file': '../work/testReads/small.forward.fq',
-                #'rev_file': '../work/testReads/small.reverse.fq',
         }
         # Second, call your implementation
         ret = self.getImpl().run_masurca(self.getContext(), m_params)

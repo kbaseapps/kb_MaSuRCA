@@ -79,7 +79,7 @@ class masurca_utils:
             params['pe_prefix'] = 'pe'
         if ('pe_mean' not in params or type(params['pe_mean']) != int):
             params['pe_mean'] = 180
-        if ('pe_stdev' not in params or type(params['pe_stdv']) != int):
+        if ('pe_stdev' not in params or type(params['pe_stdev']) != int):
             params['pe_stdev'] = 20
 
         if params.get('create_report', None) is None:
