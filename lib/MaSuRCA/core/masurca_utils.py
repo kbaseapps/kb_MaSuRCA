@@ -136,6 +136,11 @@ class masurca_utils:
                     if param_str != '':
                         param_str += '\n'
                     param_str += 'GRAPH_KMER_SIZE=' + str(params['graph_kmer_size'])
+                if (params.get('graph_kmer_size', None) is None or
+                        type(params['graph_kmer_size']) != int):
+                    if param_str != '':
+                        param_str += '\n'
+                    param_str += 'GRAPH_KMER_SIZE=auto'
                 if params.get('use_linking_mates', None) is not None:
                     if param_str != '':
                         param_str += '\n'

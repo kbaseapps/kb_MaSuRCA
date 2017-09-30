@@ -260,12 +260,12 @@
                 {
                     "input_parameter": "reads_libraries",
                     "target_property": "reads_libraries",
-                    "target_type_transform": ["resolved-ref"]
+                    "target_type_transform": "list<ref>"
                 },
 		{
                     "input_parameter": "jump_libraries",
                     "target_property": "jump_libraries",
-                    "target_type_transform": ["resolved-ref"]
+                    "target_type_transform": "list<ref>"
                 },
                 {
                     "input_parameter": "pe_prefix",
