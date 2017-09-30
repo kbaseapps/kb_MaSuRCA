@@ -1,7 +1,7 @@
-SERVICE = kb_masurca
-SERVICE_CAPS = kb_MaSuRCA
-SPEC_FILE = kb_MaSuRCA.spec
-URL = https://kbase.us/services/kb_masurca
+SERVICE = masurca
+SERVICE_CAPS = MaSuRCA
+SPEC_FILE = MaSuRCA.spec
+URL = https://kbase.us/services/masurca
 DIR = $(shell pwd)
 LIB_DIR = lib
 SCRIPTS_DIR = scripts
