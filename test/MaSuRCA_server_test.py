@@ -15,7 +15,7 @@ except:
 from pprint import pprint, pformat  # noqa: F401
 
 from biokbase.workspace.client import Workspace as workspaceService
-from MaSuRCA.MaSuRCAImpl import MaSuRCA
+from MaSuRCA.MaSuRCAImpl import kb_MaSuRCA
 from MaSuRCA.MaSuRCAServer import MethodContext
 from MaSuRCA.authclient import KBaseAuth as _KBaseAuth
 from ReadsUtils.baseclient import ServerError
@@ -31,7 +31,7 @@ class MaSuRCATest(unittest.TestCase):
         cls.cfg = {}
         config = ConfigParser()
         config.read(config_file)
-        for nameval in config.items('MaSuRCA'):
+        for nameval in config.items('kb_MaSuRCA'):
             cls.cfg[nameval[0]] = nameval[1]
         # Getting username from Auth profile for token
         authServiceUrl = cls.cfg['auth-service-url']
@@ -50,7 +50,7 @@ class MaSuRCATest(unittest.TestCase):
                         'authenticated': 1})
         cls.wsURL = cls.cfg['workspace-url']
         cls.wsClient = workspaceService(cls.wsURL)
-        cls.serviceImpl = MaSuRCA(cls.cfg)
+        cls.serviceImpl = kb_MaSuRCA(cls.cfg)
         cls.scratch = cls.cfg['scratch']
         cls.callback_url = os.environ['SDK_CALLBACK_URL']
 
@@ -159,6 +159,7 @@ class MaSuRCATest(unittest.TestCase):
                 #"jp_prefix": "sh",
                 #"jp_mean": 3600,
                 #"jp_stdev": 200,
+                'jump_libraries': None,
                 "pacbio_reads": None,
                 "other_frg_file": None,
                 "output_contigset_name": "masurca.contigs",

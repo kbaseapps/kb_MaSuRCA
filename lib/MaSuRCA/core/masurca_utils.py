@@ -95,7 +95,7 @@ class masurca_utils:
         # STEP 2: retrieve the reads data from input parameter
         pe_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_READS_LIBS])
         jp_reads_data = []
-        if self.PARAM_IN_JUMP_LIBS in params:
+        if params.get(self.PARAM_IN_JUMP_LIBS, None) is not None:
             jp_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_JUMP_LIBS])
 
         # STEP 3: construct and save the config.txt file for running masurca
@@ -122,6 +122,7 @@ class masurca_utils:
                         if jp_reads_data[0].get('rev_file', None) is not None:
                             data_str += ' ' + jp_reads_data[0]['rev_file']
 
+                    #TODO adding the pacbio_reads and other_frg_file inputs if any
                     begin_patn1 = "DATA\n"
                     end_patn1 = "END\nPARAMETERS\n"
                     config_with_data = self._replaceSectionText(config_template, begin_patn1, end_patn1, data_str)
@@ -287,6 +288,9 @@ class masurca_utils:
         obj_ids = []
         for r in reads_refs:
             obj_ids.append({'ref': r if '/' in r else (wsname + '/' + r)})
+
+        if not obj_ids:
+            return []
 
         ws_info = self.ws_client.get_object_info_new({'objects': obj_ids})
         reads_params = []
