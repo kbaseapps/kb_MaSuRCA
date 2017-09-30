@@ -12,7 +12,7 @@
 
 */
 
-module MaSuRCA {
+module kb_MaSuRCA {
     typedef string assembly_ref;
 
     /* A boolean - 0 for false, 1 for true.

@@ -9,10 +9,10 @@ from MaSuRCA.core.masurca_assembler import MaSuRCA_Assembler
 #END_HEADER
 
 
-class MaSuRCA:
+class kb_MaSuRCA:
     '''
     Module Name:
-    MaSuRCA
+    kb_MaSuRCA
 
     Module Description:
     Name of module: MaSuRCA
@@ -33,9 +33,9 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.0.2"
+    VERSION = "0.0.3"
     GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA.git"
-    GIT_COMMIT_HASH = "17b4620a016de16c08134c2c14bbdcaca8f9be98"
+    GIT_COMMIT_HASH = "a9ac0626b60760db344657a7ece22e3fbcf04d12"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block

@@ -246,7 +246,7 @@
     "behavior": {
         "service-mapping": {
             "url": "",
-            "name":"MaSuRCA",
+            "name":"kb_MaSuRCA",
             "method": "run_masurca",
             "input_mapping": [
                 {
