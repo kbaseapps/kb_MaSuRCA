@@ -17,7 +17,7 @@ except:
     from baseclient import BaseClient as _BaseClient  # @Reimport
 
 
-class MaSuRCA(object):
+class kb_MaSuRCA(object):
 
     def __init__(
             self, url=None, timeout=30 * 60, user_id=None,
@@ -73,33 +73,40 @@ class MaSuRCA(object):
            the workspace from which to take input and store output. string
            output_contigset_name - the name of the output contigset
            list<paired_end_lib> read_libraries - Illumina PairedEndLibrary
-           files to assemble @optional jump_libraries @optional pacbio_reads
-           @optional other_frg_file @optional graph_kmer_size @optional
-           use_linking_mates @optional limit_jump_coverage @optional
-           cgwErrorRate @optional kmer_count_threshold @optional close_gaps
-           @optional soap_assembly @optional do_homopolymer_trim) ->
-           structure: parameter "workspace_name" of String, parameter
-           "num_threads" of Long, parameter "jf_size" of Long, parameter
-           "read_libraries" of list of type "read_lib" (The workspace object
-           name of a SingleEndLibrary or PairedEndLibrary file, whether of
-           the KBaseAssembly or KBaseFile type.), parameter "jump_libraries"
-           of list of type "read_lib" (The workspace object name of a
+           files to assemble @optional jump_libraries @optional jp_mean
+           @optional jp_stdev @optional pacbio_reads @optional other_frg_file
+           @optional graph_kmer_size @optional use_linking_mates @optional
+           limit_jump_coverage @optional cgwErrorRate @optional
+           kmer_count_threshold @optional close_gaps @optional soap_assembly
+           @optional do_homopolymer_trim) -> structure: parameter
+           "workspace_name" of String, parameter "num_threads" of Long,
+           parameter "jf_size" of Long, parameter "reads_libraries" of list
+           of type "read_lib" (The workspace object name of a
            SingleEndLibrary or PairedEndLibrary file, whether of the
-           KBaseAssembly or KBaseFile type.), parameter "pacbio_reads" of
-           type "read_lib" (The workspace object name of a SingleEndLibrary
-           or PairedEndLibrary file, whether of the KBaseAssembly or
-           KBaseFile type.), parameter "other_frg_file" of String, parameter
-           "graph_kmer_size" of String, parameter "use_linking_mates" of type
+           KBaseAssembly or KBaseFile type.), parameter "pe_prefix" of
+           String, parameter "pe_mean" of Long, parameter "pe_stdev" of Long,
+           parameter "reads_id" of type "read_lib" (The workspace object name
+           of a SingleEndLibrary or PairedEndLibrary file, whether of the
+           KBaseAssembly or KBaseFile type.), parameter "jump_libraries" of
+           list of type "read_lib" (The workspace object name of a
+           SingleEndLibrary or PairedEndLibrary file, whether of the
+           KBaseAssembly or KBaseFile type.), parameter "jp_prefix" of
+           String, parameter "jp_mean" of Long, parameter "jp_stdev" of Long,
+           parameter "pacbio_reads" of type "read_lib" (The workspace object
+           name of a SingleEndLibrary or PairedEndLibrary file, whether of
+           the KBaseAssembly or KBaseFile type.), parameter "other_frg_file"
+           of String, parameter "graph_kmer_size" of String, parameter
+           "use_linking_mates" of type "bool" (A boolean - 0 for false, 1 for
+           true. @range (0, 1)), parameter "limit_jump_coverage" of Long,
+           parameter "cgwErrorRate" of Double, parameter
+           "kmer_count_threshold" of Long, parameter "close_gaps" of type
            "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
-           parameter "limit_jump_coverage" of Long, parameter "cgwErrorRate"
-           of Double, parameter "kmer_count_threshold" of Long, parameter
-           "close_gaps" of type "bool" (A boolean - 0 for false, 1 for true.
-           @range (0, 1)), parameter "soap_assembly" of type "bool" (A
-           boolean - 0 for false, 1 for true. @range (0, 1)), parameter
-           "do_homopolymer_trim" of type "bool" (A boolean - 0 for false, 1
-           for true. @range (0, 1)), parameter "output_contigset_name" of
-           String, parameter "create_report" of type "bool" (A boolean - 0
-           for false, 1 for true. @range (0, 1))
+           parameter "soap_assembly" of type "bool" (A boolean - 0 for false,
+           1 for true. @range (0, 1)), parameter "do_homopolymer_trim" of
+           type "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
+           parameter "output_contigset_name" of String, parameter
+           "create_report" of type "bool" (A boolean - 0 for false, 1 for
+           true. @range (0, 1))
         :returns: instance of type "masurcaResults" (Output parameter items
            for run_masurca report_name - the name of the KBaseReport.Report
            workspace object. report_ref - the workspace reference of the
@@ -107,9 +114,9 @@ class MaSuRCA(object):
            parameter "report_ref" of String
         """
         return self._client.call_method(
-            'MaSuRCA.run_masurca',
+            'kb_MaSuRCA.run_masurca',
             [params], self._service_ver, context)
 
     def status(self, context=None):
-        return self._client.call_method('MaSuRCA.status',
+        return self._client.call_method('kb_MaSuRCA.status',
                                         [], self._service_ver, context)
