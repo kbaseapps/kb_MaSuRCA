@@ -1,5 +1,5 @@
 SERVICE = masurca
-SERVICE_CAPS = MaSuRCA
+SERVICE_CAPS = kb_MaSuRCA
 SPEC_FILE = kb_MaSuRCA.spec
 URL = https://kbase.us/services/masurca
 DIR = $(shell pwd)
