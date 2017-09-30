@@ -132,7 +132,7 @@
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+                "validate_as": "text"
             }
         },
         {
@@ -152,10 +152,10 @@
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "auto"],
+            "default_values": [ ""],
             "field_type": "text",
             "text_options": {
-                "validate_as" : ["text", "int"],
+                "validate_as" : "int",
                 "min_int" : 1 
             }
         },
@@ -239,14 +239,14 @@
             "default_values": [ "1" ],
             "field_type": "text",
             "text_options": {
-                "validate_as" : ["int"]
+                "validate_as" : "int"
             }
         }
     ],
     "behavior": {
         "service-mapping": {
             "url": "",
-            "name":"MaSuRCA",
+            "name":"kb_MaSuRCA",
             "method": "run_masurca",
             "input_mapping": [
                 {
@@ -260,12 +260,12 @@
                 {
                     "input_parameter": "reads_libraries",
                     "target_property": "reads_libraries",
-                    "target_type_transform": ["resolved-ref"]
+                    "target_type_transform": "list<ref>"
                 },
 		{
                     "input_parameter": "jump_libraries",
                     "target_property": "jump_libraries",
-                    "target_type_transform": ["resolved-ref"]
+                    "target_type_transform": "list<ref>"
                 },
                 {
                     "input_parameter": "pe_prefix",
