@@ -9,6 +9,7 @@ import zipfile
 import subprocess
 from pprint import pprint, pformat
 import codecs
+import uuid
 
 from MaSuRCA.core.Program_Runner import Program_Runner
 from Workspace.WorkspaceClient import Workspace as Workspace
