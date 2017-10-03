@@ -55,12 +55,11 @@ class MaSuRCA_Assembler(object):
 
         self.au = AssemblyUtil(self.callback_url)
 
+        self.proj_dir = self.create_proj_dir(self.scratch)
         self.m_utils = masurca_utils(self.proj_dir, config)
 
         self.scratch = os.path.join(config['scratch'], str(uuid.uuid4()))
         self.m_utils._mkdir_p(self.scratch)
-
-        self.proj_dir = self.create_proj_dir(self.scratch)
 
         self.masurca_version = 'MaSuRCA-' + os.environ['M_VERSION']
 
