@@ -401,8 +401,8 @@ class masurca_utils:
              'report_object_name': 'kb_masurca_report_' + str(uuid.uuid4()),
              'workspace_name': params[self.PARAM_IN_WS]
             })
-        reportName = report_output['name']
-        reportRef = report_output['ref']
+        report_name = report_output['name']
+        report_ref = report_output['ref']
         return report_name, report_ref
 
     def _generate_output_file_list(self, out_dir):
