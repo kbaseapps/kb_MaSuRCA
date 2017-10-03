@@ -386,14 +386,14 @@ class masurca_utils:
         quastret = self.kbq.run_QUAST({'files': [{'path': contig_file_with_path,
                                              'label': params[self.PARAM_IN_CS_NAME]}]})
 
-        #output_files = self._generate_output_file_list(out_dir)
+        output_files = self._generate_output_file_list(out_dir)
 
         print('Saving report')
         report_output = self.kbr.create_extended_report(
             {'message': report_text,
              'objects_created': [{'ref': assembly_ref, 'description': 'Assembled contigs'}],
              'direct_html_link_index': 0,
-             #'file_links': output_files,
+             'file_links': output_files,
              'html_links': [{'shock_id': quastret['shock_id'],
                              'name': 'report.html',
                              'label': 'QUAST report'}
