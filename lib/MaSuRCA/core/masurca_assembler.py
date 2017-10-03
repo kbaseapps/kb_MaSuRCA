@@ -55,13 +55,14 @@ class MaSuRCA_Assembler(object):
 
         self.au = AssemblyUtil(self.callback_url)
 
+        self.m_utils = masurca_utils(self.proj_dir, config)
+
         self.scratch = os.path.join(config['scratch'], str(uuid.uuid4()))
-        self._mkdir_p(self.scratch)
+        self.m_utils._mkdir_p(self.scratch)
 
         self.proj_dir = self.create_proj_dir(self.scratch)
 
         self.masurca_version = 'MaSuRCA-' + os.environ['M_VERSION']
-        self.m_utils = masurca_utils(self.proj_dir, config)
 
         # from the provenance, extract out the version to run by exact hash if possible
         self.my_version = 'release'
@@ -114,7 +115,7 @@ class MaSuRCA_Assembler(object):
         creating the project directory for MaSuRCA
         """
         prjdir = os.path.join(home_dir, self.MaSuRCAR_PROJECT_DIR)
-        self._mkdir_p(prjdir)
+        self.m_utils._mkdir_p(prjdir)
         self.proj_dir = prjdir
 
         return prjdir
@@ -136,18 +137,4 @@ class MaSuRCA_Assembler(object):
                         return sa['commit']
         # again, default to setting this to release
         return 'dev' #'release'
-
-
-    def _mkdir_p(self, dir):
-        """
-        _mkdir_p: make directory for given path
-        """
-        log('Creating a new dir: ' + dir)
-        if not dir:
-            return
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-        else:
-            log('{} has existed, so skip creating.'.format(dir))
-
 
