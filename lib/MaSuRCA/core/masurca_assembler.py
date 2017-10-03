@@ -128,7 +128,7 @@ class MaSuRCA_Assembler(object):
         creating the project directory for MaSuRCA
         """
         prjdir = os.path.join(home_dir, self.MaSuRCAR_PROJECT_DIR)
-        self._mkdir_p(prjdir)
+        _mkdir_p(prjdir)
         self.proj_dir = prjdir
 
         return prjdir
