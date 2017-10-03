@@ -97,10 +97,11 @@ class MaSuRCA_Assembler(object):
 
         # 6. save the assembly to KBase if everything has gone well
         if assemble_ok == 0:
-            self.m_utils.save_assembly('sj.cor.ext.reduced.fa', wsname, params[self.PARAM_IN_CS_NAME])
+            contig_fa_file = 'sj.cor.ext.reduced.fa'
+            self.m_utils.save_assembly(contig_fa_file, wsname, params[self.PARAM_IN_CS_NAME])
 
 
-            report_name, report_ref = self.m_utils.generate_reports('sj.cor.ext.reduced.fa', params, self.proj_dir, wsname)
+            report_name, report_ref = self.m_utils.generate_report(contig_fa_file, params, self.proj_dir, wsname)
             returnVal = {'report_name': report_name, 'report_ref': report_ref}
         else:
             log("run_assemble process failed.")
