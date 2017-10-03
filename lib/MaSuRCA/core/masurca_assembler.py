@@ -97,7 +97,7 @@ class MaSuRCA_Assembler(object):
 
         # 6. save the assembly to KBase if everything has gone well
         if assemble_ok == 0:
-            contig_fa_file = 'sj.cor.ext.reduced.fa'
+            contig_fa_file = 'work1/superReadSequences.fasta' #'sj.cor.ext.reduced.fa'
             self.m_utils.save_assembly(contig_fa_file, wsname, params[self.PARAM_IN_CS_NAME])
 
 
