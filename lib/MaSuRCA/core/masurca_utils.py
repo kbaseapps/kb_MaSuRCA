@@ -25,6 +25,21 @@ def log(message, prefix_newline=False):
     """Logging function, provides a hook to suppress or redirect log messages."""
     print(('\n' if prefix_newline else '') + '{0:.2f}'.format(time.time()) + ': ' + str(message))
 
+
+def _mkdir_p(path):
+    """
+    _mkdir_p: make directory for given path
+    """
+    if not path:
+        return
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
 class masurca_utils:
     MaSuRCA_VERSION = 'MaSuRCA-3.2.3'
     MaSuRCA_BIN = '/kb/module/' + MaSuRCA_VERSION + '/bin/masurca'
@@ -400,7 +415,7 @@ class masurca_utils:
         output_files = list()
 
         output_directory = os.path.join(self.proj_dir, str(uuid.uuid4()))
-        self._mkdir_p(output_directory)
+        _mkdir_p(output_directory)
         masurca_output = os.path.join(output_directory, 'masurca_output.zip')
         self.zip_folder(out_dir, masurca_output)
 
@@ -486,17 +501,3 @@ class masurca_utils:
                 return False
         return True
 
-
-    def _mkdir_p(path):
-        """
-        _mkdir_p: make directory for given path
-        """
-        if not path:
-            return
-        try:
-            os.makedirs(path)
-        except OSError as exc:
-            if exc.errno == errno.EEXIST and os.path.isdir(path):
-                pass
-            else:
-                raise

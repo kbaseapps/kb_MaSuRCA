@@ -31,6 +31,21 @@ def log(message, prefix_newline=False):
     print(('\n' if prefix_newline else '') + '{0:.2f}'.format(time.time()) + ': ' + str(message))
 
 
+def _mkdir_p(path):
+    """
+    _mkdir_p: make directory for given path
+    """
+    if not path:
+        return
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
+
 class MaSuRCA_Assembler(object):
     INVALID_WS_OBJ_NAME_RE = re.compile('[^\\w\\|._-]')
     INVALID_WS_NAME_RE = re.compile('[^\\w:._-]')
@@ -56,7 +71,7 @@ class MaSuRCA_Assembler(object):
         self.au = AssemblyUtil(self.callback_url)
 
         self.scratch = os.path.join(config['scratch'], str(uuid.uuid4()))
-        self._mkdir_p(self.scratch)
+        _mkdir_p(self.scratch)
 
         self.masurca_version = 'MaSuRCA-' + os.environ['M_VERSION']
         self.proj_dir = self.create_proj_dir(self.scratch)
@@ -136,17 +151,3 @@ class MaSuRCA_Assembler(object):
         # again, default to setting this to release
         return 'dev' #'release'
 
-
-    def _mkdir_p(path):
-        """
-        _mkdir_p: make directory for given path
-        """
-        if not path:
-            return
-        try:
-            os.makedirs(path)
-        except OSError as exc:
-            if exc.errno == errno.EEXIST and os.path.isdir(path):
-                pass
-            else:
-                raise
