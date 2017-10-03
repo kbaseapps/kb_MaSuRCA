@@ -110,8 +110,9 @@ class MaSuRCA_Assembler(object):
         }
 
         # 6. save the assembly to KBase if everything has gone well
-        contig_fa_file = 'CA/dedup.genome.scf.fasta' #'work1/superReadSequences.fasta' #'sj.cor.ext.reduced.fa'
-        if (assemble_ok == 0 and os.path.isfile(os.path.join(self.proj_dir, contig_fa_file))):
+        contig_fa_file = 'CA/dedup.genome.scf.fasta'
+        contig_fa_file = os.path.join(self.proj_dir, contig_fa_file)
+        if (assemble_ok == 0 and os.path.isfile(contig_fa_file)):
             self.m_utils.save_assembly(contig_fa_file, wsname, params[self.PARAM_IN_CS_NAME])
             report_name, report_ref = self.m_utils.generate_report(contig_fa_file, params, self.proj_dir, wsname)
             returnVal = {'report_name': report_name, 'report_ref': report_ref}
