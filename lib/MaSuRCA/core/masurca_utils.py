@@ -349,7 +349,7 @@ class masurca_utils:
         log('Generating and saving report')
 
         contig_file_with_path = os.path.join(out_dir, contig_file_name)
-        fasta_stats = self.load_statsi(contig_file_with_path)
+        fasta_stats = self.load_stats(contig_file_with_path)
         lengths = [fasta_stats[contig_id] for contig_id in fasta_stats]
 
         assembly_ref = params[self.PARAM_IN_WS] + '/' + params[self.PARAM_IN_CS_NAME]
