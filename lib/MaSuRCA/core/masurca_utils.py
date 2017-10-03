@@ -220,12 +220,12 @@ class masurca_utils:
         if os.path.isfile(asmbl_file):
             log("The assemble.sh file exists at {}\n".format(asmbl_file))
             f_dir, f_nm = os.path.split(asmbl_file)
-            a_cmd = ['source']
+            a_cmd = ['/bin/bash']
             a_cmd.append(asmbl_file)
             log("The working directory is supposed to be {}\n".format(f_dir))
             p = subprocess.Popen(a_cmd, cwd=f_dir, shell=False)
             exit_code = p.wait()
-            self.log('Return code: ' + str(exit_code))
+            log('Return code: ' + str(exit_code))
 
             if p.returncode != 0:
                 raise ValueError('Error running assemble.sh, return code: ' + str(p.returncode) + '\n')
