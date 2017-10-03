@@ -138,6 +138,9 @@ class masurca_utils:
                         if jp_reads_data[0].get('rev_file', None) is not None:
                             data_str += ' ' + jp_reads_data[0]['rev_file']
 
+                    if data_str == '': #no reads libraries are specified, no further actions
+                        return ''
+
                     #TODO adding the pacbio_reads and other_frg_file inputs if any
                     begin_patn1 = "DATA\n"
                     end_patn1 = "END\nPARAMETERS\n"
@@ -188,6 +191,9 @@ class masurca_utils:
                         param_str += 'DO_HOMOPOLYMER_TRIM=1'
                     else:
                         param_str += 'DO_HOMOPOLYMER_TRIM=0'
+
+            if param_str == '': #no parameters are specified, no further actions
+                return ''
 
             begin_patn2 = "PARAMETERS\n"
             end_patn2 = "END\n"
@@ -342,6 +348,7 @@ class masurca_utils:
                 raise
 
         #log('Downloaded reads data from KBase:\n' + pformat(reads))
+
         reads_data = []
         for ref in reads_refs:
             reads_name = reftoname[ref]

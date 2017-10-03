@@ -101,7 +101,10 @@ class MaSuRCA_Assembler(object):
             assemble_file = self.m_utils.generate_assemble_script(config_file)
 
         # 4. run the assemble.sh script to do the heavy-lifting
-        assemble_ok = self.m_utils.run_assemble(assemble_file)
+        if os.path.isfile(assemble_file):
+            assemble_ok = self.m_utils.run_assemble(assemble_file)
+        else:
+            assemble_ok = -1
 
         # 5. report the final results
         returnVal = {
@@ -113,6 +116,7 @@ class MaSuRCA_Assembler(object):
         ca_dir = os.path.join(self.proj_dir, 'CA')
         contig_fa_file = 'dedup.genome.scf.fasta'
         contig_fa_file = os.path.join(ca_dir, contig_fa_file)
+
         if (assemble_ok == 0 and os.path.isfile(contig_fa_file)):
             self.m_utils.save_assembly(contig_fa_file, wsname, params[self.PARAM_IN_CS_NAME])
             if params['create_report'] == 1:
