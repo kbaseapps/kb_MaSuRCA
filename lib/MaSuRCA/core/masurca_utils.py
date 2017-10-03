@@ -417,7 +417,7 @@ class masurca_utils:
         output_directory = os.path.join(self.proj_dir, str(uuid.uuid4()))
         _mkdir_p(output_directory)
         masurca_output = os.path.join(output_directory, 'masurca_output.zip')
-        self.zip_folder(out_dir, masurca_output)
+        self._zip_folder(out_dir, masurca_output)
 
         output_files.append({'path': masurca_output,
                              'name': os.path.basename(masurca_output),
