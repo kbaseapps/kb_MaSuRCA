@@ -103,8 +103,8 @@
         },
         {
             "id": "jp_stdev",
-            "optional": false,
-            "advanced": false,
+            "optional": true,
+            "advanced": true,
             "allow_multiple": false,
             "default_values": [ "200" ],
             "field_type": "text",
