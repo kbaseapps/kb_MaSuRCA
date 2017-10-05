@@ -3,10 +3,7 @@
 #
 name: MaSuRCA Assembler, Version 3.2.3 
 tooltip: |
-      <p>MaSuRCA consists of three main steps:
-      1. create the config.txt file</br>
-      2. run `masurca config.txt` to generate the assemble.sh script</br>
-      3. run assembler.sh to assemble the data</p>
+      MaSuRCA consists of three main steps:1.Create the config.txt file 2.Generate the assemble.sh 3. Assemble the reads
       
 screenshots: []
 
@@ -112,19 +109,19 @@ parameters :
             the standard deviation for defining reads in the config.txt file
     jp_prefix :
         ui-name : |
-            prefix for defining the reads
+            prefix for defining the jump reads
         short-hint : |
-            two-letter prefix for defining reads in the config.txt file
+            two-letter prefix for defining the jump reads in the config.txt file
     jp_mean :
         ui-name : |
-            mean for defining the reads
+            mean for defining the jump reads
         short-hint : |
-            the mean for defining reads in the config.txt file
+            the mean for defining the jump reads in the config.txt file
     jp_stdev :
         ui-name : |
-            standard deviation for defining the reads
+            standard deviation for defining the jump reads
         short-hint : |
-            the standard deviation for defining reads in the config.txt file
+            the standard deviation for defining the jump reads in the config.txt file
     reads_libraries :
         ui-name : |
             Reads to be assembled

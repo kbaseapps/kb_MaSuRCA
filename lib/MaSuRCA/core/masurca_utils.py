@@ -124,24 +124,33 @@ class masurca_utils:
                     data_str = ''
                     if pe_reads_data:
                         log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
-                        data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + str(params['pe_stdev']) + ' ' + pe_reads_data[0]['fwd_file']
-                        if pe_reads_data[0].get('rev_file', None) is not None:
-                            data_str += ' ' + pe_reads_data[0]['rev_file']
+                        for pe in pe_reads_data:
+                            if data_str != '':
+                                data_str += '\n'
+                            data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' +
+                                                str(params['pe_stdev']) + ' ' + pe['fwd_file']
+                            if pe.get('rev_file', None) is not None:
+                                data_str += ' ' + pe['rev_file']
+
                     if jp_reads_data:
                         if ('jp_mean' not in params or type(params['jp_mean']) != int):
                             params['jp_mean'] = 3600
                         if ('pe_stdev' not in params or type(params['jp_stdev']) != int):
                             params['pe_stdev'] = 200
-                        if data_str != '':
-                            data_str += '\n'
-                        data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' + str(params['jp_stdev']) + ' ' + jp_reads_data[0]['fwd_file']
-                        if jp_reads_data[0].get('rev_file', None) is not None:
-                            data_str += ' ' + jp_reads_data[0]['rev_file']
+                        for jp in jp_reads_data:
+                            if data_str != '':
+                                data_str += '\n'
+                            data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' +
+                                                str(params['jp_stdev']) + ' ' + jp['fwd_file']
+                            if jp.get('rev_file', None) is not None:
+                                data_str += ' ' + jp['rev_file']
 
                     if data_str == '': #no reads libraries are specified, no further actions
                         return ''
 
-                    #TODO adding the pacbio_reads and other_frg_file inputs if any
+                    #TODO adding the pacbio_reads and note that pcbio reads must be in a single fasta file!
+                    #For example: data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/aligned_reads.fasta'
+                    #TODO adding the other_frg_file inputs if any
                     begin_patn1 = "DATA\n"
                     end_patn1 = "END\nPARAMETERS\n"
                     config_with_data = self._replaceSectionText(config_template, begin_patn1, end_patn1, data_str)

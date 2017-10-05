@@ -14,7 +14,7 @@
             "id": "reads_libraries",
             "optional": false,
             "advanced": false,
-            "allow_multiple": false,
+            "allow_multiple": true,
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
@@ -25,7 +25,7 @@
             "id": "jump_libraries",
             "optional": true,
             "advanced": true,
-            "allow_multiple": false,
+            "allow_multiple": true,
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
@@ -103,8 +103,8 @@
         },
         {
             "id": "jp_stdev",
-            "optional": false,
-            "advanced": false,
+            "optional": true,
+            "advanced": true,
             "allow_multiple": false,
             "default_values": [ "200" ],
             "field_type": "text",
