@@ -127,7 +127,7 @@ class masurca_utils:
                         for pe in pe_reads_data:
                             if data_str != '':
                                 data_str += '\n'
-                            data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' +
+                            data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + \
                                                 str(params['pe_stdev']) + ' ' + pe['fwd_file']
                             if pe.get('rev_file', None) is not None:
                                 data_str += ' ' + pe['rev_file']
@@ -140,7 +140,7 @@ class masurca_utils:
                         for jp in jp_reads_data:
                             if data_str != '':
                                 data_str += '\n'
-                            data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' +
+                            data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' +\
                                                 str(params['jp_stdev']) + ' ' + jp['fwd_file']
                             if jp.get('rev_file', None) is not None:
                                 data_str += ' ' + jp['rev_file']
