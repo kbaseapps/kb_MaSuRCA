@@ -101,6 +101,16 @@ class masurca_utils:
         if params.get('create_report', None) is None:
             params['create_report'] = 0
 
+        #params["pe_ids"] = [ item['reads_id'] for item in params['reads_libaries'] ]
+        #params["pe_prefixes"] = [ item['reads_prefix'] for item in params['reads_libraries'] ]
+        #params["pe_means"] = [ item['reads_mean'] for item in params['reads_libaries'] ]
+        #params["pe_stdevs"] = [ item['reads_stdev'] for item in params['reads_libraries'] ]
+
+        #params["jp_ids"] = [ item['reads_id'] for item in params['jump_libaries'] ]
+        #params["jp_prefixes"] = [ item['reads_prefix'] for item in params['jump_libraries'] ]
+        #params["jp_means"] = [ item['reads_mean'] for item in params['jump_libaries'] ]
+        #params["jp_stdevs"] = [ item['reads_stdev'] for item in params['jump_libraries'] ]
+
         return params
 
     def construct_masurca_config(self, params):
@@ -124,10 +134,13 @@ class masurca_utils:
                     data_str = ''
                     if pe_reads_data:
                         log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
+                        i = 0
                         for pe in pe_reads_data:
+                            i++
                             if data_str != '':
                                 data_str += '\n'
-                            data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + \
+                            #data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + \
+                            data_str += 'PE= ' + 'p' + i + ' ' + str(params['pe_mean']) + ' ' + \
                                                 str(params['pe_stdev']) + ' ' + pe['fwd_file']
                             if pe.get('rev_file', None) is not None:
                                 data_str += ' ' + pe['rev_file']
@@ -137,10 +150,13 @@ class masurca_utils:
                             params['jp_mean'] = 3600
                         if ('pe_stdev' not in params or type(params['jp_stdev']) != int):
                             params['pe_stdev'] = 200
+                        j = 0
                         for jp in jp_reads_data:
+                            j++
                             if data_str != '':
                                 data_str += '\n'
-                            data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' +\
+                            #data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' +\
+                            data_str += 'JUMP= ' + 'j' + j + ' ' + str(params['jp_mean']) + ' ' +\
                                                 str(params['jp_stdev']) + ' ' + jp['fwd_file']
                             if jp.get('rev_file', None) is not None:
                                 data_str += ' ' + jp['rev_file']
@@ -303,12 +319,15 @@ class masurca_utils:
             return orig_txt
 
 
-    def _getKBReadsInfo(self, wsname, reads_refs):
+    def _getKBReadsInfo(self, params, reads_refs):
         """
         _getKBReadsInfo--from a set of given KBase reads refs, fetches the corresponding reads info
         with as deinterleaved fastq files and returns a list of reads data in the following structure:
         reads_data = {
                 'fwd_file': path_to_fastq_file,
+                'r_prefix': the two-letter prefix for the reads library,
+                'r_mean': the average reads length for the reads library,
+                'r_stdev': the standard deviation for the reads library,
                 'type': reads_type, #('interleaved', 'paired', or 'single'
                 'seq_tech': sequencing_tech,
                 'reads_ref': KBase object ref for downstream convenience,
@@ -316,6 +335,7 @@ class masurca_utils:
                 'rev_file': path_to_fastq_file, #only if paired end
         }
         """
+        wsname = params['workspace_name']
         obj_ids = []
         for r in reads_refs:
             obj_ids.append({'ref': r if '/' in r else (wsname + '/' + r)})
@@ -364,9 +384,12 @@ class masurca_utils:
             f = reads[ref]['files']
             seq_tech = reads[ref]['sequencing_tech']
             rds_info = {
+                'fwd_file': f['fwd'],
+                #'r_prefix': params[ref]['prefix'],
+                #'r_mean': params[ref]['mean'],
+                #'r_stdev': params[ref]['stdev'],
                 'reads_ref': ref,
                 'type': f['type'],
-                'fwd_file': f['fwd'],
                 'seq_tech': seq_tech,
                 'reads_name': reads_name
             }
