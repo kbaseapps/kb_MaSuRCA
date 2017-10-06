@@ -29,39 +29,39 @@ suggestions:
 #
 parameters :
     pe_id :
-        ui-name : Reads object id
+        ui-name : Reads object id<font color=red>*</font>
         short-hint : Reads libraries
     pe_prefix :
         ui-name : |
-            prefix for defining the reads
+            prefix for defining the reads<font color=red>*</font>
         short-hint : |
             two-letter prefix for defining reads in the config.txt file
     pe_mean :
         ui-name : |
-            mean for defining the reads
+            mean for defining the reads<font color=red>*</font>
         short-hint : |
             the mean for defining reads in the config.txt file
     pe_stdev :
         ui-name : |
-            standard deviation for defining the reads
+            standard deviation for defining the reads<font color=red>*</font>
         short-hint : |
             the standard deviation for defining reads in the config.txt file
     jp_id :
-        ui-name : Reads object id
+        ui-name : Reads object id<font color=red>*</font>
         short-hint : Reads libraries
     jp_prefix :
         ui-name : |
-            prefix for defining the jump reads
+            prefix for defining the jump reads<font color=red>*</font>
         short-hint : |
             two-letter prefix for defining the jump reads in the config.txt file
     jp_mean :
         ui-name : |
-            mean for defining the jump reads
+            mean for defining the jump reads<font color=red>*</font>
         short-hint : |
             the mean for defining the jump reads in the config.txt file
     jp_stdev :
         ui-name : |
-            standard deviation for defining the jump reads
+            standard deviation for defining the jump reads<font color=red>*</font>
         short-hint : |
             the standard deviation for defining the jump reads in the config.txt file
     pacbio_reads :
@@ -71,12 +71,12 @@ parameters :
         ui-name : Other FRG
         short-hint : must be converted to CABOG format FRG files         
     jf_size :
-        ui-name : jellyfish_size 
+        ui-name : jellyfish_size<font color=red>*</font>
         short-hint : |
             An integer for the mandatory jellyfish hash size
     output_contigset_name :
         ui-name : |
-            Output ContigSet
+            Output ContigSet Name<font color=red>*</font>
         short-hint : |
             The name for the resulting ContigSet will be saved in KBase
     graph_kmer_size :
@@ -129,7 +129,7 @@ parameters :
 parameter-groups :
     reads_libraries :
         ui-name : |
-            Reads libraries to be assembled
+            Reads libraries to be assembled<font color=red>*</font>
         short-hint : |
         long-hint  : |
     jump_libraries :
