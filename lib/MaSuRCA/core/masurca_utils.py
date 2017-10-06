@@ -134,7 +134,7 @@ class masurca_utils:
                                 data_str += '\n'
                             #data_str += 'PE= ' + pe['pe_prefix'] + ' ' + str(pe['pe_mean']) + ' ' + \
                                                 #str(pe['pe_stdev']) + ' ' + pe['fwd_file']
-                            data_str += 'PE= ' + 'p' + i + ' ' + str(params['pe_mean']) + ' ' + \
+                            data_str += 'PE= ' + 'p' + str(i) + ' ' + str(params['pe_mean']) + ' ' + \
                                                 str(params['pe_stdev']) + ' ' + pe['fwd_file']
                             if pe.get('rev_file', None) is not None:
                                 data_str += ' ' + pe['rev_file']
@@ -151,7 +151,7 @@ class masurca_utils:
                                 data_str += '\n'
                             #data_str += 'JUMP= ' + jp['jp_prefix'] + ' ' + str(jp['jp_mean']) + ' ' +\
                                                 #str(jp['jp_stdev']) + ' ' + jp['fwd_file']
-                            data_str += 'JUMP= ' + 'j' + j + ' ' + str(params['jp_mean']) + ' ' +\
+                            data_str += 'JUMP= ' + 'j' + str(j) + ' ' + str(params['jp_mean']) + ' ' +\
                                                 str(params['jp_stdev']) + ' ' + jp['fwd_file']
                             if jp.get('rev_file', None) is not None:
                                 data_str += ' ' + jp['rev_file']
@@ -355,7 +355,7 @@ class masurca_utils:
 				rds['pe_stdev'] = rds_lib['pe_stdev']
 			    else:
 				raise ValueError("Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
-	   else:
+	else:
 		raise ValueError("Parameter {} is required for reads {}".format('reads_libraries'))
 	return rds_data
 
