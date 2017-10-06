@@ -331,33 +331,33 @@ class masurca_utils:
         """
 	rds_params = copy.deepcopy(input_params)
 	wsname = rds_params[self.PARAM_IN_WS]
-	reads_refs = []
-	reads_data = []
+	rds_refs = []
+	rds_data = []
         # reads_libraries grouped params
         if 'reads_libraries' in rds_params and rds_params['reads_libraries'] != None:
 	    for rds_lib in rds_params['reads_libraries']:
-        	if 'pe_id' in rds_params['reads_libraries']:
-		    reads_refs.append(rds_lib['pe_id'])
-	    reads_data = self.getKBReadsInfo(wsname, reads_refs)
+        	if 'pe_id' in rds_lib:
+		    rds_refs.append(rds_lib['pe_id'])
+	    rds_data = self.getKBReadsInfo(wsname, rds_refs)
 
 	    for rds_lib in rds_params['reads_libraries']:
-		for rds in reads_data:
-		    if rds_params['pe_id'] == rds[reads_ref]:
-			    if ('pe_prefix' in rds_params['reads_libraries']:
-				rds['pe_prefix'] = rds_params['reads_libraries']['pe_prefix'][:2]
+		for rds in rds_data:
+		    if ('pe_id' in rds_lib and rds_lib['pe_id'] == rds[reads_ref]):
+			    if 'pe_prefix' in rds_lib:
+				rds['pe_prefix'] = rds_lib['pe_prefix'][:2]
 			    else:
 				raise ValueError("Parameter pe_prefix is required for reads {}".format(rds[reads_ref]))
-			    if ('pe_mean' in rds_params['reads_libraries']:
-				rds['pe_mean'] = rds_params['reads_libraries']['pe_mean']
+			    if 'pe_mean' in rds_lib:
+				rds['pe_mean'] = rds_lib['pe_mean']
 			    else:
 				raise ValueError("Parameter pe_mean is required for reads {}".format(rds[reads_ref]))
-			    if ('pe_stdev' in rds_params['reads_libraries']:
-				rds['pe_stdev'] = rds_params['reads_libraries']['pe_stdev']
+			    if 'pe_stdev' in rds_lib:
+				rds['pe_stdev'] = rds_lib['pe_stdev']
 			    else:
 				raise ValueError("Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
 	   else:
 		raise ValueError("Parameter {} is required for reads {}".format('reads_libraries'))
-	return reads_data
+	return rds_data
 
     def _getReadsInfo_JP(self, input_params):
         """
@@ -377,31 +377,32 @@ class masurca_utils:
         """
 	rds_params = copy.deepcopy(input_params)
 	wsname = rds_params[self.PARAM_IN_WS]
-	reads_refs = []
-	reads_data = []
+	rds_refs = []
+	rds_data = []
         # jump_libraries grouped params
         if 'jump_libraries' in rds_params and rds_params['jump_libraries'] != None:
 	    for rds_lib in rds_params['jump_libraries']:
-        	if 'jp_id' in rds_params['jump_libraries']:
-		    reads_refs.append(rds_lib['jp_id'])
-	    reads_data = self._getKBReadsInfo(wsname, reads_refs)
+        	if 'jp_id' in rds_lib:
+		    rds_refs.append(rds_lib['jp_id'])
+	    rds_data = self._getKBReadsInfo(wsname, rds_refs)
 
 	    for rds_lib in rds_params['jump_libraries']:
-		for rds in reads_data:
-		    if rds_params['jp_id'] == rds[reads_ref]):
-			    if ('jp_prefix' in rds_params['jump_libraries']:
-				rds['jp_prefix'] = rds_params['jump_libraries']['jp_prefix'][:2]
+		for rds in rds_data:
+		    if ('jp_id' in rds_lib and rds_lib['jp_id'] == rds[reads_ref]):
+			    if 'jp_prefix' in rds_lib:
+				rds['jp_prefix'] = rds_lib['jp_prefix'][:2]
 			    else:
 				raise ValueError("Parameter jp_prefix is required for reads {}".format(rds[reads_ref]))
-			    if ('jp_mean' in rds_params['jump_libraries']:
-				rds['jp_mean'] = rds_params['jump_libraries']['jp_mean']
+			    if 'jp_mean' in rds_lib:
+				rds['jp_mean'] = rds_lib['jp_mean']
 			    else:
 				raise ValueError("Parameter jp_mean is required for reads {}".format(rds[reads_ref]))
-			    if ('jp_stdev' in rds_params['jump_libraries']:
-				rds['jp_stdev'] = rds_params['jump_libraries']['jp_stdev']
+			    if 'jp_stdev' in rds_lib:
+				rds['jp_stdev'] = rds_lib['jp_stdev']
 			    else:
 				raise ValueError("Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
-	return reads_data
+	return rds_data
+
 
     def _getKBReadsInfo(self, wsname, reads_refs):
         """
