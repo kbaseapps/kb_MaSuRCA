@@ -45,7 +45,7 @@
         },
         {
             "id": "pe_prefix",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "pe" ],
@@ -56,7 +56,7 @@
         },
         {
             "id": "pe_mean",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "180" ],
@@ -68,7 +68,7 @@
         },
         {
             "id": "pe_stdev",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "20" ],
@@ -80,7 +80,7 @@
         },
         {
             "id": "jp_prefix",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "sh" ],
@@ -91,7 +91,7 @@
         },
         {
             "id": "jp_mean",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "3600" ],
@@ -103,7 +103,7 @@
         },
         {
             "id": "jp_stdev",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "200" ],
