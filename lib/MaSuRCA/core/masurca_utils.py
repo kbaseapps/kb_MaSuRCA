@@ -10,6 +10,7 @@ import subprocess
 from pprint import pprint, pformat
 import codecs
 import uuid
+import copy
 
 from MaSuRCA.core.Program_Runner import Program_Runner
 from Workspace.WorkspaceClient import Workspace as Workspace
@@ -100,17 +101,7 @@ class masurca_utils:
 
         if params.get('create_report', None) is None:
             params['create_report'] = 0
-
-        #params["pe_ids"] = [ item['reads_id'] for item in params['reads_libaries'] ]
-        #params["pe_prefixes"] = [ item['reads_prefix'] for item in params['reads_libraries'] ]
-        #params["pe_means"] = [ item['reads_mean'] for item in params['reads_libaries'] ]
-        #params["pe_stdevs"] = [ item['reads_stdev'] for item in params['reads_libraries'] ]
-
-        #params["jp_ids"] = [ item['reads_id'] for item in params['jump_libaries'] ]
-        #params["jp_prefixes"] = [ item['reads_prefix'] for item in params['jump_libraries'] ]
-        #params["jp_means"] = [ item['reads_mean'] for item in params['jump_libaries'] ]
-        #params["jp_stdevs"] = [ item['reads_stdev'] for item in params['jump_libraries'] ]
-
+	
         return params
 
     def construct_masurca_config(self, params):
@@ -119,9 +110,11 @@ class masurca_utils:
         config_file_path = os.path.join(self.proj_dir, 'config.txt')
 
         # STEP 2: retrieve the reads data from input parameter
+        #pe_reads_data = self._getReadsInfo_PE(params)
         pe_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_READS_LIBS])
         jp_reads_data = []
         if params.get(self.PARAM_IN_JUMP_LIBS, None) is not None:
+            #jp_reads_data = self._getReadsInfo_JP(params)
             jp_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_JUMP_LIBS])
 
         # STEP 3: construct and save the config.txt file for running masurca
@@ -136,10 +129,11 @@ class masurca_utils:
                         log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
                         i = 0
                         for pe in pe_reads_data:
-                            i++
+                            i += 1
                             if data_str != '':
                                 data_str += '\n'
-                            #data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + \
+                            #data_str += 'PE= ' + pe['pe_prefix'] + ' ' + str(pe['pe_mean']) + ' ' + \
+                                                #str(pe['pe_stdev']) + ' ' + pe['fwd_file']
                             data_str += 'PE= ' + 'p' + i + ' ' + str(params['pe_mean']) + ' ' + \
                                                 str(params['pe_stdev']) + ' ' + pe['fwd_file']
                             if pe.get('rev_file', None) is not None:
@@ -152,10 +146,11 @@ class masurca_utils:
                             params['pe_stdev'] = 200
                         j = 0
                         for jp in jp_reads_data:
-                            j++
+                            j += 1
                             if data_str != '':
                                 data_str += '\n'
-                            #data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' +\
+                            #data_str += 'JUMP= ' + jp['jp_prefix'] + ' ' + str(jp['jp_mean']) + ' ' +\
+                                                #str(jp['jp_stdev']) + ' ' + jp['fwd_file']
                             data_str += 'JUMP= ' + 'j' + j + ' ' + str(params['jp_mean']) + ' ' +\
                                                 str(params['jp_stdev']) + ' ' + jp['fwd_file']
                             if jp.get('rev_file', None) is not None:
@@ -318,16 +313,15 @@ class masurca_utils:
         else:
             return orig_txt
 
-
-    def _getKBReadsInfo(self, params, reads_refs):
+    def _getReadsInfo_PE(self, input_params):
         """
-        _getKBReadsInfo--from a set of given KBase reads refs, fetches the corresponding reads info
-        with as deinterleaved fastq files and returns a list of reads data in the following structure:
+        _getReadsInfo+PE--from a list of paired_readsParams structures fetches the corresponding reads info with the paired_readsParams[pe_id]
+        returns a list of reads data in the following structure:
         reads_data = {
                 'fwd_file': path_to_fastq_file,
-                'r_prefix': the two-letter prefix for the reads library,
-                'r_mean': the average reads length for the reads library,
-                'r_stdev': the standard deviation for the reads library,
+                'pe_prefix': the two-letter prefix for the reads library,
+                'pe_mean': the average reads length for the reads library,
+                'pe_stdev': the standard deviation for the reads library,
                 'type': reads_type, #('interleaved', 'paired', or 'single'
                 'seq_tech': sequencing_tech,
                 'reads_ref': KBase object ref for downstream convenience,
@@ -335,7 +329,93 @@ class masurca_utils:
                 'rev_file': path_to_fastq_file, #only if paired end
         }
         """
-        wsname = params['workspace_name']
+	rds_params = copy.deepcopy(input_params)
+	wsname = rds_params[self.PARAM_IN_WS]
+	reads_refs = []
+	reads_data = []
+        # reads_libraries grouped params
+        if 'reads_libraries' in rds_params and rds_params['reads_libraries'] != None:
+	    for rds_lib in rds_params['reads_libraries']:
+        	if 'pe_id' in rds_params['reads_libraries']:
+		    reads_refs.append(rds_lib['pe_id'])
+	    reads_data = self.getKBReadsInfo(wsname, reads_refs)
+
+	    for rds_lib in rds_params['reads_libraries']:
+		for rds in reads_data:
+		    if rds_params['pe_id'] == rds[reads_ref]:
+			    if ('pe_prefix' in rds_params['reads_libraries']:
+				rds['pe_prefix'] = rds_params['reads_libraries']['pe_prefix'][:2]
+			    else:
+				raise ValueError("Parameter pe_prefix is required for reads {}".format(rds[reads_ref]))
+			    if ('pe_mean' in rds_params['reads_libraries']:
+				rds['pe_mean'] = rds_params['reads_libraries']['pe_mean']
+			    else:
+				raise ValueError("Parameter pe_mean is required for reads {}".format(rds[reads_ref]))
+			    if ('pe_stdev' in rds_params['reads_libraries']:
+				rds['pe_stdev'] = rds_params['reads_libraries']['pe_stdev']
+			    else:
+				raise ValueError("Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
+	   else:
+		raise ValueError("Parameter {} is required for reads {}".format('reads_libraries'))
+	return reads_data
+
+    def _getReadsInfo_JP(self, input_params):
+        """
+        _getReadsInfo_JP--from a list of jump_readsParams structures fetches the corresponding reads info with the paired_readsParams[pe_id]
+        returns a list of reads data in the following structure:
+        reads_data = {
+                'fwd_file': path_to_fastq_file,
+                'jp_prefix': the two-letter prefix for the reads library,
+                'jp_mean': the average reads length for the reads library,
+                'jp_stdev': the standard deviation for the reads library,
+                'type': reads_type, #('interleaved', 'paired', or 'single'
+                'seq_tech': sequencing_tech,
+                'reads_ref': KBase object ref for downstream convenience,
+                'reads_name': KBase object name for downstream convenience,
+                'rev_file': path_to_fastq_file, #only if paired end
+        }
+        """
+	rds_params = copy.deepcopy(input_params)
+	wsname = rds_params[self.PARAM_IN_WS]
+	reads_refs = []
+	reads_data = []
+        # jump_libraries grouped params
+        if 'jump_libraries' in rds_params and rds_params['jump_libraries'] != None:
+	    for rds_lib in rds_params['jump_libraries']:
+        	if 'jp_id' in rds_params['jump_libraries']:
+		    reads_refs.append(rds_lib['jp_id'])
+	    reads_data = self._getKBReadsInfo(wsname, reads_refs)
+
+	    for rds_lib in rds_params['jump_libraries']:
+		for rds in reads_data:
+		    if rds_params['jp_id'] == rds[reads_ref]):
+			    if ('jp_prefix' in rds_params['jump_libraries']:
+				rds['jp_prefix'] = rds_params['jump_libraries']['jp_prefix'][:2]
+			    else:
+				raise ValueError("Parameter jp_prefix is required for reads {}".format(rds[reads_ref]))
+			    if ('jp_mean' in rds_params['jump_libraries']:
+				rds['jp_mean'] = rds_params['jump_libraries']['jp_mean']
+			    else:
+				raise ValueError("Parameter jp_mean is required for reads {}".format(rds[reads_ref]))
+			    if ('jp_stdev' in rds_params['jump_libraries']:
+				rds['jp_stdev'] = rds_params['jump_libraries']['jp_stdev']
+			    else:
+				raise ValueError("Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
+	return reads_data
+
+    def _getKBReadsInfo(self, wsname, reads_refs):
+        """
+        _getKBReadsInfo--from a set of given KBase reads refs, fetches the corresponding reads info
+        with as deinterleaved fastq files and returns a list of reads data in the following structure:
+        reads_data = {
+                'fwd_file': path_to_fastq_file,
+                'type': reads_type, #('interleaved', 'paired', or 'single'
+                'seq_tech': sequencing_tech,
+                'reads_ref': KBase object ref for downstream convenience,
+                'reads_name': KBase object name for downstream convenience,
+                'rev_file': path_to_fastq_file, #only if paired end
+        }
+        """
         obj_ids = []
         for r in reads_refs:
             obj_ids.append({'ref': r if '/' in r else (wsname + '/' + r)})

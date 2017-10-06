@@ -103,12 +103,12 @@ class MaSuRCATest(unittest.TestCase):
         if hasattr(self.__class__, 'pairedEndLibInfo'):
             return self.__class__.pairedEndLibInfo
         # 1) upload files to shock
-        shared_dir = "/kb/module/work/tmp"
+        #shared_dir = "/kb/module/work/tmp"
         forward_data_file = '../test/testReads/small.forward.fq'
-        forward_file = os.path.join(shared_dir, os.path.basename(forward_data_file))
+        forward_file = os.path.join(self.scratch, os.path.basename(forward_data_file))
         shutil.copy(forward_data_file, forward_file)
         reverse_data_file = '../test/testReads/small.reverse.fq'
-        reverse_file = os.path.join(shared_dir, os.path.basename(reverse_data_file))
+        reverse_file = os.path.join(self.scratch, os.path.basename(reverse_data_file))
         shutil.copy(reverse_data_file, reverse_file)
 
         ru = ReadsUtils(os.environ['SDK_CALLBACK_URL'])
@@ -147,10 +147,12 @@ class MaSuRCATest(unittest.TestCase):
     def test_run_masurca(self):
         # First load a test FASTA file as an KBase Assembly
         se_lib_ref = self.loadSEReads(os.path.join('../test/testReads', 'small.forward.fq'))
-        pe_lib_ref = self.loadPairedEndReads()
+        pe_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'rhodo.art.q10.PE.reads.fastq'))
+        pe_lib_ref1 = self.loadPairedEndReads()
         m_params = {
                 'workspace_name': self.getWsName(),
-                'reads_libraries': [pe_lib_ref],
+                'reads_libraries': [pe_lib_ref1, pe_lib_ref2],
+                #'jump_libraries': [se_lib_ref],
                 "jf_size": 100000000,
                 "pe_prefix": "pe",
                 "pe_mean": 180,
