@@ -23,7 +23,7 @@
         },
         {
             "id": "pe_id",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "" ],
@@ -34,7 +34,7 @@
         },
         {
             "id": "jp_id",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "" ],
