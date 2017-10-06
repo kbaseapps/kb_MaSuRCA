@@ -29,6 +29,22 @@ module kb_MaSuRCA {
        KBaseAssembly or KBaseFile type.
     */
     typedef string read_lib;
+       
+    /* parameter groups
+    */
+    typedef structure {
+        obj_ref pe_id;
+        string pe_prefix;
+        int pe_mean;
+        int pe_stdev;
+    } paired_readsParams;
+
+    typedef structure {
+        obj_ref jp_id;
+        string jp_prefix;
+        int jp_mean;
+        int jp_stdev;
+    } jump_readsParams;
 
     /* 
         Arguments for run_masurca
@@ -79,13 +95,15 @@ module kb_MaSuRCA {
         string workspace_name;
         int num_threads;
         int jf_size;
-        list<read_lib> reads_libraries; 
+        list<read_lib> reads_libraries;
+        #list<paired_readsParams> reads_libraries;
         string pe_prefix;
         int pe_mean;
         int pe_stdev;
        
         read_lib reads_id; 
         list<read_lib> jump_libraries;
+        #list<jump_readsParams> jump_libraries;
         string jp_prefix;
         int jp_mean;
         int jp_stdev;
