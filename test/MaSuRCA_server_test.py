@@ -173,7 +173,7 @@ class MaSuRCATest(unittest.TestCase):
             "close_gaps": 0,
             "soap_assembly": 0,
             "do_homopolymer_trim": 0,
-            "kmer_count_threshold": 1
+            "kmer_count_threshold": 1,
             "num_threads": 2,
             "create_report": 1
         }
