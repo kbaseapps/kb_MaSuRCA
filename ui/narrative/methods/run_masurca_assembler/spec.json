@@ -293,40 +293,6 @@
                     "target_property": "jump_libraries"
                 },
                 {
-                    "input_parameter": "pe_id",
-                    "target_property": "pe_id",
-                    "target_type_transform": "resolved-ref"
-                },
-                {
-                    "input_parameter": "pe_prefix",
-                    "target_property": "pe_prefix"
-                },
-                {
-                    "input_parameter": "pe_mean",
-                    "target_property": "pe_mean"
-                },
-                {
-                    "input_parameter": "pe_stdev",
-                    "target_property": "pe_stdev"
-                },
-                {
-                    "input_parameter": "jp_id",
-                    "target_property": "jp_id",
-                    "target_type_transform": "resolved-ref"
-                },
-                {
-                    "input_parameter": "jp_prefix",
-                    "target_property": "jp_prefix"
-                },
-                {
-                    "input_parameter": "jp_mean",
-                    "target_property": "jp_mean"
-                },
-                {
-                    "input_parameter": "jp_stdev",
-                    "target_property": "jp_stdev"
-                },
-                {
                     "input_parameter": "pacbio_reads",
                     "target_property": "pacbio_reads",
                     "target_type_transform": "resolved-ref"
