@@ -435,7 +435,7 @@ class masurca_utils:
 
             for rds_lib in rds_params['reads_libraries']:
 		for rds in rds_data:
-                    if ('pe_id' in rds_lib and rds_lib['pe_id'] == rds[reads_ref]):
+                    if ('pe_id' in rds_lib and rds_lib['pe_id'] == rds['reads_ref']):
                         if 'pe_prefix' in rds_lib:
                             rds['pe_prefix'] = rds_lib['pe_prefix'][:2]
                         else:
@@ -481,7 +481,7 @@ class masurca_utils:
 
             for rds_lib in rds_params['jump_libraries']:
 		for rds in rds_data:
-                    if ('jp_id' in rds_lib and rds_lib['jp_id'] == rds[reads_ref]):
+                    if ('jp_id' in rds_lib and rds_lib['jp_id'] == rds['reads_ref']):
 			if 'jp_prefix' in rds_lib:
                             rds['jp_prefix'] = rds_lib['jp_prefix'][:2]
 			else:
