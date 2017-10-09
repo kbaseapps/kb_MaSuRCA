@@ -274,7 +274,7 @@
         "service-mapping": {
             "url": "",
             "name":"kb_MaSuRCA",
-            "method": "run_masurca",
+            "method": "run_masurca_assembler",
             "input_mapping": [
                 {
                     "narrative_system_variable": "workspace",
