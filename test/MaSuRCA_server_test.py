@@ -178,7 +178,7 @@ class MaSuRCATest(unittest.TestCase):
             "create_report": 1
         }
         # Second, call your implementation
-        ret = self.getImpl().run_masurca(self.getContext(), m_params)
+        ret = self.getImpl().run_masurca_assembler(self.getContext(), m_params)
 
         # Validate the returned data
         #self.assertEqual(ret[0]['n_initial_contigs'], 3)
