@@ -101,7 +101,7 @@ class masurca_utils:
 
         if params.get('create_report', None) is None:
             params['create_report'] = 0
-	
+
         return params
 
 
@@ -164,21 +164,21 @@ class masurca_utils:
                     #log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
 
             # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
-	    param_str = self._get_parameters_portion(params)
+            param_str = self._get_parameters_portion(params)
 
-	    if param_str == '': #no parameters are specified, no further actions
+            if param_str == '': #no parameters are specified, no further actions
 		return ''
 
-	    previous_config = ''
+            previous_config = ''
             with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
                 previous_config = previous_config_file.read()
-	    
-	    begin_patn2 = "PARAMETERS\n"
-	    end_patn2 = "END\n"
-	    final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
-	    log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(final_config.encode('utf-8').decode('utf-8'), config_file_path))
 
-	    with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
+            begin_patn2 = "PARAMETERS\n"
+            end_patn2 = "END\n"
+            final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
+            log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(final_config.encode('utf-8').decode('utf-8'), config_file_path))
+
+            with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
 		config_file.write(final_config)
         except IOError as ioerr:
             log('Creation of the config.txt file raised error:\n')
@@ -216,17 +216,17 @@ class masurca_utils:
                     config_file.write(config_with_data)
 
             # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
-	    param_str = self._get_parameters_portion(params)
-	    if param_str == '': #no parameters are specified, no further actions
+            param_str = self._get_parameters_portion(params)
+            if param_str == '': #no parameters are specified, no further actions
 		return ''
 
-	    previous_config = ''
+            previous_config = ''
             with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
                 previous_config = previous_config_file.read()
 
-	    begin_patn2 = "PARAMETERS\n"
-	    end_patn2 = "END\n"
-	    final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
+            begin_patn2 = "PARAMETERS\n"
+            end_patn2 = "END\n"
+            final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
             log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(final_config.encode('utf-8').decode('utf-8'), config_file_path))
 
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
@@ -241,36 +241,36 @@ class masurca_utils:
 
     def _get_data_portion(self, pe_reads_data, jp_reads_data):
 	"""
-	build the 'DATA...END' portion for the config.txt file 
+	build the 'DATA...END' portion for the config.txt file
 	"""
 	data_str = ''
 	if pe_reads_data:
-	    log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
-	    for pe in pe_reads_data:
+            log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
+            for pe in pe_reads_data:
 		if data_str != '':
-		    data_str += '\n'
-	        data_str += 'PE= ' + pe['pe_prefix'] + ' ' + str(pe['pe_mean']) + ' ' + \
+                    data_str += '\n'
+                data_str += 'PE= ' + pe['pe_prefix'] + ' ' + str(pe['pe_mean']) + ' ' + \
 					str(pe['pe_stdev']) + ' ' + pe['fwd_file']
 		if pe.get('rev_file', None) is not None:
-		    data_str += ' ' + pe['rev_file']
+                    data_str += ' ' + pe['rev_file']
 
 	if jp_reads_data:
-	    log('JUMP reads data details:\n{}'.format(json.dumps(jp_reads_data, indent=1)))
-	    if ('jp_mean' not in params or type(params['jp_mean']) != int):
+            log('JUMP reads data details:\n{}'.format(json.dumps(jp_reads_data, indent=1)))
+            if ('jp_mean' not in params or type(params['jp_mean']) != int):
 		params['jp_mean'] = 3600
-	    if ('pe_stdev' not in params or type(params['jp_stdev']) != int):
+            if ('pe_stdev' not in params or type(params['jp_stdev']) != int):
 		params['pe_stdev'] = 200
-	    for jp in jp_reads_data:
+            for jp in jp_reads_data:
 		if data_str != '':
-		    data_str += '\n'
+                    data_str += '\n'
 		data_str += 'JUMP= ' + jp['jp_prefix'] + ' ' + str(jp['jp_mean']) + ' ' + \
 					str(jp['jp_stdev']) + ' ' + jp['fwd_file']
 		if jp.get('rev_file', None) is not None:
-		    data_str += ' ' + jp['rev_file']
+                    data_str += ' ' + jp['rev_file']
 
-	    #TODO adding the pacbio_reads and note that pcbio reads must be in a single fasta file!
-	    #For example: data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/aligned_reads.fasta'
-	    #TODO adding the other_frg_file inputs if any
+        #TODO adding the pacbio_reads and note that pcbio reads must be in a single fasta file!
+	#For example: data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/aligned_reads.fasta'
+	#TODO adding the other_frg_file inputs if any
 	return data_str
 
 
@@ -288,30 +288,30 @@ class masurca_utils:
                 if param_str != '':
                     param_str += '\n'
                 param_str += 'GRAPH_KMER_SIZE=auto'
- 	if params.get('use_linking_mates', None) is not None:
+        if params.get('use_linking_mates', None) is not None:
                 if param_str != '':
                     param_str += '\n'
                 if params['use_linking_mates'] == 1:
                     param_str += 'USE_LINKING_MATES=1'
                 else:
                     param_str += 'USE_LINKING_MATES=0'
- 	if params.get('limit_jump_coverage', None) is not None:
+        if params.get('limit_jump_coverage', None) is not None:
                 if param_str != '':
                    param_str += '\n'
                 param_str += 'LIMIT_JUMP_COVERAGE = ' + str(params['limit_jump_coverage'])
- 	if params.get('cgwErrorRate', None) is not None:
+        if params.get('cgwErrorRate', None) is not None:
                 if param_str != '':
                     param_str += '\n'
                 param_str += 'CA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
- 	if params.get('num_threads', None) is not None:
+        if params.get('num_threads', None) is not None:
                 if param_str != '':
                     param_str += '\n'
                 param_str += 'NUM_THREADS=' + str(params['num_threads'])
- 	if params.get('jf_size', None) is not None:
+        if params.get('jf_size', None) is not None:
                 if param_str != '':
                     param_str += '\n'
                 param_str += 'JF_SIZE=' + str(params['jf_size'])
- 	if params.get('do_homopolymer_trim', None) is not None:
+        if params.get('do_homopolymer_trim', None) is not None:
                 if param_str != '':
                     param_str += '\n'
                 if params['do_homopolymer_trim'] == 1:
@@ -408,7 +408,7 @@ class masurca_utils:
 
     def _getReadsInfo_PE(self, input_params):
         """
-        _getReadsInfo+PE--from a list of paired_readsParams structures fetches the corresponding reads info with the paired_readsParams[pe_id]
+        _getReadsInfo_PE--from a list of paired_readsParams structures fetches the corresponding reads info with the paired_readsParams[pe_id]
         returns a list of reads data in the following structure:
         reads_data = {
                 'fwd_file': path_to_fastq_file,
