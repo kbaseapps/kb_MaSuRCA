@@ -96,14 +96,11 @@ module kb_MaSuRCA {
         int num_threads;
         int jf_size;
         list<read_lib> reads_libraries;
-        /*list<paired_readsParams> reads_libraries;*/
         string pe_prefix;
         int pe_mean;
         int pe_stdev;
-       
-        read_lib reads_id; 
+
         list<read_lib> jump_libraries;
-        /*list<jump_readsParams> jump_libraries;*/
         string jp_prefix;
         int jp_mean;
         int jp_stdev;
@@ -120,9 +117,31 @@ module kb_MaSuRCA {
 
         string output_contigset_name;
         bool create_report;
-    } masurcaParams;
-    
-    /* Output parameter items for run_masurca
+    } masurcaParams;      
+
+    typedef structure {
+        string workspace_name;
+        int num_threads;
+        int jf_size;
+        list<paired_readsParams> reads_libraries;    
+        list<jump_readsParams> jump_libraries;
+       
+        read_lib pacbio_reads;
+        string other_frg_file;   
+        string graph_kmer_size;
+        bool use_linking_mates;
+        int limit_jump_coverage;
+        float cgwErrorRate;
+        int kmer_count_threshold;
+        bool close_gaps;
+        bool soap_assembly;
+        bool do_homopolymer_trim;
+
+        string output_contigset_name;
+        bool create_report;
+    } masurcaAssemblerParams;
+           
+    /* Output parameter items for run_masurca and run_masurca_assembler
 
     report_name - the name of the KBaseReport.Report workspace object.
     report_ref - the workspace reference of the report.
@@ -137,4 +156,9 @@ module kb_MaSuRCA {
         Definition of run_masurca
      */
     funcdef run_masurca(masurcaParams params) returns (masurcaResults output) authentication required;
+    
+    /* 
+        Definition of run_masurca_assembler
+     */
+    funcdef run_masurca_assembler(masurcaAssemblerParams params) returns (masurcaResults output) authentication required;
 };
