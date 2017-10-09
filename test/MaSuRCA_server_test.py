@@ -140,10 +140,54 @@ class MaSuRCATest(unittest.TestCase):
         #self.__class__.reads_ref = reads_ref
         return reads_ref
 
+    # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
+    # Uncomment to skip this test
+    # @unittest.skip("skipped test_run_masurca_assembler")
+    def test_run_masurca_assembler(self):
+        # First load a test FASTA file as an KBase Assembly
+        se_lib_ref = self.loadSEReads(os.path.join('../test/testReads', 'small.forward.fq'))
+        pe_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'rhodo.art.q10.PE.reads.fastq'))
+        pe_lib_ref1 = self.loadPairedEndReads()
+        m_params =     {
+            'workspace_name': self.getWsName(),
+            "jf_size": 100000000,
+            "reads_libraries": [{
+                "pe_id": pe_lib_ref1,
+                "pe_prefix": "p1",
+                "pe_mean": 180,
+                "pe_stdev": 20
+            }, {
+                "pe_id": pe_lib_ref2,
+                "pe_prefix": "p2",
+                "pe_mean": 180,
+                "pe_stdev": 20
+            }],
+            "jump_libraries": [],
+            "pacbio_reads": None,
+            "other_frg_file": "",
+            "output_contigset_name": "TestGroupmasurca.contigs",
+            "graph_kmer_size": None,
+            "use_linking_mates": 1,
+            "limit_jump_coverage": 60,
+            "cgwErrorRate": 0.25,
+            "close_gaps": 0,
+            "soap_assembly": 0,
+            "do_homopolymer_trim": 0,
+            "kmer_count_threshold": 1
+            "num_threads": 2,
+            "create_report": 1
+        }
+        # Second, call your implementation
+        ret = self.getImpl().run_masurca(self.getContext(), m_params)
+
+        # Validate the returned data
+        #self.assertEqual(ret[0]['n_initial_contigs'], 3)
+        #self.assertEqual(ret[0]['n_contigs_removed'], 1)
+        #self.assertEqual(ret[0]['n_contigs_remaining'], 2)
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     # Uncomment to skip this test
-    # @unittest.skip("skipped test_run_masurca")
+    @unittest.skip("skipped test_run_masurca")
     def test_run_masurca(self):
         # First load a test FASTA file as an KBase Assembly
         se_lib_ref = self.loadSEReads(os.path.join('../test/testReads', 'small.forward.fq'))
