@@ -87,6 +87,45 @@ class MaSuRCA_Assembler(object):
         pass
 
 
+    def run_masurca_app2(self, params):
+        # 1. validate & process the input parameters
+        validated_params = self.m_utils.validate_params(params)
+
+        wsname = params['workspace_name']
+
+        # 2. create the configuration file 
+        config_file = self.m_utils.construct_masurca_assembler_cfg(validated_params)
+
+        # 3. run masurca against the configuration file to generate the assemble.sh script 
+        if os.path.isfile(config_file):
+            assemble_file = self.m_utils.generate_assemble_script(config_file)
+
+        # 4. run the assemble.sh script to do the heavy-lifting
+        if os.path.isfile(assemble_file):
+            assemble_ok = self.m_utils.run_assemble(assemble_file)
+        else:
+            assemble_ok = -1
+
+        # 5. report the final results
+        returnVal = {
+            "report_ref": None,
+            "report_name": None
+        }
+
+        # 6. save the assembly to KBase and, if everything has gone well, create a report
+        ca_dir = os.path.join(self.proj_dir, 'CA')
+        contig_fa_file = 'dedup.genome.scf.fasta'
+        contig_fa_file = os.path.join(ca_dir, contig_fa_file)
+
+        if (assemble_ok == 0 and os.path.isfile(contig_fa_file)):
+            self.m_utils.save_assembly(contig_fa_file, wsname, params[self.PARAM_IN_CS_NAME])
+            if params['create_report'] == 1:
+                report_name, report_ref = self.m_utils.generate_report(contig_fa_file, params, ca_dir, wsname)
+                returnVal = {'report_name': report_name, 'report_ref': report_ref}
+        else:
+            log("run_assemble process failed.")
+
+        return returnVal
     def run_masurca_app(self, params):
         # 1. validate & process the input parameters
         validated_params = self.m_utils.validate_params(params)

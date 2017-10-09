@@ -195,6 +195,15 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
         # ctx is the context object
         # return variables are: output
         #BEGIN run_masurca_assembler
+        self.log('Running run_masurca_assembler with params:\n{}'.format(json.dumps(params, indent=1)))
+
+        for key, value in params.iteritems():
+            if isinstance(value, basestring):
+                params[key] = value.strip()
+
+        masurca_assembler = MaSuRCA_Assembler(self.config, ctx.provenance())
+
+        output = masurca_assembler.run_masurca_app2(params)
         #END run_masurca_assembler
 
         # At some point might do deeper type checking...
