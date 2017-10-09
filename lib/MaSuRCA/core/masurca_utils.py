@@ -428,26 +428,26 @@ class masurca_utils:
 	rds_data = []
         # reads_libraries grouped params
         if 'reads_libraries' in rds_params and rds_params['reads_libraries'] != None:
-	    for rds_lib in rds_params['reads_libraries']:
-        	if 'pe_id' in rds_lib:
-		    rds_refs.append(rds_lib['pe_id'])
-	    rds_data = self.getKBReadsInfo(wsname, rds_refs)
+            for rds_lib in rds_params['reads_libraries']:
+                if 'pe_id' in rds_lib:
+                    rds_refs.append(rds_lib['pe_id'])
+            rds_data = self._getKBReadsInfo(wsname, rds_refs)
 
-	    for rds_lib in rds_params['reads_libraries']:
+            for rds_lib in rds_params['reads_libraries']:
 		for rds in rds_data:
-		    if ('pe_id' in rds_lib and rds_lib['pe_id'] == rds[reads_ref]):
-			    if 'pe_prefix' in rds_lib:
-				rds['pe_prefix'] = rds_lib['pe_prefix'][:2]
-			    else:
-				raise ValueError("Parameter pe_prefix is required for reads {}".format(rds[reads_ref]))
-			    if 'pe_mean' in rds_lib:
-				rds['pe_mean'] = rds_lib['pe_mean']
-			    else:
-				raise ValueError("Parameter pe_mean is required for reads {}".format(rds[reads_ref]))
-			    if 'pe_stdev' in rds_lib:
-				rds['pe_stdev'] = rds_lib['pe_stdev']
-			    else:
-				raise ValueError("Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
+                    if ('pe_id' in rds_lib and rds_lib['pe_id'] == rds[reads_ref]):
+                        if 'pe_prefix' in rds_lib:
+                            rds['pe_prefix'] = rds_lib['pe_prefix'][:2]
+                        else:
+                            raise ValueError("Parameter pe_prefix is required for reads {}".format(rds[reads_ref]))
+                        if 'pe_mean' in rds_lib:
+                            rds['pe_mean'] = rds_lib['pe_mean']
+			else:
+                            raise ValueError("Parameter pe_mean is required for reads {}".format(rds[reads_ref]))
+			if 'pe_stdev' in rds_lib:
+                            rds['pe_stdev'] = rds_lib['pe_stdev']
+			else:
+                            raise ValueError("Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
 	else:
 		raise ValueError("Parameter {} is required for reads {}".format('reads_libraries'))
 	return rds_data
@@ -474,26 +474,26 @@ class masurca_utils:
 	rds_data = []
         # jump_libraries grouped params
         if 'jump_libraries' in rds_params and rds_params['jump_libraries'] != None:
-	    for rds_lib in rds_params['jump_libraries']:
-        	if 'jp_id' in rds_lib:
-		    rds_refs.append(rds_lib['jp_id'])
-	    rds_data = self._getKBReadsInfo(wsname, rds_refs)
+            for rds_lib in rds_params['jump_libraries']:
+                if 'jp_id' in rds_lib:
+                    rds_refs.append(rds_lib['jp_id'])
+            rds_data = self._getKBReadsInfo(wsname, rds_refs)
 
-	    for rds_lib in rds_params['jump_libraries']:
+            for rds_lib in rds_params['jump_libraries']:
 		for rds in rds_data:
-		    if ('jp_id' in rds_lib and rds_lib['jp_id'] == rds[reads_ref]):
-			    if 'jp_prefix' in rds_lib:
-				rds['jp_prefix'] = rds_lib['jp_prefix'][:2]
-			    else:
-				raise ValueError("Parameter jp_prefix is required for reads {}".format(rds[reads_ref]))
-			    if 'jp_mean' in rds_lib:
-				rds['jp_mean'] = rds_lib['jp_mean']
-			    else:
-				raise ValueError("Parameter jp_mean is required for reads {}".format(rds[reads_ref]))
-			    if 'jp_stdev' in rds_lib:
-				rds['jp_stdev'] = rds_lib['jp_stdev']
-			    else:
-				raise ValueError("Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
+                    if ('jp_id' in rds_lib and rds_lib['jp_id'] == rds[reads_ref]):
+			if 'jp_prefix' in rds_lib:
+                            rds['jp_prefix'] = rds_lib['jp_prefix'][:2]
+			else:
+                            raise ValueError("Parameter jp_prefix is required for reads {}".format(rds[reads_ref]))
+			if 'jp_mean' in rds_lib:
+                            rds['jp_mean'] = rds_lib['jp_mean']
+			else:
+                            raise ValueError("Parameter jp_mean is required for reads {}".format(rds[reads_ref]))
+			if 'jp_stdev' in rds_lib:
+                            rds['jp_stdev'] = rds_lib['jp_stdev']
+			else:
+                            raise ValueError("Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
 	return rds_data
 
 
