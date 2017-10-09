@@ -35,7 +35,7 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
     ######################################### noqa
     VERSION = "0.0.3"
     GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA"
-    GIT_COMMIT_HASH = "81fabc7b74acd951e80a0036cd7ee367f96ca87c"
+    GIT_COMMIT_HASH = "5cad119b762aec50f77faad135285ede036def59"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
@@ -111,33 +111,30 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
            SingleEndLibrary or PairedEndLibrary file, whether of the
            KBaseAssembly or KBaseFile type.), parameter "pe_prefix" of
            String, parameter "pe_mean" of Long, parameter "pe_stdev" of Long,
-           parameter "reads_id" of type "read_lib" (The workspace object name
-           of a SingleEndLibrary or PairedEndLibrary file, whether of the
-           KBaseAssembly or KBaseFile type.), parameter "jump_libraries" of
-           list of type "read_lib" (The workspace object name of a
-           SingleEndLibrary or PairedEndLibrary file, whether of the
-           KBaseAssembly or KBaseFile type.), parameter "jp_prefix" of
-           String, parameter "jp_mean" of Long, parameter "jp_stdev" of Long,
-           parameter "pacbio_reads" of type "read_lib" (The workspace object
-           name of a SingleEndLibrary or PairedEndLibrary file, whether of
-           the KBaseAssembly or KBaseFile type.), parameter "other_frg_file"
-           of String, parameter "graph_kmer_size" of String, parameter
-           "use_linking_mates" of type "bool" (A boolean - 0 for false, 1 for
-           true. @range (0, 1)), parameter "limit_jump_coverage" of Long,
-           parameter "cgwErrorRate" of Double, parameter
-           "kmer_count_threshold" of Long, parameter "close_gaps" of type
+           parameter "jump_libraries" of list of type "read_lib" (The
+           workspace object name of a SingleEndLibrary or PairedEndLibrary
+           file, whether of the KBaseAssembly or KBaseFile type.), parameter
+           "jp_prefix" of String, parameter "jp_mean" of Long, parameter
+           "jp_stdev" of Long, parameter "pacbio_reads" of type "read_lib"
+           (The workspace object name of a SingleEndLibrary or
+           PairedEndLibrary file, whether of the KBaseAssembly or KBaseFile
+           type.), parameter "other_frg_file" of String, parameter
+           "graph_kmer_size" of String, parameter "use_linking_mates" of type
            "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
-           parameter "soap_assembly" of type "bool" (A boolean - 0 for false,
-           1 for true. @range (0, 1)), parameter "do_homopolymer_trim" of
-           type "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
-           parameter "output_contigset_name" of String, parameter
-           "create_report" of type "bool" (A boolean - 0 for false, 1 for
-           true. @range (0, 1))
+           parameter "limit_jump_coverage" of Long, parameter "cgwErrorRate"
+           of Double, parameter "kmer_count_threshold" of Long, parameter
+           "close_gaps" of type "bool" (A boolean - 0 for false, 1 for true.
+           @range (0, 1)), parameter "soap_assembly" of type "bool" (A
+           boolean - 0 for false, 1 for true. @range (0, 1)), parameter
+           "do_homopolymer_trim" of type "bool" (A boolean - 0 for false, 1
+           for true. @range (0, 1)), parameter "output_contigset_name" of
+           String, parameter "create_report" of type "bool" (A boolean - 0
+           for false, 1 for true. @range (0, 1))
         :returns: instance of type "masurcaResults" (Output parameter items
-           for run_masurca report_name - the name of the KBaseReport.Report
-           workspace object. report_ref - the workspace reference of the
-           report.) -> structure: parameter "report_name" of String,
-           parameter "report_ref" of String
+           for run_masurca and run_masurca_assembler report_name - the name
+           of the KBaseReport.Report workspace object. report_ref - the
+           workspace reference of the report.) -> structure: parameter
+           "report_name" of String, parameter "report_ref" of String
         """
         # ctx is the context object
         # return variables are: output
@@ -156,6 +153,53 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
         # At some point might do deeper type checking...
         if not isinstance(output, dict):
             raise ValueError('Method run_masurca return value ' +
+                             'output is not type dict as required.')
+        # return the results
+        return [output]
+
+    def run_masurca_assembler(self, ctx, params):
+        """
+        Definition of run_masurca_assembler
+        :param params: instance of type "masurcaAssemblerParams" ->
+           structure: parameter "workspace_name" of String, parameter
+           "num_threads" of Long, parameter "jf_size" of Long, parameter
+           "reads_libraries" of list of type "paired_readsParams" (parameter
+           groups) -> structure: parameter "pe_id" of type "obj_ref" (An
+           X/Y/Z style KBase object reference), parameter "pe_prefix" of
+           String, parameter "pe_mean" of Long, parameter "pe_stdev" of Long,
+           parameter "jump_libraries" of list of type "jump_readsParams" ->
+           structure: parameter "jp_id" of type "obj_ref" (An X/Y/Z style
+           KBase object reference), parameter "jp_prefix" of String,
+           parameter "jp_mean" of Long, parameter "jp_stdev" of Long,
+           parameter "pacbio_reads" of type "read_lib" (The workspace object
+           name of a SingleEndLibrary or PairedEndLibrary file, whether of
+           the KBaseAssembly or KBaseFile type.), parameter "other_frg_file"
+           of String, parameter "graph_kmer_size" of String, parameter
+           "use_linking_mates" of type "bool" (A boolean - 0 for false, 1 for
+           true. @range (0, 1)), parameter "limit_jump_coverage" of Long,
+           parameter "cgwErrorRate" of Double, parameter
+           "kmer_count_threshold" of Long, parameter "close_gaps" of type
+           "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
+           parameter "soap_assembly" of type "bool" (A boolean - 0 for false,
+           1 for true. @range (0, 1)), parameter "do_homopolymer_trim" of
+           type "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
+           parameter "output_contigset_name" of String, parameter
+           "create_report" of type "bool" (A boolean - 0 for false, 1 for
+           true. @range (0, 1))
+        :returns: instance of type "masurcaResults" (Output parameter items
+           for run_masurca and run_masurca_assembler report_name - the name
+           of the KBaseReport.Report workspace object. report_ref - the
+           workspace reference of the report.) -> structure: parameter
+           "report_name" of String, parameter "report_ref" of String
+        """
+        # ctx is the context object
+        # return variables are: output
+        #BEGIN run_masurca_assembler
+        #END run_masurca_assembler
+
+        # At some point might do deeper type checking...
+        if not isinstance(output, dict):
+            raise ValueError('Method run_masurca_assembler return value ' +
                              'output is not type dict as required.')
         # return the results
         return [output]
