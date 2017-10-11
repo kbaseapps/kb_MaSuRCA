@@ -113,30 +113,6 @@
                 "min_int" : 20
             }
         },
-/*
-        {
-            "id": "pacbio_reads",
-            "optional": true,
-            "advanced": true,
-            "allow_multiple": false,
-            "default_values": [ "" ],
-            "field_type": "text",
-            "text_options": {
-                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
-            }
-        },
-        {
-            "id": "nanopore_reads",
-            "optional": true,
-            "advanced": true,
-            "allow_multiple": false,
-            "default_values": [ "" ],
-            "field_type": "text",
-            "text_options": {
-                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
-            }
-        },
-*/
         {
             "id": "other_frg_file",
             "optional": true,
@@ -305,16 +281,6 @@
                     "input_parameter": "jump_libraries",
                     "target_property": "jump_libraries"
                 },
-                /*{
-                    "input_parameter": "pacbio_reads",
-                    "target_property": "pacbio_reads",
-                    "target_type_transform": "resolved-ref"
-                },
-                {
-                    "input_parameter": "nanopore_reads",
-                    "target_property": "nanopore_reads",
-                    "target_type_transform": "resolved-ref"
-                },*/
                 {
                     "input_parameter": "output_contigset_name",
                     "target_property": "output_contigset_name"
