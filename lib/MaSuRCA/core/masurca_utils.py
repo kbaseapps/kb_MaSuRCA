@@ -202,12 +202,12 @@ class masurca_utils:
         #PACBIO reads must be in a single FASTA file and supplied as PACBIO=reads.fa;
         pb_reads_file = ''
         if params.get('pacbio_assembly', None) is not None:
-            pb_reads_file = self.get_fasta_from_assembly(params['pacbio_assembly'])
+            pb_reads_file = (self.get_fasta_from_assembly(params['pacbio_assembly'])).get('path','')
 
         #NANOPORE reads must be in a single FASTA file and supplied as NANOPORE=reads.fa
         np_reads_file = ''
         if params.get('nanopore_assembly', None) is not None:
-            np_reads_file = self._get_fasta_from_assembly(params['nanopore_assembly'])
+            np_reads_file = (self.get_fasta_from_assembly(params['nanopore_assembly'])).get('path','')
 
         #any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg files
         # (see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
