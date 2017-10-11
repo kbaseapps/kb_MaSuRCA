@@ -35,7 +35,7 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
     ######################################### noqa
     VERSION = "0.0.3"
     GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA.git"
-    GIT_COMMIT_HASH = "1a65bd5bc60aa55603aabd56787db713ae6987b9"
+    GIT_COMMIT_HASH = "bf0e2b2d821bb5c585e3c441d1f27fb5e9ca0a7b"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
@@ -171,16 +171,13 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
            structure: parameter "jp_id" of type "obj_ref" (An X/Y/Z style
            KBase object reference), parameter "jp_prefix" of String,
            parameter "jp_mean" of Long, parameter "jp_stdev" of Long,
-           parameter "pacbio_reads" of type "read_lib" (The workspace object
-           name of a SingleEndLibrary or PairedEndLibrary file, whether of
-           the KBaseAssembly or KBaseFile type.), parameter "nanopore_reads"
-           of type "read_lib" (The workspace object name of a
-           SingleEndLibrary or PairedEndLibrary file, whether of the
-           KBaseAssembly or KBaseFile type.), parameter "other_frg_file" of
-           String, parameter "graph_kmer_size" of String, parameter
-           "use_linking_mates" of type "bool" (A boolean - 0 for false, 1 for
-           true. @range (0, 1)), parameter "limit_jump_coverage" of Long,
-           parameter "cgwErrorRate" of Double, parameter
+           parameter "pacbio_assembly" of type "obj_ref" (An X/Y/Z style
+           KBase object reference), parameter "nanopore_assembly" of type
+           "obj_ref" (An X/Y/Z style KBase object reference), parameter
+           "other_frg_file" of String, parameter "graph_kmer_size" of String,
+           parameter "use_linking_mates" of type "bool" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter "limit_jump_coverage"
+           of Long, parameter "cgwErrorRate" of Double, parameter
            "kmer_count_threshold" of Long, parameter "close_gaps" of type
            "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
            parameter "soap_assembly" of type "bool" (A boolean - 0 for false,

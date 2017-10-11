@@ -200,14 +200,14 @@ class masurca_utils:
             jp_reads_data = self._getReadsInfo_JP(params)
 
         #PACBIO reads must be in a single FASTA file and supplied as PACBIO=reads.fa;
-        pb_reads_data = []
-        if params.get('pacbio_reads', None) is not None:
-            pb_reads_data = self._getKBReadsInfo(wsname, [params['pacbio_reads']])
+        pb_reads_file = ''
+        if params.get('pacbio_assembly', None) is not None:
+            pb_reads_file = self.get_fasta_from_assembly(params['pacbio_assembly'])
 
         #NANOPORE reads must be in a single FASTA file and supplied as NANOPORE=reads.fa
-        np_reads_data = []
-        if params.get('nanopore_reads', None) is not None:
-            np_reads_data = self._getKBReadsInfo(wsname, params[['nanopore_reads']])
+        np_reads_file = ''
+        if params.get('nanopore_assembly', None) is not None:
+            np_reads_file = self._get_fasta_from_assembly(params['nanopore_assembly'])
 
         #any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg files
         # (see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
@@ -222,7 +222,7 @@ class masurca_utils:
                 with codecs.open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
                           mode='r', encoding='utf-8') as config_template_file:
                     config_template = config_template_file.read()
-                    data_str = self._get_data_portion(pe_reads_data, jp_reads_data, pb_reads_data, np_reads_data, other_frg)
+                    data_str = self._get_data_portion(pe_reads_data, jp_reads_data, pb_reads_file, np_reads_file, other_frg)
                     if data_str == '': #no reads libraries are specified, no further actions
                         return ''
                     begin_patn1 = "DATA\n"
@@ -255,7 +255,7 @@ class masurca_utils:
             return config_file_path
 
 
-    def _get_data_portion(self, pe_reads_data, jp_reads_data, pacbio_reads_data=None, nanopore_reads_data=None, other_frg_file=''):
+    def _get_data_portion(self, pe_reads_data, jp_reads_data=None, pacbio_reads_file='', nanopore_reads_file='', other_frg_file=''):
 	"""
 	build the 'DATA...END' portion for the config.txt file
 	"""
@@ -286,16 +286,16 @@ class masurca_utils:
 
         #Adding the pacbio_reads and note that pcbio reads must be in a single fasta file!
 	#For example: data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/pacbio_reads.fasta'
-        if pacbio_reads_data:
+        if pacbio_reads_file != '':
             if data_str != '':
                 data_str += '\n'
-            data_str +='PACBIO= ' + pacbio_reads_data[0]['fwd_file']
+            data_str +='PACBIO= ' + pacbio_reads_file
         #Adding the nanopore_reads and note that nanopore reads must be in a single fasta file!
 	#For example: data_str +='\nNANOPORE= /pool/genomics/frandsenp/masurca/NanoPore/nanopore_reads.fasta'
-        if nanopore_reads_data:
+        if nanopore_reads_file != '':
             if data_str != '':
                 data_str += '\n'
-            data_str +='NANOPORE= ' + nanopore_reads_data[0]['fwd_file']
+            data_str +='NANOPORE= ' + nanopore_reads_file
 	#Adding the other_frg_file inputs if any
         ##any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg file
         #(see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
@@ -305,7 +305,6 @@ class masurca_utils:
             data_str +='OTHER= ' + other_frg_file
 
         return data_str
-
 
     def _get_parameters_portion(self, params):
 	"""
@@ -606,6 +605,19 @@ class masurca_utils:
 
         return reads_data
 
+    def get_fasta_from_assembly(self, assembly_ref):
+        """
+        From an assembly or contigset, this uses a data file util to build a FASTA file and return the
+        path to it.
+        """
+        allowed_types = ['KBaseFile.Assembly',
+                         'KBaseGenomeAnnotations.Assembly',
+                         'KBaseGenomes.ContigSet']
+        if not self.check_ref_type(assembly_ref, allowed_types):
+            raise ValueError("The reference {} cannot be used to fetch a FASTA file".format(assembly_ref))
+        au = AssemblyUtil(self.callback_url)
+        return au.get_assembly_as_fasta({'ref': assembly_ref})
+
 
     def generate_report(self, contig_file_name, params, out_dir, wsname):
         log('Generating and saving report')
@@ -746,4 +758,38 @@ class masurca_utils:
             if not obj_ref_regex.match(step):
                 return False
         return True
+
+    def check_ref_type(self, ref, allowed_types):
+        """
+        Validates the object type of ref against the list of allowed types. If it passes, this
+        returns True, otherwise False.
+        Really, all this does is verify that at least one of the strings in allowed_types is
+        a substring of the ref object type name.
+        Ex1:
+        ref = "KBaseGenomes.Genome-4.0"
+        allowed_types = ["assembly", "KBaseFile.Assembly"]
+        returns False
+        Ex2:
+        ref = "KBaseGenomes.Genome-4.0"
+        allowed_types = ["assembly", "genome"]
+        returns True
+        """
+        obj_type = self.get_object_type(ref).lower()
+        for t in allowed_types:
+            if t.lower() in obj_type:
+                return True
+        return False
+
+    def get_object_type(self, ref):
+        """
+        Fetches and returns the typed object name of ref from the given workspace url.
+        If that object doesn't exist, or there's another Workspace error, this raises a
+        RuntimeError exception.
+        """
+        info = self.ws_client.get_object_info3({'objects': [{'ref': ref}]})
+        obj_info = info.get('infos', [[]])[0]
+        if len(obj_info) == 0:
+            raise RuntimeError("An error occurred while fetching type info from the Workspace. "
+                               "No information returned for reference {}".format(ref))
+        return obj_info[2]
 
