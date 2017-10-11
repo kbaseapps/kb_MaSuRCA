@@ -97,6 +97,38 @@ class MaSuRCATest(unittest.TestCase):
                                                               })
         return assembly_ref
 
+    def loadAssembly(self, fa_file_path):
+        #if hasattr(self.__class__, 'assembly_ref'):
+            #return self.__class__.assembly_ref
+
+        assembly_nm = os.path.basename(fa_file_path)
+        fasta_path = os.path.join(self.scratch, assembly_nm)
+        shutil.copy(fa_file_path, fasta_path)
+        au = AssemblyUtil(self.callback_url)
+        assembly_ref = au.save_assembly_from_fasta({'file': {'path': fasta_path},
+                                                    'workspace_name': self.getWsName(),
+                                                    'assembly_name': assembly_nm.split('.')[0]
+                                                    })
+        #self.__class__.assembly_ref = assembly_ref
+        print('Loaded Assembly:{} with ref of{}.'.format(assembly_nm, assembly_ref))
+        return assembly_ref
+
+    def loadSEReads(self, reads_file_path):
+        #if hasattr(self.__class__, 'reads_ref'):
+            #return self.__class__.reads_ref
+        se_reads_name = os.path.basename(reads_file_path)
+        fq_path = os.path.join(self.scratch, se_reads_name)
+        shutil.copy(reads_file_path, fq_path)
+
+        ru = ReadsUtils(self.callback_url)
+        reads_ref = ru.upload_reads({'fwd_file': fq_path,
+                                        'wsname': self.getWsName(),
+                                        'name': se_reads_name.split('.')[0],
+                                        'sequencing_tech': 'kb reads'})['obj_ref']
+        #self.__class__.reads_ref = reads_ref
+        return reads_ref
+
+
     # borrowed from Megahit - call this method to get the WS object info of a Paired End Library (will
     # upload the example data if this is the first time the method is called during tests)
     def loadPairedEndReads(self):
@@ -125,20 +157,6 @@ class MaSuRCATest(unittest.TestCase):
         #return new_obj_info[0]
         return pe_reads_ref
 
-    def loadSEReads(self, reads_file_path):
-        #if hasattr(self.__class__, 'reads_ref'):
-            #return self.__class__.reads_ref
-        se_reads_name = os.path.basename(reads_file_path)
-        fq_path = os.path.join(self.scratch, se_reads_name)
-        shutil.copy(reads_file_path, fq_path)
-
-        ru = ReadsUtils(self.callback_url)
-        reads_ref = ru.upload_reads({'fwd_file': fq_path,
-                                        'wsname': self.getWsName(),
-                                        'name': se_reads_name.split('.')[0],
-                                        'sequencing_tech': 'kb reads'})['obj_ref']
-        #self.__class__.reads_ref = reads_ref
-        return reads_ref
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     # Uncomment to skip this test
@@ -146,6 +164,8 @@ class MaSuRCATest(unittest.TestCase):
     def test_run_masurca_assembler(self):
         # First load a test FASTA file as an KBase Assembly
         se_lib_ref = self.loadSEReads(os.path.join('../test/testReads', 'small.forward.fq'))
+        asmbl_ref1 = self.loadAssembly(os.path.join('../test/testReads', 'test_long.fa'))
+        asmbl_ref2 = self.loadAssembly(os.path.join('../test/testReads', 'test_reference.fa'))
         pe_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'rhodo.art.q10.PE.reads.fastq'))
         pe_lib_ref1 = self.loadPairedEndReads()
         m_params =     {
@@ -163,7 +183,8 @@ class MaSuRCATest(unittest.TestCase):
                 "pe_stdev": 20
             }],
             "jump_libraries": [],
-            "pacbio_reads": None,
+            "pacbio_assembly": asmbl_ref1,
+            "nanopore_assembly": asmbl_ref2,
             "other_frg_file": "",
             "output_contigset_name": "TestGroupmasurca.contigs",
             "graph_kmer_size": None,
