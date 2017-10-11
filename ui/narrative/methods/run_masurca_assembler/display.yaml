@@ -66,10 +66,10 @@ parameters :
             the standard deviation for defining the jump reads in the config.txt file
     pacbio_assembly :
         ui-name : PacBio Assembly
-        short-hint : supports KBaseFile.Assembly and KBaseGenomeAnnotations.Assembly
+        short-hint : supports KBaseGenomes.ContigSet, KBaseFile.Assembly and KBaseGenomeAnnotations.Assembly
     nanopore_assembly :
         ui-name : NanoPore Assembly
-        short-hint : supports KBaseFile.Assembly and KBaseGenomeAnnotations.Assembly
+        short-hint : supports KBaseGenomes.ContigSet, KBaseFile.Assembly and KBaseGenomeAnnotations.Assembly
     other_frg_file:
         ui-name : Other FRG
         short-hint : must have been converted into a Celera Assembler compatible .frg file       
