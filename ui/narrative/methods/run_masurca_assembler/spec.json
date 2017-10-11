@@ -113,6 +113,28 @@
                 "min_int" : 20
             }
         },
+        {   
+            "id": "pacbio_reads",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": ["KBaseFile.Assembly","KBaseGenomeAnnotation.Assembly"]
+            }   
+        },  
+        {   
+            "id": "nanopore_reads",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": ["KBaseFile.Assembly","KBaseGenomeAnnotation.Assembly"]
+            }   
+        },  
         {
             "id": "other_frg_file",
             "optional": true,
@@ -284,6 +306,16 @@
                 {
                     "input_parameter": "output_contigset_name",
                     "target_property": "output_contigset_name"
+                },
+                {
+                    "input_parameter": "pacbio_assembly",
+                    "target_property": "pacbio_assembly",
+                    "target_type_transform": "resolved-ref"
+                },
+                {
+                    "input_parameter": "nanopore_assembly",
+                    "target_property": "nanopore_assembly",
+                    "target_type_transform": "resolved-ref"
                 },
                 {
                     "input_parameter": "other_frg_file",
