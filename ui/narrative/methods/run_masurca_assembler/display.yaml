@@ -66,10 +66,10 @@ parameters :
             the standard deviation for defining the jump reads in the config.txt file
     pacbio_reads :
         ui-name : PacBio Reads
-        short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
+        short-hint : Reads libraries
     nanopore_reads :
         ui-name : NanoPore Reads
-        short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
+        short-hint : Reads libraries
     other_frg_file:
         ui-name : Other FRG
         short-hint : must have been converted into a Celera Assembler compatible .frg file       
