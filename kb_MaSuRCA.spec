@@ -127,6 +127,7 @@ module kb_MaSuRCA {
         list<jump_readsParams> jump_libraries;
        
         read_lib pacbio_reads;
+        read_lib nanopore_reads;
         string other_frg_file;   
         string graph_kmer_size;
         bool use_linking_mates;

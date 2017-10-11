@@ -199,6 +199,22 @@ class masurca_utils:
         if params.get(self.PARAM_IN_JUMP_LIBS, None) is not None:
             jp_reads_data = self._getReadsInfo_JP(params)
 
+        #PACBIO reads must be in a single FASTA file and supplied as PACBIO=reads.fa;
+        pb_reads_data = []
+        if params.get('pacbio_reads', None) is not None:
+            pb_reads_data = self._getKBReadsInfo(wsname, params['pacbio_reads'])
+
+        #NANOPORE reads must be in a single FASTA file and supplied as NANOPORE=reads.fa
+        np_reads_data = []
+        if params.get('nanopore_reads', None) is not None:
+            np_reads_data = self._getKBReadsInfo(wsname, params['nanopore_reads'])
+
+        #any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg files
+        # (see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
+        other_frg = ''
+        if params.get('other_frg_file', None) is not None:
+            other_frg = self._getKBReadsInfo(wsname, params['other_frg_file'])
+
         # STEP 3: construct and save the config.txt file for running masurca
         try:
             # STEP 3.1: replace the 'DATA...END' portion of the config_template.txt file 
@@ -206,7 +222,7 @@ class masurca_utils:
                 with codecs.open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
                           mode='r', encoding='utf-8') as config_template_file:
                     config_template = config_template_file.read()
-                    data_str = self._get_data_portion(pe_reads_data, jp_reads_data)
+                    data_str = self._get_data_portion(pe_reads_data, jp_reads_data, pb_reads_data, np_reads_data, other_frg)
                     if data_str == '': #no reads libraries are specified, no further actions
                         return ''
                     begin_patn1 = "DATA\n"
@@ -239,7 +255,7 @@ class masurca_utils:
             return config_file_path
 
 
-    def _get_data_portion(self, pe_reads_data, jp_reads_data):
+    def _get_data_portion(self, pe_reads_data, jp_reads_data, pacbio_reads_data=None, nanopore_reads_data=None, other_frg_file=''):
 	"""
 	build the 'DATA...END' portion for the config.txt file
 	"""
@@ -268,10 +284,27 @@ class masurca_utils:
 		if jp.get('rev_file', None) is not None:
                     data_str += ' ' + jp['rev_file']
 
-        #TODO adding the pacbio_reads and note that pcbio reads must be in a single fasta file!
-	#For example: data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/aligned_reads.fasta'
-	#TODO adding the other_frg_file inputs if any
-	return data_str
+        #Adding the pacbio_reads and note that pcbio reads must be in a single fasta file!
+	#For example: data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/pacbio_reads.fasta'
+        if pacbio_reads_data:
+            if data_str != '':
+                data_str += '\n'
+            data_str +='PACBIO= ' + pacbio_reads_data['fwd_file']
+        #Adding the nanopore_reads and note that nanopore reads must be in a single fasta file!
+	#For example: data_str +='\nNANOPORE= /pool/genomics/frandsenp/masurca/NanoPore/nanopore_reads.fasta'
+        if nanopore_reads_data:
+            if data_str != '':
+                data_str += '\n'
+            data_str +='NANOPORE= ' + nanopore_reads_data['fwd_file']
+	#Adding the other_frg_file inputs if any
+        ##any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg file
+        #(see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
+        if other_frg_file != '':
+            if data_str != '':
+                data_str += '\n'
+            data_str +='OTHER= ' + other_frg_file
+
+        return data_str
 
 
     def _get_parameters_portion(self, params):
