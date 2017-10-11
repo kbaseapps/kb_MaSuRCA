@@ -213,7 +213,7 @@ class masurca_utils:
         # (see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
         other_frg = ''
         if params.get('other_frg_file', None) is not None:
-            other_frg = self._getKBReadsInfo(wsname, params['other_frg_file'])
+            other_frg = params['other_frg_file']
 
         # STEP 3: construct and save the config.txt file for running masurca
         try:
