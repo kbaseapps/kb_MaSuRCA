@@ -202,12 +202,12 @@ class masurca_utils:
         #PACBIO reads must be in a single FASTA file and supplied as PACBIO=reads.fa;
         pb_reads_data = []
         if params.get('pacbio_reads', None) is not None:
-            pb_reads_data = self._getKBReadsInfo(wsname, params['pacbio_reads'])
+            pb_reads_data = self._getKBReadsInfo(wsname, [params['pacbio_reads']])
 
         #NANOPORE reads must be in a single FASTA file and supplied as NANOPORE=reads.fa
         np_reads_data = []
         if params.get('nanopore_reads', None) is not None:
-            np_reads_data = self._getKBReadsInfo(wsname, params['nanopore_reads'])
+            np_reads_data = self._getKBReadsInfo(wsname, params[['nanopore_reads']])
 
         #any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg files
         # (see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
@@ -289,13 +289,13 @@ class masurca_utils:
         if pacbio_reads_data:
             if data_str != '':
                 data_str += '\n'
-            data_str +='PACBIO= ' + pacbio_reads_data['fwd_file']
+            data_str +='PACBIO= ' + pacbio_reads_data[0]['fwd_file']
         #Adding the nanopore_reads and note that nanopore reads must be in a single fasta file!
 	#For example: data_str +='\nNANOPORE= /pool/genomics/frandsenp/masurca/NanoPore/nanopore_reads.fasta'
         if nanopore_reads_data:
             if data_str != '':
                 data_str += '\n'
-            data_str +='NANOPORE= ' + nanopore_reads_data['fwd_file']
+            data_str +='NANOPORE= ' + nanopore_reads_data[0]['fwd_file']
 	#Adding the other_frg_file inputs if any
         ##any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg file
         #(see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
