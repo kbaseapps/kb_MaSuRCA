@@ -114,7 +114,7 @@
             }
         },
         {   
-            "id": "pacbio_reads",
+            "id": "pacbio_assembly",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
@@ -125,7 +125,7 @@
             }   
         },  
         {   
-            "id": "nanopore_reads",
+            "id": "nanopore_assembly",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
