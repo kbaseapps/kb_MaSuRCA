@@ -3,7 +3,7 @@
 #
 name: MaSuRCA Assembler, Version 3.2.3 
 tooltip: |
-      MaSuRCA consists of three main steps:1.Create the config.txt file 2.Generate the assemble.sh 3.Assemble reads
+      MaSuRCA consists of three main steps:1.Create config.txt file 2.Generate assemble.sh 3.Assemble reads
       
 screenshots: []
 
@@ -67,9 +67,12 @@ parameters :
     pacbio_reads :
         ui-name : PacBio Reads
         short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
+    nanopore_reads :
+        ui-name : NanoPore Reads
+        short-hint : Reads libraries (only KBase PairedEnd Libs are input through this parameter)
     other_frg_file:
         ui-name : Other FRG
-        short-hint : must be converted to CABOG format FRG files         
+        short-hint : must have been converted into a Celera Assembler compatible .frg file       
     jf_size :
         ui-name : jellyfish_size<font color=red>*</font>
         short-hint : |
