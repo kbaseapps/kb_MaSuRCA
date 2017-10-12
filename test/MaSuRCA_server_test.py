@@ -184,7 +184,7 @@ class MaSuRCATest(unittest.TestCase):
             }],
             "jump_libraries": [],
             "pacbio_assembly": asmbl_ref1,
-            "nanopore_assembly": asmbl_ref2,
+            #"nanopore_assembly": asmbl_ref2,
             "other_frg_file": "",
             "output_contigset_name": "TestGroupmasurca.contigs",
             "graph_kmer_size": None,
