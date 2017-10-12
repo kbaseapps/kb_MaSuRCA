@@ -122,6 +122,7 @@ class MaSuRCA_Assembler(object):
         if (assemble_ok == 0 and fa_file_dir != ''):
             fa_file_dir = os.path.join(self.proj_dir, fa_file_dir)
             log("Found contig_fa_file in folder {}".format(fa_file_dir))
+
             fa_file_path = os.path.join(fa_file_dir, contig_fa_file)
             self.m_utils.save_assembly(fa_file_path, wsname, params[self.PARAM_IN_CS_NAME])
             if params['create_report'] == 1:
@@ -134,10 +135,10 @@ class MaSuRCA_Assembler(object):
 
     def find_file_path(self, search_dir, search_file_name):
         for dirName, subdirList, fileList in os.walk(search_dir):
-            log('Found directory: {}'.format(dirName))
+            #log('Found directory: {}'.format(dirName))
             for fname in fileList:
-                log('Found file: {}'.format(fname))
                 if fname == search_file_name:
+                    log('Found file: {}'.format(fname))
                     return dirName
         return ''
 
