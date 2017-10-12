@@ -119,9 +119,9 @@ class MaSuRCA_Assembler(object):
 
         #if (assemble_ok == 0 and os.path.isfile(contig_fa_file)):
         fa_file_dir = self.find_file_path(self.proj_dir, contig_fa_file)
-        fa_file_dir = os.path.join(self.proj_dir, fa_file_dir)
-        log("Found contig_fa_file in folder {}".format(fa_file_dir))
-        if (assemble_ok == 0 and fa_file_path != ''):
+        if (assemble_ok == 0 and fa_file_dir != ''):
+            fa_file_dir = os.path.join(self.proj_dir, fa_file_dir)
+            log("Found contig_fa_file in folder {}".format(fa_file_dir))
             fa_file_path = os.path.join(fa_file_dir, config_fa_file)
             self.m_utils.save_assembly(fa_file_path, wsname, params[self.PARAM_IN_CS_NAME])
             if params['create_report'] == 1:
