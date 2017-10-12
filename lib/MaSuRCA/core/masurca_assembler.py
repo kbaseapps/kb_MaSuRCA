@@ -117,8 +117,11 @@ class MaSuRCA_Assembler(object):
         contig_fa_file = 'dedup.genome.scf.fasta'
         contig_fa_file = os.path.join(ca_dir, contig_fa_file)
 
-        if (assemble_ok == 0 and os.path.isfile(contig_fa_file)):
-            self.m_utils.save_assembly(contig_fa_file, wsname, params[self.PARAM_IN_CS_NAME])
+        #if (assemble_ok == 0 and os.path.isfile(contig_fa_file)):
+        fa_file_path = self.find_file_path(self.proj_dir, contig_fa_file)
+        log("Found contig_fa_file with path {}".format(fa_file_path))
+        if (assemble_ok == 0 and fa_file_path != '':
+            self.m_utils.save_assembly(fa_file_path, wsname, params[self.PARAM_IN_CS_NAME])
             if params['create_report'] == 1:
                 report_name, report_ref = self.m_utils.generate_report(contig_fa_file, params, ca_dir, wsname)
                 returnVal = {'report_name': report_name, 'report_ref': report_ref}
@@ -126,7 +129,18 @@ class MaSuRCA_Assembler(object):
             log("run_assemble process failed.")
 
         return returnVal
-    def run_masurca_app(self, params):
+
+    def find_file_path(self, search_dir, search_file_name):
+        for dirName, subdirList, fileList in os.walk(search_dir):
+            log('Found directory: {}'.format(dirName))
+            for fname in fileList:
+                log('Found file: {}'.format(fname))
+                if fname == search_file_name:
+                    return os.path.join(dirName, fname)
+        return ''
+
+
+def run_masurca_app(self, params):
         # 1. validate & process the input parameters
         validated_params = self.m_utils.validate_params(params)
 
