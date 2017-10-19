@@ -106,14 +106,20 @@ class MaSuRCA_Assembler(object):
         else:
             assemble_ok = -1
 
-        # 5. report the final results
+        # 5. save the assembly to KBase and, if everything has gone well, create a report
+        returnVal = self.save_assembly('dedup.genome.scf.fasta')
+
+        return returnVal
+
+
+    def save_assembly(self, contig_fa_file = 'dedup.genome.scf.fasta'):
+        """
+        save the assembly to KBase and, if everything has gone well, create a report
+        """
         returnVal = {
             "report_ref": None,
             "report_name": None
         }
-
-        # 6. save the assembly to KBase and, if everything has gone well, create a report
-        contig_fa_file = 'dedup.genome.scf.fasta'
 
         fa_file_dir = self.find_file_path(self.proj_dir, contig_fa_file)
         if (assemble_ok == 0 and fa_file_dir != ''):
@@ -130,6 +136,7 @@ class MaSuRCA_Assembler(object):
 
         return returnVal
 
+
     def find_file_path(self, search_dir, search_file_name):
         for dirName, subdirList, fileList in os.walk(search_dir):
             #log('Found directory: {}'.format(dirName))
@@ -139,6 +146,51 @@ class MaSuRCA_Assembler(object):
                     return dirName
         return ''
 
+
+    def run_masurca_app_0(self, params):
+        # 1. validate & process the input parameters
+        validated_params = self.m_utils.validate_params(params)
+
+        wsname = params['workspace_name']
+
+        # 2. create the configuration file 
+        config_file = self.m_utils.construct_masurca_config_0(validated_params)
+
+        # 3. run masurca against the configuration file to generate the assemble.sh script 
+        if os.path.isfile(config_file):
+            assemble_file = self.m_utils.generate_assemble_script(config_file)
+
+        # 4. run the assemble.sh script to do the heavy-lifting
+        if os.path.isfile(assemble_file):
+            assemble_ok = self.m_utils.run_assemble(assemble_file)
+        else:
+            assemble_ok = -1
+
+        # 5. save the assembly to KBase and, if everything has gone well, create a report
+        return self.save_assembly('dedup.genome.scf.fasta')
+
+
+    def run_masurca_app_1(self, params):
+        # 1. validate & process the input parameters
+        validated_params = self.m_utils.validate_params(params)
+
+        wsname = params['workspace_name']
+
+        # 2. create the configuration file 
+        config_file = self.m_utils.construct_masurca_config_1(validated_params)
+
+        # 3. run masurca against the configuration file to generate the assemble.sh script 
+        if os.path.isfile(config_file):
+            assemble_file = self.m_utils.generate_assemble_script(config_file)
+
+        # 4. run the assemble.sh script to do the heavy-lifting
+        if os.path.isfile(assemble_file):
+            assemble_ok = self.m_utils.run_assemble(assemble_file)
+        else:
+            assemble_ok = -1
+
+        # 5. save the assembly to KBase and, if everything has gone well, create a report
+        return self.save_assembly('dedup.genome.scf.fasta')
 
     def run_masurca_app(self, params):
         # 1. validate & process the input parameters
@@ -159,26 +211,8 @@ class MaSuRCA_Assembler(object):
         else:
             assemble_ok = -1
 
-        # 5. report the final results
-        returnVal = {
-            "report_ref": None,
-            "report_name": None
-        }
-
-        # 6. save the assembly to KBase and, if everything has gone well, create a report
-        ca_dir = os.path.join(self.proj_dir, 'CA')
-        contig_fa_file = 'dedup.genome.scf.fasta'
-        contig_fa_file = os.path.join(ca_dir, contig_fa_file)
-
-        if (assemble_ok == 0 and os.path.isfile(contig_fa_file)):
-            self.m_utils.save_assembly(contig_fa_file, wsname, params[self.PARAM_IN_CS_NAME])
-            if params['create_report'] == 1:
-                report_name, report_ref = self.m_utils.generate_report(contig_fa_file, params, ca_dir, wsname)
-                returnVal = {'report_name': report_name, 'report_ref': report_ref}
-        else:
-            log("run_assemble process failed.")
-
-        return returnVal
+        # 5. save the assembly to KBase and, if everything has gone well, create a report
+        return self.save_assembly('dedup.genome.scf.fasta')
 
 
     def create_proj_dir(self, home_dir):

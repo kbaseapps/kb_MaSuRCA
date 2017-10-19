@@ -147,7 +147,7 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
 
         masurca_assembler = MaSuRCA_Assembler(self.config, ctx.provenance())
 
-        output = masurca_assembler.run_masurca_app(params)
+        output = masurca_assembler.run_masurca_app_0(params)
         #END run_masurca
 
         # At some point might do deeper type checking...

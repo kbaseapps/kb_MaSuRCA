@@ -27,11 +27,12 @@ RUN pip install cffi --upgrade \
 
 # MaSuRCA installation
 # BOOST is required by cmake which is used by the MaSuRCA install.sh
-RUN cd /opt && \
+RUN \
+  cd /opt && \
   mkdir -p /opt/BOOST && \
   cd /opt/BOOST && \
   wget https://dl.bintray.com/boostorg/release/1.65.1/source/boost_1_65_1.tar.bz2 && \
-  #tar -vxjf boost_1_65_1.tar.bz2 && \
+  #tar -vxjf boost_1_65_1.tar.bz2
   tar --bzip2 -xf boost_1_65_1.tar.bz2
 
 ENV BOOST_ROOT=/opt/BOOST/boost_1_65_1
