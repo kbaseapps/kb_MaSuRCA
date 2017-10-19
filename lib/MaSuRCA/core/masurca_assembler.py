@@ -112,7 +112,7 @@ class MaSuRCA_Assembler(object):
         return returnVal
 
 
-    def save_assembly(self, asmbl_ok, contig_fa_file = 'dedup.genome.scf.fasta'):
+    def save_assembly(self, params, asmbl_ok, contig_fa_file = 'dedup.genome.scf.fasta'):
         """
         save the assembly to KBase and, if everything has gone well, create a report
         """
@@ -121,6 +121,7 @@ class MaSuRCA_Assembler(object):
             "report_name": None
         }
 
+        wsname = params['workspace_name']
         fa_file_dir = self.find_file_path(self.proj_dir, contig_fa_file)
         if (asmbl_ok == 0 and fa_file_dir != ''):
             fa_file_dir = os.path.join(self.proj_dir, fa_file_dir)
