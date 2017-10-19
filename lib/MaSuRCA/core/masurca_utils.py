@@ -644,7 +644,8 @@ class masurca_utils:
         """
         obj_ids = []
         for r in reads_refs:
-            obj_ids.append({'ref': r if '/' in r else (wsname + '/' + r)})
+            if r:
+                obj_ids.append({'ref': r if '/' in r else (wsname + '/' + r)})
 
         if not obj_ids:
             return []
@@ -691,9 +692,6 @@ class masurca_utils:
             seq_tech = reads[ref]['sequencing_tech']
             rds_info = {
                 'fwd_file': f['fwd'],
-                #'r_prefix': params[ref]['prefix'],
-                #'r_mean': params[ref]['mean'],
-                #'r_stdev': params[ref]['stdev'],
                 'reads_ref': ref,
                 'type': f['type'],
                 'seq_tech': seq_tech,
