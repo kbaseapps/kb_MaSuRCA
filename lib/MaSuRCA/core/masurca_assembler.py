@@ -107,12 +107,12 @@ class MaSuRCA_Assembler(object):
             assemble_ok = -1
 
         # 5. save the assembly to KBase and, if everything has gone well, create a report
-        returnVal = self.save_assembly('dedup.genome.scf.fasta', assemble_ok)
+        returnVal = self.save_assembly(asmbl_ok, 'dedup.genome.scf.fasta')
 
         return returnVal
 
 
-    def save_assembly(self, contig_fa_file = 'dedup.genome.scf.fasta', asmbl_ok):
+    def save_assembly(self, asmbl_ok, contig_fa_file = 'dedup.genome.scf.fasta'):
         """
         save the assembly to KBase and, if everything has gone well, create a report
         """
