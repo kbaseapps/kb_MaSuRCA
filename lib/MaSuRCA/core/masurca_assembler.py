@@ -107,7 +107,7 @@ class MaSuRCA_Assembler(object):
             assemble_ok = -1
 
         # 5. save the assembly to KBase and, if everything has gone well, create a report
-        returnVal = self.save_assembly(asmbl_ok, 'dedup.genome.scf.fasta')
+        returnVal = self.save_assembly(assemble_ok, 'dedup.genome.scf.fasta')
 
         return returnVal
 
@@ -167,7 +167,7 @@ class MaSuRCA_Assembler(object):
             assemble_ok = -1
 
         # 5. save the assembly to KBase and, if everything has gone well, create a report
-        return self.save_assembly('dedup.genome.scf.fasta')
+        return self.save_assembly(assemble_ok, 'dedup.genome.scf.fasta')
 
 
     def run_masurca_app_1(self, params):
@@ -190,7 +190,8 @@ class MaSuRCA_Assembler(object):
             assemble_ok = -1
 
         # 5. save the assembly to KBase and, if everything has gone well, create a report
-        return self.save_assembly('dedup.genome.scf.fasta')
+        return self.save_assembly(assemble_ok, 'dedup.genome.scf.fasta')
+
 
     def run_masurca_app(self, params):
         # 1. validate & process the input parameters
@@ -212,7 +213,7 @@ class MaSuRCA_Assembler(object):
             assemble_ok = -1
 
         # 5. save the assembly to KBase and, if everything has gone well, create a report
-        return self.save_assembly('dedup.genome.scf.fasta')
+        return self.save_assembly(assemble_ok, 'dedup.genome.scf.fasta')
 
 
     def create_proj_dir(self, home_dir):
