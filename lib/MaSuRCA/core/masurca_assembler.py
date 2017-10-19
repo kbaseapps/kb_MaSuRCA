@@ -107,7 +107,7 @@ class MaSuRCA_Assembler(object):
             assemble_ok = -1
 
         # 5. save the assembly to KBase and, if everything has gone well, create a report
-        returnVal = self.save_assembly(assemble_ok, 'dedup.genome.scf.fasta')
+        returnVal = self.save_assembly(params, assemble_ok, 'dedup.genome.scf.fasta')
 
         return returnVal
 
@@ -122,6 +122,7 @@ class MaSuRCA_Assembler(object):
         }
 
         wsname = params['workspace_name']
+
         fa_file_dir = self.find_file_path(self.proj_dir, contig_fa_file)
         if (asmbl_ok == 0 and fa_file_dir != ''):
             fa_file_dir = os.path.join(self.proj_dir, fa_file_dir)
@@ -168,7 +169,7 @@ class MaSuRCA_Assembler(object):
             assemble_ok = -1
 
         # 5. save the assembly to KBase and, if everything has gone well, create a report
-        return self.save_assembly(assemble_ok, 'dedup.genome.scf.fasta')
+        return self.save_assembly(params, assemble_ok, 'dedup.genome.scf.fasta')
 
 
     def run_masurca_app_1(self, params):
@@ -191,7 +192,7 @@ class MaSuRCA_Assembler(object):
             assemble_ok = -1
 
         # 5. save the assembly to KBase and, if everything has gone well, create a report
-        return self.save_assembly(assemble_ok, 'dedup.genome.scf.fasta')
+        return self.save_assembly(params, assemble_ok, 'dedup.genome.scf.fasta')
 
 
     def run_masurca_app(self, params):
@@ -214,7 +215,7 @@ class MaSuRCA_Assembler(object):
             assemble_ok = -1
 
         # 5. save the assembly to KBase and, if everything has gone well, create a report
-        return self.save_assembly(assemble_ok, 'dedup.genome.scf.fasta')
+        return self.save_assembly(params, assemble_ok, 'dedup.genome.scf.fasta')
 
 
     def create_proj_dir(self, home_dir):
