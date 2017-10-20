@@ -88,6 +88,7 @@ class masurca_utils:
             raise ValueError(self.PARAM_IN_READS_LIBS + ' parameter is mandatory')
         if type(params[self.PARAM_IN_READS_LIBS]) != list:
             raise ValueError(self.PARAM_IN_READS_LIBS + ' must be a list')
+
         if (params.get(self.PARAM_IN_CS_NAME, None) is None or
                 not self.valid_string(params[self.PARAM_IN_CS_NAME])):
             raise ValueError("Parameter output_contigset_name is required and must be a valid Workspace object string, "
@@ -538,6 +539,17 @@ class masurca_utils:
         else:
             return orig_txt
 
+
+    def _unique_prefix_check(self, pfix, refs):
+        prefix_lookup = {}
+        for k in range(0, len(refs)):
+            pre = refs[k][pfix][0:2]
+            if pre not in prefix_lookup:
+                prefix_lookup[pre] = 1
+            else:
+                raise ValueError('The first two letters ' + pfix + ' has been used.')
+
+
     def _getReadsInfo_PE(self, input_params):
         """
         _getReadsInfo_PE--from a list of paired_readsParams structures fetches the corresponding reads info with the paired_readsParams[pe_id]
@@ -558,6 +570,7 @@ class masurca_utils:
 	wsname = rds_params[self.PARAM_IN_WS]
 	rds_refs = []
 	rds_data = []
+        self._unique_prefix_check('pe_prefix', rds_params[self.PARAM_IN_READS_LIBS])
         # reads_libraries grouped params
         if 'reads_libraries' in rds_params and rds_params['reads_libraries'] != None:
             for rds_lib in rds_params['reads_libraries']:
@@ -569,6 +582,7 @@ class masurca_utils:
 		for rds in rds_data:
                     if ('pe_id' in rds_lib and rds_lib['pe_id'] == rds['reads_ref']):
                         if 'pe_prefix' in rds_lib:
+
                             rds['pe_prefix'] = rds_lib['pe_prefix'][:2]
                         else:
                             raise ValueError("Parameter pe_prefix is required for reads {}".format(rds[reads_ref]))
@@ -583,6 +597,7 @@ class masurca_utils:
 	else:
 		raise ValueError("Parameter {} is required for reads {}".format('reads_libraries'))
 	return rds_data
+
 
     def _getReadsInfo_JP(self, input_params):
         """
@@ -606,6 +621,7 @@ class masurca_utils:
 	rds_data = []
         # jump_libraries grouped params
         if 'jump_libraries' in rds_params and rds_params['jump_libraries'] != None:
+            self._unique_prefix_check('jp_prefix', rds_params['jump_libraries'])
             for rds_lib in rds_params['jump_libraries']:
                 if 'jp_id' in rds_lib:
                     rds_refs.append(rds_lib['jp_id'])
