@@ -547,7 +547,7 @@ class masurca_utils:
             if pre not in prefix_lookup:
                 prefix_lookup[pre] = 1
             else:
-                raise ValueError('The first two letters ' + pfix + ' has been used.')
+                raise ValueError('The first two letters in ' + refs[k][pfix] + ' has been used.')
 
 
     def _getReadsInfo_PE(self, input_params):
