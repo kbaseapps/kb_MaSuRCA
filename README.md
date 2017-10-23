@@ -8,8 +8,14 @@ MaSuRCA References:
    https://academic.oup.com/bioinformatics/article/29/21/2669/195975/The-MaSuRCA-genome-assembler
    https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btt476
    ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
+   http://masurca.blogspot.com/
+
+The MaSuRCA Quick Start Guide is available here: 
+   ftp://ftp.genome.umd.edu/pub/MaSuRCA/MaSuRCA_QuickStartGuide.pdf
+
 
 General steps to run the MaSuRCA assemblers:
+
 
     First, create a configuration file which contains the location of the compiled assembler (the 
     executable), data and assembly parameters. 
