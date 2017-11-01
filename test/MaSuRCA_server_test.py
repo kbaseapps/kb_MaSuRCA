@@ -160,7 +160,7 @@ class MaSuRCATest(unittest.TestCase):
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     # Uncomment to skip this test
-    # @unittest.skip("skipped test_run_masurca_assembler")
+    @unittest.skip("skipped test_run_masurca_assembler")
     def test_run_masurca_assembler(self):
         # First load a test FASTA file as an KBase Assembly
         se_lib_ref = self.loadSEReads(os.path.join('../test/testReads', 'small.forward.fq'))
@@ -208,7 +208,7 @@ class MaSuRCATest(unittest.TestCase):
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     # Uncomment to skip this test
-    @unittest.skip("skipped test_run_masurca")
+    # @unittest.skip("skipped test_run_masurca")
     def test_run_masurca(self):
         # First load a test FASTA file as an KBase Assembly
         se_lib_ref = self.loadSEReads(os.path.join('../test/testReads', 'small.forward.fq'))
@@ -238,7 +238,7 @@ class MaSuRCATest(unittest.TestCase):
                 "do_homopolymer_trim": 0,
                 "kmer_count_threshold": 1,
                 'num_threads': 2,
-                'create_report': 1
+                'create_report': 0
         }
         # Second, call your implementation
         ret = self.getImpl().run_masurca(self.getContext(), m_params)

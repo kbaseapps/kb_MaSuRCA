@@ -87,7 +87,7 @@ class MaSuRCA_Assembler(object):
         pass
 
 
-    def run_masurca_app2(self, params):
+    def run_masurca_assembler(self, params):
         # 1. validate & process the input parameters
         validated_params = self.m_utils.validate_params(params)
 
