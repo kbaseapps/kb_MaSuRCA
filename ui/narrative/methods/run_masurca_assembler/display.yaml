@@ -1,7 +1,7 @@
 #
 # define display information
 #
-name: MaSuRCA Assembler (grouped), Version 3.2.3 
+name: MaSuRCA Assembler, Version 3.2.3 
 tooltip: |
       MaSuRCA consists of three main steps:1.Create config.txt file 2.Generate assemble.sh 3.Assemble reads
       

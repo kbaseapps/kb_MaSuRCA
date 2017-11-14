@@ -160,7 +160,7 @@ class MaSuRCATest(unittest.TestCase):
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     # Uncomment to skip this test
-    @unittest.skip("skipped test_run_masurca_assembler")
+    # @unittest.skip("skipped test_run_masurca_assembler")
     def test_run_masurca_assembler(self):
         # First load a test FASTA file as an KBase Assembly
         se_lib_ref = self.loadSEReads(os.path.join('../test/testReads', 'small.forward.fq'))
@@ -208,7 +208,7 @@ class MaSuRCATest(unittest.TestCase):
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     # Uncomment to skip this test
-    # @unittest.skip("skipped test_run_masurca")
+    @unittest.skip("skipped test_run_masurca")
     def test_run_masurca(self):
         # First load a test FASTA file as an KBase Assembly
         se_lib_ref = self.loadSEReads(os.path.join('../test/testReads', 'small.forward.fq'))
