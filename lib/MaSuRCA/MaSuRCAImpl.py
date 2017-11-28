@@ -33,8 +33,8 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.0.3"
-    GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA.git"
+    VERSION = "1.0.1"
+    GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA"
     GIT_COMMIT_HASH = "bf0e2b2d821bb5c585e3c441d1f27fb5e9ca0a7b"
 
     #BEGIN_CLASS_HEADER
