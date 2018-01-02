@@ -29,7 +29,7 @@ install:
     - docker images
     - export PATH=$(pwd)/bin:$PATH
     - cd ../
-    - git clone https://github.com/kbaseapps/MaSuRCA.git
+    - git clone https://github.com/kbaseapps/kb_MaSuRCA.git
     - cd MaSuRCA
     # run the kb-sdk test command once to build test_local dir and populate the .ignore files
     - kb-sdk test -s || true
