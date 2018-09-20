@@ -1,12 +1,12 @@
 #
 # define display information
 #
-name: MaSuRCA Assembler - v3.2.3 
+name: MaSuRCA Assembler - v3.2.3
 tooltip: |
       MaSuRCA consists of three main steps:1.Create config.txt file 2.Generate assemble.sh 3.Assemble reads
 
 icon: masurca-blue.png
-      
+
 screenshots: []
 
 icon: null
@@ -74,7 +74,7 @@ parameters :
         short-hint : supports KBaseGenomes.ContigSet, KBaseFile.Assembly and KBaseGenomeAnnotations.Assembly
     other_frg_file:
         ui-name : Other FRG
-        short-hint : must have been converted into a Celera Assembler compatible .frg file       
+        short-hint : must have been converted into a Celera Assembler compatible .frg file
     jf_size :
         ui-name : jellyfish_size<font color=red>*</font>
         short-hint : |
@@ -93,9 +93,9 @@ parameters :
         ui-name : |
             use_linking_mates
         short-hint : |
-            Those that do not end up in the same super read are called 'linking mates' 
+            Those that do not end up in the same super read are called 'linking mates'
         long-hint : |
-           The best assembly results are achieved by setting this parameter to 1 for Illumina-only assemblies to use the 'linking mates'. 
+           The best assembly results are achieved by setting this parameter to 1 for Illumina-only assemblies to use the 'linking mates'.
     limit_jump_coverage :
         ui-name : |
             limit_jump_coverage
@@ -106,7 +106,7 @@ parameters :
             cgwErrorRate
         short-hint : |
             these are the additional parameters to Celera Assembler
-        long-hint : |            
+        long-hint : |
             set cgwErrorRate=0.25 for bacteria, i.e., CA_PARAMETERS = cgwErrorRate=0.25
     kmer_count_threshold :
         ui-name : |
@@ -128,7 +128,7 @@ parameters :
     do_homopolymer_trim :
         ui-name : |
             do_homopolymer_trim
-        short-hint : | 
+        short-hint : |
             <p>specifies if we do (1) or do not (0) want to trim long runs of homopolymers (e.g. GGGGGGGG) from 3 prime read ends, use it for high GC genomes DO_HOMOPOLYMER_TRIM=0</p>
 
 parameter-groups :
@@ -138,18 +138,19 @@ parameter-groups :
         short-hint : |
         long-hint  : |
     jump_libraries :
-        ui-name : | 
+        ui-name : |
             Jump reads to be assembled
-        short-hint : | 
+        short-hint : |
         long-hint  : |
 
-                      
+
 description : |
     <p>This is a KBase wrapper for <a href="https://academic.oup.com/bioinformatics/article/29/21/2669/195975/The-MaSuRCA-genome-assembler">MaSuRCA (Maryland Super Read Cabog Assembler).</a></p>
     <p><The MaSuRCA assembler combines the benefits of deBruijn graph and Overlap-Layout-Consensus assembly approaches. Since version 3.2.1 it supports hybrid assembly with short Illumina reads and long high error PacBio/MinION data.</p>
     <p><strong>The MaSuRCA Quick Start Guide is available here:</strong><br><a href="ftp://ftp.genome.umd.edu/pub/MaSuRCA/MaSuRCA_QuickStartGuide.pdf">ftp://ftp.genome.umd.edu/pub/MaSuRCA/MaSuRCA_QuickStartGuide.pdf</a></p>
-    
+
 publications :
     -
         display-text : |
-           <p><a href="https://doi.org/10.1093/bioinformatics/btt476">Zimin, A. et al. The MaSuRCA genome Assembler. Bioinformatics (2013). doi:10.1093/bioinformatics/btt476</a></p>
+            Zimin AV, Marçais G, Puiu D, Roberts M, Salzberg SL, Yorke JA. The MaSuRCA genome assembler. Bioinformatics. 2013;29: 2669–2677. doi:10.1093/bioinformatics/btt476
+        link: https://academic.oup.com/bioinformatics/article/29/21/2669/195975
