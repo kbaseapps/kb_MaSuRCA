@@ -41,6 +41,7 @@ def _mkdir_p(path):
         else:
             raise
 
+
 class masurca_utils:
     MaSuRCA_VERSION = 'MaSuRCA-3.2.3'
     MaSuRCA_BIN = '/kb/module/' + MaSuRCA_VERSION + '/bin/masurca'
@@ -68,19 +69,19 @@ class masurca_utils:
         self.proj_dir = prj_dir
         self.prog_runner = Program_Runner(self.MaSuRCA_BIN, self.proj_dir)
 
-
     def validate_params(self, params):
         """
         validate_params: checks params passed to run_masurca_app method and set default values
         """
-        #log('Start validating run_masurca_app parameters:\n{}'.format(json.dumps(params, indent=1)))
+        # log('Start validating run_masurca_app parameters:\n{}'.format(json.dumps(params, indent=1)))
 
         # check for mandatory parameters
         if params.get(self.PARAM_IN_WS, None) is None:
             raise ValueError(self.PARAM_IN_WS + ' parameter is mandatory')
         if self.PARAM_IN_THREADN not in params:
             raise ValueError(self.PARAM_IN_THREADN + ' parameter is mandatory')
-        #params[self.PARAM_IN_THREADN] = min(params.get(self.PARAM_IN_THREADN), psutil.cpu_count())
+
+        # params[self.PARAM_IN_THREADN] = min(params.get(self.PARAM_IN_THREADN), psutil.cpu_count())
 
         if params.get(self.PARAM_IN_JF_SIZE, None) is None:
             raise ValueError(self.PARAM_IN_JF_SIZE + ' parameter is mandatory')
@@ -91,8 +92,9 @@ class masurca_utils:
 
         if (params.get(self.PARAM_IN_CS_NAME, None) is None or
                 not self.valid_string(params[self.PARAM_IN_CS_NAME])):
-            raise ValueError("Parameter output_contigset_name is required and must be a valid Workspace object string, "
-                      "not {}".format(params.get(self.PARAM_IN_CS_NAME, None)))
+            raise ValueError("Parameter output_contigset_name is required and" +
+                             " must be a valid Workspace object string, " +
+                             "not {}".format(params.get(self.PARAM_IN_CS_NAME, None)))
         if ('pe_prefix' not in params):
             params['pe_prefix'] = 'pe'
         if ('pe_mean' not in params or type(params['pe_mean']) != int):
@@ -105,7 +107,6 @@ class masurca_utils:
 
         return params
 
-
     def construct_masurca_config_0(self, params):
         # STEP 1: get the working folder housing the config.txt file and the masurca results
         wsname = params[self.PARAM_IN_WS]
@@ -114,22 +115,27 @@ class masurca_utils:
         # STEP 2: retrieve the reads data from input parameter
         pe_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_READS_LIBS])
         jp_reads_data = []
-        if params.get(self.PARAM_IN_JUMP_LIBS, None) is not None:
+        if params.get(self.PARAM_IN_JUMP_LIBS, None):
             jp_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_JUMP_LIBS])
 
         # STEP 3: construct and save the config.txt file for running masurca
         try:
-            # STEP 3.1: replace the 'DATA...END' portion of the config_template.txt file 
+            # STEP 3.1: replace the 'DATA...END' portion of the config_template.txt file
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
                 with codecs.open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
-                          mode='r', encoding='utf-8') as config_template_file:
+                                 mode='r', encoding='utf-8') as config_template_file:
                     config_template = config_template_file.read()
                     data_str = ''
                     if pe_reads_data:
-                        log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
-                        data_str += 'PE= ' + params['pe_prefix'] + ' ' + str(params['pe_mean']) + ' ' + str(params['pe_stdev']) + ' ' + pe_reads_data[0]['fwd_file']
+                        log('PE reads data details:\n{}'.format(
+                            json.dumps(pe_reads_data, indent=1)))
+                        data_str += ('PE= ' + params['pe_prefix'] +
+                                     ' ' + str(params['pe_mean']) +
+                                     ' ' + str(params['pe_stdev']) +
+                                     ' ' + pe_reads_data[0]['fwd_file'])
                         if pe_reads_data[0].get('rev_file', None) is not None:
                             data_str += ' ' + pe_reads_data[0]['rev_file']
+
                     if jp_reads_data:
                         if ('jp_mean' not in params or type(params['jp_mean']) != int):
                             params['jp_mean'] = 3600
@@ -137,16 +143,21 @@ class masurca_utils:
                             params['pe_stdev'] = 200
                         if data_str != '':
                             data_str += '\n'
-                        data_str += 'JUMP= ' + params['jp_prefix'] + ' ' + str(params['jp_mean']) + ' ' + str(params['jp_stdev']) + ' ' + jp_reads_data[0]['fwd_file']
+                        data_str += ('JUMP= ' + params['jp_prefix'] +
+                                     ' ' + str(params['jp_mean']) +
+                                     ' ' + str(params['jp_stdev']) +
+                                     ' ' + jp_reads_data[0]['fwd_file'])
                         if jp_reads_data[0].get('rev_file', None) is not None:
                             data_str += ' ' + jp_reads_data[0]['rev_file']
 
-                    #TODO adding the pacbio_reads and other_frg_file inputs if any
+                    # TODO add the pacbio_reads and other_frg_file inputs if any
                     begin_patn1 = "DATA\n"
                     end_patn1 = "END\nPARAMETERS\n"
-                    config_with_data = self._replaceSectionText(config_template, begin_patn1, end_patn1, data_str)
+                    config_with_data = self._replaceSectionText(config_template, begin_patn1,
+                                                                end_patn1, data_str)
                     config_file.write(config_with_data)
-                    #log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
+                    # log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(
+                    # config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
 
             # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
             with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
@@ -194,17 +205,18 @@ class masurca_utils:
 
             begin_patn2 = "PARAMETERS\n"
             end_patn2 = "END\n"
-            final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
+            final_config = self._replaceSectionText(previous_config, begin_patn2,
+                                                    end_patn2, param_str)
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
                 config_file.write(final_config)
-            log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(final_config.encode('utf-8').decode('utf-8'), config_file_path))
+            log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(
+                final_config.encode('utf-8').decode('utf-8'), config_file_path))
         except IOError as ioerr:
             log('Creation of the config.txt file raised error:\n')
             pprint(ioerr)
             return ''
         else:
             return config_file_path
-
 
     def construct_masurca_config_1(self, params):
         # STEP 1: get the working folder housing the config.txt file and the masurca results
@@ -219,21 +231,22 @@ class masurca_utils:
 
         # STEP 3: construct and save the config.txt file for running masurca
         try:
-            # STEP 3.1: replace the 'DATA...END' portion of the config_template.txt file 
+            # STEP 3.1: replace the 'DATA...END' portion of the config_template.txt file
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
                 with codecs.open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
-                          mode='r', encoding='utf-8') as config_template_file:
+                                 mode='r', encoding='utf-8') as config_template_file:
                     config_template = config_template_file.read()
                     data_str = ''
                     if pe_reads_data:
-                        log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
+                        log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data,
+                                                                indent=1)))
                         i = 0
                         for pe in pe_reads_data:
                             i += 1
                             if data_str != '':
                                 data_str += '\n'
-                            data_str += 'PE= ' + 'p' + str(i) + ' ' + str(params['pe_mean']) + ' ' + \
-                                                str(params['pe_stdev']) + ' ' + pe['fwd_file']
+                            data_str += ('PE= ' + 'p' + str(i) + ' ' + str(params['pe_mean']) +
+                                         ' ' + str(params['pe_stdev']) + ' ' + pe['fwd_file'])
                             if pe.get('rev_file', None) is not None:
                                 data_str += ' ' + pe['rev_file']
 
@@ -247,47 +260,52 @@ class masurca_utils:
                             j += 1
                             if data_str != '':
                                 data_str += '\n'
-                            data_str += 'JUMP= ' + 'j' + str(j) + ' ' + str(params['jp_mean']) + ' ' +\
-                                                str(params['jp_stdev']) + ' ' + jp['fwd_file']
+                            data_str += ('JUMP= ' + 'j' + str(j) + ' ' + str(params['jp_mean']) +
+                                         ' ' + str(params['jp_stdev']) + ' ' + jp['fwd_file'])
                             if jp.get('rev_file', None) is not None:
                                 data_str += ' ' + jp['rev_file']
 
-                    if data_str == '': #no reads libraries are specified, no further actions
+                    if data_str == '':  # no reads libraries are specified, no further actions
                         return ''
 
-                    #TODO adding the pacbio_reads and note that pcbio reads must be in a single fasta file!
-                    #For example: data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/aligned_reads.fasta'
-                    #TODO adding the other_frg_file inputs if any
+                    # TODO add the pacbio_reads and note that pcbio reads must be in a single
+                    # fasta file!
+                    # For example:
+                    # data_str += '\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/aligned_reads.fasta'
+                    # TODO add the other_frg_file inputs if any
                     begin_patn1 = "DATA\n"
                     end_patn1 = "END\nPARAMETERS\n"
-                    config_with_data = self._replaceSectionText(config_template, begin_patn1, end_patn1, data_str)
+                    config_with_data = self._replaceSectionText(config_template, begin_patn1,
+                                                                end_patn1, data_str)
                     config_file.write(config_with_data)
-                    #log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
+                    # log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(
+                    # config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
 
-            # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
-            param_str = self._get_parameters_portion(params)
+                # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
+                param_str = self._get_parameters_portion(params)
+                if param_str == '':  # no parameters are specified, no further actions
+                    return ''
 
-            if param_str == '': #no parameters are specified, no further actions
-		return ''
+                previous_config = ''
+                with codecs.open(
+                            config_file_path, mode='r', encoding='utf-8') as previous_config_file:
+                    previous_config = previous_config_file.read()
 
-            previous_config = ''
-            with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
-                previous_config = previous_config_file.read()
+                begin_patn2 = "PARAMETERS\n"
+                end_patn2 = "END\n"
+                final_config = self._replaceSectionText(previous_config, begin_patn2,
+                                                        end_patn2, param_str)
+                log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(
+                                    final_config.encode('utf-8').decode('utf-8'), config_file_path))
 
-            begin_patn2 = "PARAMETERS\n"
-            end_patn2 = "END\n"
-            final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
-            log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(final_config.encode('utf-8').decode('utf-8'), config_file_path))
-
-            with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
-		config_file.write(final_config)
+                with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
+                    config_file.write(final_config)
         except IOError as ioerr:
             log('Creation of the config.txt file raised error:\n')
             pprint(ioerr)
             return ''
         else:
             return config_file_path
-
 
     def construct_masurca_assembler_cfg(self, params):
         # STEP 1: get the working folder housing the config.txt file and the masurca results
@@ -297,45 +315,54 @@ class masurca_utils:
         # STEP 2: retrieve the reads data from input parameter
         pe_reads_data = self._getReadsInfo_PE(params)
         jp_reads_data = []
-        if params.get(self.PARAM_IN_JUMP_LIBS, None) is not None:
+        if params.get(self.PARAM_IN_JUMP_LIBS, None):
             jp_reads_data = self._getReadsInfo_JP(params)
+            if ('jp_mean' not in params or type(params['jp_mean']) != int):
+                params['jp_mean'] = 3600
+            if ('jp_stdev' not in params or type(params['jp_stdev']) != int):
+                params['jp_stdev'] = 200
 
-        #PACBIO reads must be in a single FASTA file and supplied as PACBIO=reads.fa;
+        # PACBIO reads must be in a single FASTA file and supplied as PACBIO=reads.fa;
         pb_reads_file = ''
-        if params.get('pacbio_assembly', None) is not None:
+        if params.get('pacbio_assembly', None):
             pb_reads_file = (self.get_fasta_from_assembly(params['pacbio_assembly'])).get('path','')
 
-        #NANOPORE reads must be in a single FASTA file and supplied as NANOPORE=reads.fa
+        # NANOPORE reads must be in a single FASTA file and supplied as NANOPORE=reads.fa
         np_reads_file = ''
-        if params.get('nanopore_assembly', None) is not None:
+        if params.get('nanopore_assembly', None):
             np_reads_file = (self.get_fasta_from_assembly(params['nanopore_assembly'])).get('path','')
 
-        #any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg files
+        # any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into
+        # Celera Assembler compatible .frg files
         # (see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
         other_frg = ''
-        if params.get('other_frg_file', None) is not None:
+        if params.get('other_frg_file', None):
             other_frg = params['other_frg_file']
 
         # STEP 3: construct and save the config.txt file for running masurca
         try:
             # STEP 3.1: replace the 'DATA...END' portion of the config_template.txt file 
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
-                with codecs.open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
-                          mode='r', encoding='utf-8') as config_template_file:
+                with codecs.open(
+                    os.path.join(os.path.dirname(__file__), 'config_template.txt'), mode='r',
+                    encoding='utf-8') as config_template_file:
                     config_template = config_template_file.read()
-                    data_str = self._get_data_portion(pe_reads_data, jp_reads_data, pb_reads_file, np_reads_file, other_frg)
-                    if data_str == '': #no reads libraries are specified, no further actions
+                    data_str = self._get_data_portion(pe_reads_data, jp_reads_data,
+                                                      pb_reads_file, np_reads_file, other_frg)
+                    if data_str == '':  # no reads libraries are specified, no further actions
                         return ''
                     begin_patn1 = "DATA\n"
                     end_patn1 = "END\nPARAMETERS\n"
-                    config_with_data = self._replaceSectionText(config_template, begin_patn1, end_patn1, data_str)
-                    #log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
+                    config_with_data = self._replaceSectionText(config_template, begin_patn1,
+                                                                end_patn1, data_str)
+                    # log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(
+                    # config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
                     config_file.write(config_with_data)
 
             # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
             param_str = self._get_parameters_portion(params)
-            if param_str == '': #no parameters are specified, no further actions
-		return ''
+            if param_str == '':  # no parameters are specified, no further actions
+                return ''
 
             previous_config = ''
             with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
@@ -343,8 +370,10 @@ class masurca_utils:
 
             begin_patn2 = "PARAMETERS\n"
             end_patn2 = "END\n"
-            final_config = self._replaceSectionText(previous_config, begin_patn2, end_patn2, param_str)
-            log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(final_config.encode('utf-8').decode('utf-8'), config_file_path))
+            final_config = self._replaceSectionText(previous_config, begin_patn2,
+                                                    end_patn2, param_str)
+            log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(
+                        final_config.encode('utf-8').decode('utf-8'), config_file_path))
 
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
                 config_file.write(final_config)
@@ -355,104 +384,103 @@ class masurca_utils:
         else:
             return config_file_path
 
+    def _get_data_portion(self, pe_reads_data, jp_reads_data=None, pacbio_reads_file='',
+                          nanopore_reads_file='', other_frg_file=''):
+        """
+        build the 'DATA...END' portion for the config.txt file
+        """
+        data_str = ''
+        if pe_reads_data:
+                log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
+                for pe in pe_reads_data:
+                    if data_str != '':
+                        data_str += '\n'
+                    data_str += 'PE= ' + pe['pe_prefix'] + ' ' + str(pe['pe_mean']) + ' ' + \
+                                str(pe['pe_stdev']) + ' ' + pe['fwd_file']
+                    if pe.get('rev_file', None):
+                        data_str += ' ' + pe['rev_file']
 
-    def _get_data_portion(self, pe_reads_data, jp_reads_data=None, pacbio_reads_file='', nanopore_reads_file='', other_frg_file=''):
-	"""
-	build the 'DATA...END' portion for the config.txt file
-	"""
-	data_str = ''
-	if pe_reads_data:
-            log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
-            for pe in pe_reads_data:
-		if data_str != '':
-                    data_str += '\n'
-                data_str += 'PE= ' + pe['pe_prefix'] + ' ' + str(pe['pe_mean']) + ' ' + \
-					str(pe['pe_stdev']) + ' ' + pe['fwd_file']
-		if pe.get('rev_file', None) is not None:
-                    data_str += ' ' + pe['rev_file']
-
-	if jp_reads_data:
+        if jp_reads_data:
             log('JUMP reads data details:\n{}'.format(json.dumps(jp_reads_data, indent=1)))
-            if ('jp_mean' not in params or type(params['jp_mean']) != int):
-		params['jp_mean'] = 3600
-            if ('pe_stdev' not in params or type(params['jp_stdev']) != int):
-		params['pe_stdev'] = 200
             for jp in jp_reads_data:
-		if data_str != '':
+                if data_str != '':
                     data_str += '\n'
-		data_str += 'JUMP= ' + jp['jp_prefix'] + ' ' + str(jp['jp_mean']) + ' ' + \
-					str(jp['jp_stdev']) + ' ' + jp['fwd_file']
-		if jp.get('rev_file', None) is not None:
+                data_str += 'JUMP= ' + jp['jp_prefix'] + ' ' + str(jp['jp_mean']) + ' ' + \
+                            str(jp['jp_stdev']) + ' ' + jp['fwd_file']
+                if jp.get('rev_file', None):
                     data_str += ' ' + jp['rev_file']
 
-        #Adding the pacbio_reads and note that pcbio reads must be in a single fasta file!
-	#For example: data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/pacbio_reads.fasta'
+        # Adding the pacbio_reads
+        # Note that pcbio reads must be in a single fasta file!
+        # For example:
+        # data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/pacbio_reads.fasta'
         if pacbio_reads_file != '':
             if data_str != '':
                 data_str += '\n'
-            data_str +='PACBIO= ' + pacbio_reads_file
-        #Adding the nanopore_reads and note that nanopore reads must be in a single fasta file!
-	#For example: data_str +='\nNANOPORE= /pool/genomics/frandsenp/masurca/NanoPore/nanopore_reads.fasta'
+            data_str += 'PACBIO= ' + pacbio_reads_file
+
+        # Adding the nanopore_reads and note that nanopore reads must be in a single fasta file!
+        # For example:
+        # data_str +='\nNANOPORE= /pool/genomics/frandsenp/masurca/NanoPore/nanopore_reads.fasta'
         if nanopore_reads_file != '':
             if data_str != '':
                 data_str += '\n'
-            data_str +='NANOPORE= ' + nanopore_reads_file
-	#Adding the other_frg_file inputs if any
-        ##any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg file
-        #(see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
+            data_str += 'NANOPORE= ' + nanopore_reads_file
+        
+        # Adding the other_frg_file inputs if any
+        # any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into 
+        # Celera Assembler compatible .frg file
+        # (see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
         if other_frg_file != '':
             if data_str != '':
                 data_str += '\n'
-            data_str +='OTHER= ' + other_frg_file
+            data_str += 'OTHER= ' + other_frg_file
 
         return data_str
 
     def _get_parameters_portion(self, params):
-	"""
-	build the 'PARAMETERS...END' portion for the config.txt file 
-	"""
-	param_str = ''
-	if params.get('graph_kmer_size', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'GRAPH_KMER_SIZE=' + str(params['graph_kmer_size'])
-	if (params.get('graph_kmer_size', None) is None or
-                        type(params['graph_kmer_size']) != int):
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'GRAPH_KMER_SIZE=auto'
-        if params.get('use_linking_mates', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                if params['use_linking_mates'] == 1:
-                    param_str += 'USE_LINKING_MATES=1'
-                else:
-                    param_str += 'USE_LINKING_MATES=0'
-        if params.get('limit_jump_coverage', None) is not None:
-                if param_str != '':
-                   param_str += '\n'
-                param_str += 'LIMIT_JUMP_COVERAGE = ' + str(params['limit_jump_coverage'])
-        if params.get('cgwErrorRate', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'CA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
-        if params.get('num_threads', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'NUM_THREADS=' + str(params['num_threads'])
-        if params.get('jf_size', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'JF_SIZE=' + str(params['jf_size'])
-        if params.get('do_homopolymer_trim', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                if params['do_homopolymer_trim'] == 1:
-                    param_str += 'DO_HOMOPOLYMER_TRIM=1'
-                else:
-                    param_str += 'DO_HOMOPOLYMER_TRIM=0'
-	return param_str
-
+        """
+        build the 'PARAMETERS...END' portion for the config.txt file
+        """
+        param_str = ''
+        if params.get('graph_kmer_size', None):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'GRAPH_KMER_SIZE=' + str(params['graph_kmer_size'])
+        if (params.get('graph_kmer_size', None) is None or type(params['graph_kmer_size']) != int):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'GRAPH_KMER_SIZE=auto'
+        if params.get('use_linking_mates', None):
+            if param_str != '':
+                param_str += '\n'
+            if params['use_linking_mates'] == 1:
+                param_str += 'USE_LINKING_MATES=1'
+            else:
+                param_str += 'USE_LINKING_MATES=0'
+        if params.get('limit_jump_coverage', None):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'LIMIT_JUMP_COVERAGE = ' + str(params['limit_jump_coverage'])
+        if params.get('cgwErrorRate', None):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'CA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
+        if params.get('num_threads', None):
+            if param_str != '':
+                param_str += '\n'
+        if params.get('jf_size', None):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'JF_SIZE=' + str(params['jf_size'])
+        if params.get('do_homopolymer_trim', None):
+            if param_str != '':
+                param_str += '\n'
+            if params['do_homopolymer_trim'] == 1:
+                param_str += 'DO_HOMOPOLYMER_TRIM=1'
+            else:
+                param_str += 'DO_HOMOPOLYMER_TRIM=0'
+        return param_str
 
     def generate_assemble_script(self, config_file):
         exit_code = 1
@@ -480,8 +508,7 @@ class masurca_utils:
         with codecs.open(asmbl_file, mode='r', encoding='utf-8') as a_file:
             afile_content = a_file.read()
             log("\n*******************\nThe assemble.sh file content if any:\n")
-            log("{}\n****************".format(afile_content.encode('utf-8','replace').decode('utf-8')))
-
+            log("{}\n***".format(afile_content.encode('utf-8', 'replace').decode('utf-8')))
 
     def run_assemble(self, asmbl_file):
         exit_code = 1
@@ -496,10 +523,11 @@ class masurca_utils:
             log('Return code: ' + str(exit_code))
 
             if p.returncode != 0:
-                raise ValueError('Error running assemble.sh, return code: ' + str(p.returncode) + '\n')
+                raise ValueError('Error running assemble.sh, return code: ' +
+                                 str(p.returncode) + '\n')
             else:
                 exit_code = p.returncode
-            #exit_code = self.prog_runner.run(a_cmd, f_dir)
+            # exit_code = self.prog_runner.run(a_cmd, f_dir)
         else:
             log("The assemble.sh file {} is not found.".format(asmbl_file))
         return exit_code
@@ -510,9 +538,8 @@ class masurca_utils:
             output_contigs = os.path.join(self.proj_dir, contig_fa)
             self.au.save_assembly_from_fasta(
                             {'file': {'path': output_contigs},
-                            'workspace_name': wsname,
-                            'assembly_name': a_name
-                            })
+                             'workspace_name': wsname,
+                             'assembly_name': a_name})
         else:
             log("The contig file {} is not found.".format(contig_fa))
 
@@ -530,15 +557,13 @@ class masurca_utils:
         if repl_txt != '':
             # create regular expression pattern
             repl = re.compile(begin_patn + '.*?' + end_patn, re.DOTALL)
-
             repl_txt = begin_patn + repl_txt + '\n' + end_patn
             # replace the text between begin_patn and end_patn with repl_txt
             txt_replaced = repl.sub(repl_txt, orig_txt)
-            #pprint(txt_replaced)
+            # pprint(txt_replaced)
             return txt_replaced
         else:
             return orig_txt
-
 
     def _unique_prefix_check(self, pfix, refs):
         prefix_lookup = {}
@@ -549,10 +574,10 @@ class masurca_utils:
             else:
                 raise ValueError('The first two letters in \'' + refs[k][pfix] + '\' has been used.')
 
-
     def _getReadsInfo_PE(self, input_params):
         """
-        _getReadsInfo_PE--from a list of paired_readsParams structures fetches the corresponding reads info with the paired_readsParams[pe_id]
+        _getReadsInfo_PE--from a list of paired_readsParams structures fetches the corresponding
+        reads info with the paired_readsParams[pe_id]
         returns a list of reads data in the following structure:
         reads_data = {
                 'fwd_file': path_to_fastq_file,
@@ -566,11 +591,12 @@ class masurca_utils:
                 'rev_file': path_to_fastq_file, #only if paired end
         }
         """
-	rds_params = copy.deepcopy(input_params)
-	wsname = rds_params[self.PARAM_IN_WS]
-	rds_refs = []
-	rds_data = []
+        rds_params = copy.deepcopy(input_params)
+        wsname = rds_params[self.PARAM_IN_WS]
+        rds_refs = []
+        rds_data = []
         self._unique_prefix_check('pe_prefix', rds_params[self.PARAM_IN_READS_LIBS])
+
         # reads_libraries grouped params
         if 'reads_libraries' in rds_params and rds_params['reads_libraries'] != None:
             for rds_lib in rds_params['reads_libraries']:
@@ -579,29 +605,31 @@ class masurca_utils:
             rds_data = self._getKBReadsInfo(wsname, rds_refs)
 
             for rds_lib in rds_params['reads_libraries']:
-		for rds in rds_data:
+                for rds in rds_data:
                     if ('pe_id' in rds_lib and rds_lib['pe_id'] == rds['reads_ref']):
                         if 'pe_prefix' in rds_lib:
-
                             rds['pe_prefix'] = rds_lib['pe_prefix'][:2]
                         else:
-                            raise ValueError("Parameter pe_prefix is required for reads {}".format(rds[reads_ref]))
+                            raise ValueError(
+                                "Parameter pe_prefix is required for reads {}".format(rds[reads_ref]))
                         if 'pe_mean' in rds_lib:
                             rds['pe_mean'] = rds_lib['pe_mean']
-			else:
-                            raise ValueError("Parameter pe_mean is required for reads {}".format(rds[reads_ref]))
-			if 'pe_stdev' in rds_lib:
+                        else:
+                            raise ValueError(
+                                "Parameter pe_mean is required for reads {}".format(rds[reads_ref]))
+                        if 'pe_stdev' in rds_lib:
                             rds['pe_stdev'] = rds_lib['pe_stdev']
-			else:
-                            raise ValueError("Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
-	else:
-		raise ValueError("Parameter {} is required for reads {}".format('reads_libraries'))
-	return rds_data
-
+                        else:
+                            raise ValueError(
+                                "Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
+        else:
+            raise ValueError("Parameter {} is required for reads {}".format('reads_libraries'))
+        return rds_data
 
     def _getReadsInfo_JP(self, input_params):
         """
-        _getReadsInfo_JP--from a list of jump_readsParams structures fetches the corresponding reads info with the paired_readsParams[pe_id]
+        _getReadsInfo_JP--from a list of jump_readsParams structures fetches the corresponding
+        reads info with the paired_readsParams[pe_id]
         returns a list of reads data in the following structure:
         reads_data = {
                 'fwd_file': path_to_fastq_file,
@@ -615,12 +643,13 @@ class masurca_utils:
                 'rev_file': path_to_fastq_file, #only if paired end
         }
         """
-	rds_params = copy.deepcopy(input_params)
-	wsname = rds_params[self.PARAM_IN_WS]
-	rds_refs = []
-	rds_data = []
+        rds_params = copy.deepcopy(input_params)
+        wsname = rds_params[self.PARAM_IN_WS]
+        rds_refs = []
+        rds_data = []
+
         # jump_libraries grouped params
-        if 'jump_libraries' in rds_params and rds_params['jump_libraries'] != None:
+        if 'jump_libraries' in rds_params and rds_params['jump_libraries']:
             self._unique_prefix_check('jp_prefix', rds_params['jump_libraries'])
             for rds_lib in rds_params['jump_libraries']:
                 if 'jp_id' in rds_lib:
@@ -628,22 +657,24 @@ class masurca_utils:
             rds_data = self._getKBReadsInfo(wsname, rds_refs)
 
             for rds_lib in rds_params['jump_libraries']:
-		for rds in rds_data:
+                for rds in rds_data:
                     if ('jp_id' in rds_lib and rds_lib['jp_id'] == rds['reads_ref']):
-			if 'jp_prefix' in rds_lib:
+                        if 'jp_prefix' in rds_lib:
                             rds['jp_prefix'] = rds_lib['jp_prefix'][:2]
-			else:
-                            raise ValueError("Parameter jp_prefix is required for reads {}".format(rds[reads_ref]))
-			if 'jp_mean' in rds_lib:
+                        else:
+                            raise ValueError(
+                                "Parameter jp_prefix is required for reads {}".format(rds[reads_ref]))
+                        if 'jp_mean' in rds_lib:
                             rds['jp_mean'] = rds_lib['jp_mean']
-			else:
-                            raise ValueError("Parameter jp_mean is required for reads {}".format(rds[reads_ref]))
-			if 'jp_stdev' in rds_lib:
+                        else:
+                            raise ValueError(
+                                "Parameter jp_mean is required for reads {}".format(rds[reads_ref]))
+                        if 'jp_stdev' in rds_lib:
                             rds['jp_stdev'] = rds_lib['jp_stdev']
-			else:
-                            raise ValueError("Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
-	return rds_data
-
+                        else:
+                            raise ValueError(
+                                "Parameter pe_stdev is required for reads {}".format(rds[reads_ref]))
+        return rds_data
 
     def _getKBReadsInfo(self, wsname, reads_refs):
         """
@@ -719,6 +750,7 @@ class masurca_utils:
 
         return reads_data
 
+
     def get_fasta_from_assembly(self, assembly_ref):
         """
         From an assembly or contigset, this uses a data file util to build a FASTA file and return the
@@ -777,11 +809,11 @@ class masurca_utils:
         report_ref = report_output['ref']
         return report_name, report_ref
 
+
     def _generate_output_file_list(self, out_dir):
         """
         _generate_output_file_list: zip result files and generate file_links for report
         """
-
         log('start packing result files')
 
         output_files = list()
@@ -798,8 +830,10 @@ class masurca_utils:
 
         return output_files
 
+
     def _zip_folder(self, folder_path, output_path):
-        """Zip the contents of an entire folder (with that folder included in the archive).
+        """
+        _zip_folder: Zip the contents of an entire folder (with that folder included in the archive).
         Empty subfolders could be included in the archive as well if the commented portion is used.
         """
         with zipfile.ZipFile(output_path, 'w',
@@ -813,7 +847,6 @@ class masurca_utils:
                     ziph.write(absolute_path, relative_path)
 
         print "{} created successfully.".format(output_path)
-
         #with zipfile.ZipFile(output_path, "r") as f:
         #    print 'Checking the zipped file......\n'
         #    for info in f.infolist():
@@ -855,11 +888,13 @@ class masurca_utils:
             fasta_dict[contig_id] = sequence_len
         return fasta_dict
 
+
     def valid_string(self, s_str, is_ref=False):
         is_valid = isinstance(s_str, basestring) and len(s_str.strip()) > 0
         if is_valid and is_ref:
             is_valid = check_reference(s_str)
         return is_valid
+
 
     def check_reference(self, ref):
         """
@@ -872,6 +907,7 @@ class masurca_utils:
             if not obj_ref_regex.match(step):
                 return False
         return True
+
 
     def check_ref_type(self, ref, allowed_types):
         """
@@ -893,6 +929,7 @@ class masurca_utils:
             if t.lower() in obj_type:
                 return True
         return False
+
 
     def get_object_type(self, ref):
         """

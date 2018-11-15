@@ -2,29 +2,9 @@ import os
 import re
 import time
 import uuid
-import json
-import shutil
-import subprocess
-import numpy as np
-from datetime import datetime
-from Bio import SeqIO
-from pprint import pprint, pformat
-import traceback
-import zipfile
-import multiprocessing
 
 from MaSuRCA.core.masurca_utils import masurca_utils
 
-from DataFileUtil.DataFileUtilClient import DataFileUtil
-from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
-from KBaseReport.KBaseReportClient import KBaseReport
-from KBaseReport.baseclient import ServerError as _RepError
-from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
-from kb_quast.kb_quastClient import kb_quast
-from kb_quast.baseclient import ServerError as QUASTError
-from ReadsUtils.ReadsUtilsClient import ReadsUtils
-from ReadsUtils.baseclient import ServerError
-from Workspace.WorkspaceClient import Workspace as workspace
 
 def log(message, prefix_newline=False):
     """Logging function, provides a hook to suppress or redirect log messages."""
@@ -40,7 +20,7 @@ def _mkdir_p(path):
     try:
         os.makedirs(path)
     except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
+        if exc.errno == os.errno.EEXIST and os.path.isdir(path):
             pass
         else:
             raise
@@ -86,12 +66,9 @@ class MaSuRCA_Assembler(object):
         # END_CONSTRUCTOR
         pass
 
-
     def run_masurca_assembler(self, params):
         # 1. validate & process the input parameters
         validated_params = self.m_utils.validate_params(params)
-
-        wsname = params['workspace_name']
 
         # 2. create the configuration file 
         config_file = self.m_utils.construct_masurca_assembler_cfg(validated_params)
@@ -111,8 +88,7 @@ class MaSuRCA_Assembler(object):
 
         return returnVal
 
-
-    def save_assembly(self, params, asmbl_ok, contig_fa_file = 'dedup.genome.scf.fasta'):
+    def save_assembly(self, params, asmbl_ok, contig_fa_file='dedup.genome.scf.fasta'):
         """
         save the assembly to KBase and, if everything has gone well, create a report
         """
@@ -138,7 +114,6 @@ class MaSuRCA_Assembler(object):
 
         return returnVal
 
-
     def find_file_path(self, search_dir, search_file_name):
         for dirName, subdirList, fileList in os.walk(search_dir):
             #log('Found directory: {}'.format(dirName))
@@ -148,12 +123,9 @@ class MaSuRCA_Assembler(object):
                     return dirName
         return ''
 
-
     def run_masurca_app_0(self, params):
         # 1. validate & process the input parameters
         validated_params = self.m_utils.validate_params(params)
-
-        wsname = params['workspace_name']
 
         # 2. create the configuration file 
         config_file = self.m_utils.construct_masurca_config_0(validated_params)
@@ -171,12 +143,9 @@ class MaSuRCA_Assembler(object):
         # 5. save the assembly to KBase and, if everything has gone well, create a report
         return self.save_assembly(params, assemble_ok, 'dedup.genome.scf.fasta')
 
-
     def run_masurca_app_1(self, params):
         # 1. validate & process the input parameters
         validated_params = self.m_utils.validate_params(params)
-
-        wsname = params['workspace_name']
 
         # 2. create the configuration file 
         config_file = self.m_utils.construct_masurca_config_1(validated_params)
@@ -194,12 +163,9 @@ class MaSuRCA_Assembler(object):
         # 5. save the assembly to KBase and, if everything has gone well, create a report
         return self.save_assembly(params, assemble_ok, 'dedup.genome.scf.fasta')
 
-
     def run_masurca_app(self, params):
         # 1. validate & process the input parameters
         validated_params = self.m_utils.validate_params(params)
-
-        wsname = params['workspace_name']
 
         # 2. create the configuration file 
         config_file = self.m_utils.construct_masurca_config(validated_params)
@@ -217,7 +183,6 @@ class MaSuRCA_Assembler(object):
         # 5. save the assembly to KBase and, if everything has gone well, create a report
         return self.save_assembly(params, assemble_ok, 'dedup.genome.scf.fasta')
 
-
     def create_proj_dir(self, home_dir):
         """
         creating the project directory for MaSuRCA
@@ -227,7 +192,6 @@ class MaSuRCA_Assembler(object):
         self.proj_dir = prjdir
 
         return prjdir
-
 
     def get_version_from_subactions(self, module_name, subactions):
         # go through each sub action looking for
@@ -244,5 +208,5 @@ class MaSuRCA_Assembler(object):
                     if re.match('[a-fA-F0-9]{40}$', sa['commit']):
                         return sa['commit']
         # again, default to setting this to release
-        return 'dev' #'release'
+        return 'dev'  # 'release'
 
