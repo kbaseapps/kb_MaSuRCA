@@ -2,7 +2,7 @@
    Name of module: MaSuRCA
 
    This KBase module wraps the genome assembly software MaSuRCA(Maryland Super-Read Celera Assembler).
-   MaSuRCA 3.2.3
+   MaSuRCA 3.2.9
 
 
    References:

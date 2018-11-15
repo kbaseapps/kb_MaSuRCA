@@ -29,7 +29,7 @@ MaSuRCA::MaSuRCAClient
 Name of module: MaSuRCA
 
 This KBase module wraps the genome assembly software MaSuRCA(Maryland Super-Read Celera Assembler).
-MaSuRCA 3.2.3
+MaSuRCA 3.2.9
 
 
 References:
@@ -138,7 +138,6 @@ masurcaParams is a reference to a hash where the following keys are defined:
 	pe_prefix has a value which is a string
 	pe_mean has a value which is an int
 	pe_stdev has a value which is an int
-	reads_id has a value which is a kb_MaSuRCA.read_lib
 	jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
 	jp_prefix has a value which is a string
 	jp_mean has a value which is an int
@@ -177,7 +176,6 @@ masurcaParams is a reference to a hash where the following keys are defined:
 	pe_prefix has a value which is a string
 	pe_mean has a value which is an int
 	pe_stdev has a value which is an int
-	reads_id has a value which is a kb_MaSuRCA.read_lib
 	jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
 	jp_prefix has a value which is a string
 	jp_mean has a value which is an int
@@ -257,6 +255,156 @@ Definition of run_masurca
     }
 }
  
+
+
+=head2 run_masurca_assembler
+
+  $output = $obj->run_masurca_assembler($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a kb_MaSuRCA.masurcaAssemblerParams
+$output is a kb_MaSuRCA.masurcaResults
+masurcaAssemblerParams is a reference to a hash where the following keys are defined:
+	workspace_name has a value which is a string
+	num_threads has a value which is an int
+	jf_size has a value which is an int
+	reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.paired_readsParams
+	jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.jump_readsParams
+	pacbio_assembly has a value which is a kb_MaSuRCA.obj_ref
+	nanopore_assembly has a value which is a kb_MaSuRCA.obj_ref
+	other_frg_file has a value which is a string
+	graph_kmer_size has a value which is a string
+	use_linking_mates has a value which is a kb_MaSuRCA.bool
+	limit_jump_coverage has a value which is an int
+	cgwErrorRate has a value which is a float
+	kmer_count_threshold has a value which is an int
+	close_gaps has a value which is a kb_MaSuRCA.bool
+	soap_assembly has a value which is a kb_MaSuRCA.bool
+	do_homopolymer_trim has a value which is a kb_MaSuRCA.bool
+	output_contigset_name has a value which is a string
+	create_report has a value which is a kb_MaSuRCA.bool
+paired_readsParams is a reference to a hash where the following keys are defined:
+	pe_id has a value which is a kb_MaSuRCA.obj_ref
+	pe_prefix has a value which is a string
+	pe_mean has a value which is an int
+	pe_stdev has a value which is an int
+obj_ref is a string
+jump_readsParams is a reference to a hash where the following keys are defined:
+	jp_id has a value which is a kb_MaSuRCA.obj_ref
+	jp_prefix has a value which is a string
+	jp_mean has a value which is an int
+	jp_stdev has a value which is an int
+bool is an int
+masurcaResults is a reference to a hash where the following keys are defined:
+	report_name has a value which is a string
+	report_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a kb_MaSuRCA.masurcaAssemblerParams
+$output is a kb_MaSuRCA.masurcaResults
+masurcaAssemblerParams is a reference to a hash where the following keys are defined:
+	workspace_name has a value which is a string
+	num_threads has a value which is an int
+	jf_size has a value which is an int
+	reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.paired_readsParams
+	jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.jump_readsParams
+	pacbio_assembly has a value which is a kb_MaSuRCA.obj_ref
+	nanopore_assembly has a value which is a kb_MaSuRCA.obj_ref
+	other_frg_file has a value which is a string
+	graph_kmer_size has a value which is a string
+	use_linking_mates has a value which is a kb_MaSuRCA.bool
+	limit_jump_coverage has a value which is an int
+	cgwErrorRate has a value which is a float
+	kmer_count_threshold has a value which is an int
+	close_gaps has a value which is a kb_MaSuRCA.bool
+	soap_assembly has a value which is a kb_MaSuRCA.bool
+	do_homopolymer_trim has a value which is a kb_MaSuRCA.bool
+	output_contigset_name has a value which is a string
+	create_report has a value which is a kb_MaSuRCA.bool
+paired_readsParams is a reference to a hash where the following keys are defined:
+	pe_id has a value which is a kb_MaSuRCA.obj_ref
+	pe_prefix has a value which is a string
+	pe_mean has a value which is an int
+	pe_stdev has a value which is an int
+obj_ref is a string
+jump_readsParams is a reference to a hash where the following keys are defined:
+	jp_id has a value which is a kb_MaSuRCA.obj_ref
+	jp_prefix has a value which is a string
+	jp_mean has a value which is an int
+	jp_stdev has a value which is an int
+bool is an int
+masurcaResults is a reference to a hash where the following keys are defined:
+	report_name has a value which is a string
+	report_ref has a value which is a string
+
+
+=end text
+
+=item Description
+
+Definition of run_masurca_assembler
+
+=back
+
+=cut
+
+ sub run_masurca_assembler
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function run_masurca_assembler (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to run_masurca_assembler:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'run_masurca_assembler');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "kb_MaSuRCA.run_masurca_assembler",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'run_masurca_assembler',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method run_masurca_assembler",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'run_masurca_assembler',
+				       );
+    }
+}
+ 
   
 sub status
 {
@@ -300,16 +448,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'run_masurca',
+                method_name => 'run_masurca_assembler',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method run_masurca",
+            error => "Error invoking method run_masurca_assembler",
             status_line => $self->{client}->status_line,
-            method_name => 'run_masurca',
+            method_name => 'run_masurca_assembler',
         );
     }
 }
@@ -467,6 +615,83 @@ a string
 
 
 
+=head2 paired_readsParams
+
+=over 4
+
+
+
+=item Description
+
+parameter groups
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+pe_id has a value which is a kb_MaSuRCA.obj_ref
+pe_prefix has a value which is a string
+pe_mean has a value which is an int
+pe_stdev has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+pe_id has a value which is a kb_MaSuRCA.obj_ref
+pe_prefix has a value which is a string
+pe_mean has a value which is an int
+pe_stdev has a value which is an int
+
+
+=end text
+
+=back
+
+
+
+=head2 jump_readsParams
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+jp_id has a value which is a kb_MaSuRCA.obj_ref
+jp_prefix has a value which is a string
+jp_mean has a value which is an int
+jp_stdev has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+jp_id has a value which is a kb_MaSuRCA.obj_ref
+jp_prefix has a value which is a string
+jp_mean has a value which is an int
+jp_stdev has a value which is an int
+
+
+=end text
+
+=back
+
+
+
 =head2 masurcaParams
 
 =over 4
@@ -532,7 +757,6 @@ reads_libraries has a value which is a reference to a list where each element is
 pe_prefix has a value which is a string
 pe_mean has a value which is an int
 pe_stdev has a value which is an int
-reads_id has a value which is a kb_MaSuRCA.read_lib
 jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
 jp_prefix has a value which is a string
 jp_mean has a value which is an int
@@ -564,12 +788,75 @@ reads_libraries has a value which is a reference to a list where each element is
 pe_prefix has a value which is a string
 pe_mean has a value which is an int
 pe_stdev has a value which is an int
-reads_id has a value which is a kb_MaSuRCA.read_lib
 jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
 jp_prefix has a value which is a string
 jp_mean has a value which is an int
 jp_stdev has a value which is an int
 pacbio_reads has a value which is a kb_MaSuRCA.read_lib
+other_frg_file has a value which is a string
+graph_kmer_size has a value which is a string
+use_linking_mates has a value which is a kb_MaSuRCA.bool
+limit_jump_coverage has a value which is an int
+cgwErrorRate has a value which is a float
+kmer_count_threshold has a value which is an int
+close_gaps has a value which is a kb_MaSuRCA.bool
+soap_assembly has a value which is a kb_MaSuRCA.bool
+do_homopolymer_trim has a value which is a kb_MaSuRCA.bool
+output_contigset_name has a value which is a string
+create_report has a value which is a kb_MaSuRCA.bool
+
+
+=end text
+
+=back
+
+
+
+=head2 masurcaAssemblerParams
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+num_threads has a value which is an int
+jf_size has a value which is an int
+reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.paired_readsParams
+jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.jump_readsParams
+pacbio_assembly has a value which is a kb_MaSuRCA.obj_ref
+nanopore_assembly has a value which is a kb_MaSuRCA.obj_ref
+other_frg_file has a value which is a string
+graph_kmer_size has a value which is a string
+use_linking_mates has a value which is a kb_MaSuRCA.bool
+limit_jump_coverage has a value which is an int
+cgwErrorRate has a value which is a float
+kmer_count_threshold has a value which is an int
+close_gaps has a value which is a kb_MaSuRCA.bool
+soap_assembly has a value which is a kb_MaSuRCA.bool
+do_homopolymer_trim has a value which is a kb_MaSuRCA.bool
+output_contigset_name has a value which is a string
+create_report has a value which is a kb_MaSuRCA.bool
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+num_threads has a value which is an int
+jf_size has a value which is an int
+reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.paired_readsParams
+jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.jump_readsParams
+pacbio_assembly has a value which is a kb_MaSuRCA.obj_ref
+nanopore_assembly has a value which is a kb_MaSuRCA.obj_ref
 other_frg_file has a value which is a string
 graph_kmer_size has a value which is a string
 use_linking_mates has a value which is a kb_MaSuRCA.bool
@@ -597,7 +884,7 @@ create_report has a value which is a kb_MaSuRCA.bool
 
 =item Description
 
-Output parameter items for run_masurca
+Output parameter items for run_masurca and run_masurca_assembler
 
     report_name - the name of the KBaseReport.Report workspace object.
     report_ref - the workspace reference of the report.

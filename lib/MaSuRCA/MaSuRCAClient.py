@@ -85,20 +85,56 @@ class kb_MaSuRCA(object):
            SingleEndLibrary or PairedEndLibrary file, whether of the
            KBaseAssembly or KBaseFile type.), parameter "pe_prefix" of
            String, parameter "pe_mean" of Long, parameter "pe_stdev" of Long,
-           parameter "reads_id" of type "read_lib" (The workspace object name
-           of a SingleEndLibrary or PairedEndLibrary file, whether of the
-           KBaseAssembly or KBaseFile type.), parameter "jump_libraries" of
-           list of type "read_lib" (The workspace object name of a
-           SingleEndLibrary or PairedEndLibrary file, whether of the
-           KBaseAssembly or KBaseFile type.), parameter "jp_prefix" of
-           String, parameter "jp_mean" of Long, parameter "jp_stdev" of Long,
-           parameter "pacbio_reads" of type "read_lib" (The workspace object
-           name of a SingleEndLibrary or PairedEndLibrary file, whether of
-           the KBaseAssembly or KBaseFile type.), parameter "other_frg_file"
-           of String, parameter "graph_kmer_size" of String, parameter
-           "use_linking_mates" of type "bool" (A boolean - 0 for false, 1 for
-           true. @range (0, 1)), parameter "limit_jump_coverage" of Long,
-           parameter "cgwErrorRate" of Double, parameter
+           parameter "jump_libraries" of list of type "read_lib" (The
+           workspace object name of a SingleEndLibrary or PairedEndLibrary
+           file, whether of the KBaseAssembly or KBaseFile type.), parameter
+           "jp_prefix" of String, parameter "jp_mean" of Long, parameter
+           "jp_stdev" of Long, parameter "pacbio_reads" of type "read_lib"
+           (The workspace object name of a SingleEndLibrary or
+           PairedEndLibrary file, whether of the KBaseAssembly or KBaseFile
+           type.), parameter "other_frg_file" of String, parameter
+           "graph_kmer_size" of String, parameter "use_linking_mates" of type
+           "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
+           parameter "limit_jump_coverage" of Long, parameter "cgwErrorRate"
+           of Double, parameter "kmer_count_threshold" of Long, parameter
+           "close_gaps" of type "bool" (A boolean - 0 for false, 1 for true.
+           @range (0, 1)), parameter "soap_assembly" of type "bool" (A
+           boolean - 0 for false, 1 for true. @range (0, 1)), parameter
+           "do_homopolymer_trim" of type "bool" (A boolean - 0 for false, 1
+           for true. @range (0, 1)), parameter "output_contigset_name" of
+           String, parameter "create_report" of type "bool" (A boolean - 0
+           for false, 1 for true. @range (0, 1))
+        :returns: instance of type "masurcaResults" (Output parameter items
+           for run_masurca and run_masurca_assembler report_name - the name
+           of the KBaseReport.Report workspace object. report_ref - the
+           workspace reference of the report.) -> structure: parameter
+           "report_name" of String, parameter "report_ref" of String
+        """
+        return self._client.call_method(
+            'kb_MaSuRCA.run_masurca',
+            [params], self._service_ver, context)
+
+    def run_masurca_assembler(self, params, context=None):
+        """
+        Definition of run_masurca_assembler
+        :param params: instance of type "masurcaAssemblerParams" ->
+           structure: parameter "workspace_name" of String, parameter
+           "num_threads" of Long, parameter "jf_size" of Long, parameter
+           "reads_libraries" of list of type "paired_readsParams" (parameter
+           groups) -> structure: parameter "pe_id" of type "obj_ref" (An
+           X/Y/Z style KBase object reference), parameter "pe_prefix" of
+           String, parameter "pe_mean" of Long, parameter "pe_stdev" of Long,
+           parameter "jump_libraries" of list of type "jump_readsParams" ->
+           structure: parameter "jp_id" of type "obj_ref" (An X/Y/Z style
+           KBase object reference), parameter "jp_prefix" of String,
+           parameter "jp_mean" of Long, parameter "jp_stdev" of Long,
+           parameter "pacbio_assembly" of type "obj_ref" (An X/Y/Z style
+           KBase object reference), parameter "nanopore_assembly" of type
+           "obj_ref" (An X/Y/Z style KBase object reference), parameter
+           "other_frg_file" of String, parameter "graph_kmer_size" of String,
+           parameter "use_linking_mates" of type "bool" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter "limit_jump_coverage"
+           of Long, parameter "cgwErrorRate" of Double, parameter
            "kmer_count_threshold" of Long, parameter "close_gaps" of type
            "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
            parameter "soap_assembly" of type "bool" (A boolean - 0 for false,
@@ -108,13 +144,13 @@ class kb_MaSuRCA(object):
            "create_report" of type "bool" (A boolean - 0 for false, 1 for
            true. @range (0, 1))
         :returns: instance of type "masurcaResults" (Output parameter items
-           for run_masurca report_name - the name of the KBaseReport.Report
-           workspace object. report_ref - the workspace reference of the
-           report.) -> structure: parameter "report_name" of String,
-           parameter "report_ref" of String
+           for run_masurca and run_masurca_assembler report_name - the name
+           of the KBaseReport.Report workspace object. report_ref - the
+           workspace reference of the report.) -> structure: parameter
+           "report_name" of String, parameter "report_ref" of String
         """
         return self._client.call_method(
-            'kb_MaSuRCA.run_masurca',
+            'kb_MaSuRCA.run_masurca_assembler',
             [params], self._service_ver, context)
 
     def status(self, context=None):

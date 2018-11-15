@@ -337,6 +337,10 @@ class Application(object):
                              name='kb_MaSuRCA.run_masurca',
                              types=[dict])
         self.method_authentication['kb_MaSuRCA.run_masurca'] = 'required'  # noqa
+        self.rpc_service.add(impl_kb_MaSuRCA.run_masurca_assembler,
+                             name='kb_MaSuRCA.run_masurca_assembler',
+                             types=[dict])
+        self.method_authentication['kb_MaSuRCA.run_masurca_assembler'] = 'required'  # noqa
         self.rpc_service.add(impl_kb_MaSuRCA.status,
                              name='kb_MaSuRCA.status',
                              types=[dict])

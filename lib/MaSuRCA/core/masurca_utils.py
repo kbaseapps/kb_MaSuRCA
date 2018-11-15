@@ -43,7 +43,7 @@ def _mkdir_p(path):
 
 
 class masurca_utils:
-    MaSuRCA_VERSION = 'MaSuRCA-3.2.3'
+    MaSuRCA_VERSION = 'MaSuRCA-3.2.9'
     MaSuRCA_BIN = '/kb/module/' + MaSuRCA_VERSION + '/bin/masurca'
     PARAM_IN_WS = 'workspace_name'
     PARAM_IN_THREADN = 'num_threads'
