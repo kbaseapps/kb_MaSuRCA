@@ -38,6 +38,7 @@ class MaSuRCA_Assembler(object):
     PARAM_IN_OTHER = 'read_libraries'
     MaSuRCAR_PROJECT_DIR = 'masurca_project_dir'
     MaSuRCA_OUT_DIR = 'MaSuRCA_Output'
+    MaSuRCA_final_scaffold_sequences = 'CA/final.genome.scf.fasta'  # 'dedup.genome.scf.fasta'
 
     def __init__(self, config, provenance):
         """
@@ -62,34 +63,13 @@ class MaSuRCA_Assembler(object):
         self.my_version = 'release'
         if len(provenance) > 0:
             if 'subactions' in provenance[0]:
-                self.my_version = self.get_version_from_subactions('kb_MaSuRCA', provenance[0]['subactions'])
+                self.my_version = self.get_version_from_subactions(
+                                    'kb_MaSuRCA', provenance[0]['subactions'])
         print('Running kb_MaSuRCA version = ' + self.my_version)
         # END_CONSTRUCTOR
         pass
 
-    def run_masurca_assembler(self, params):
-        # 1. validate & process the input parameters
-        validated_params = self.m_utils.validate_params(params)
-
-        # 2. create the configuration file 
-        config_file = self.m_utils.construct_masurca_assembler_cfg(validated_params)
-
-        # 3. run masurca against the configuration file to generate the assemble.sh script 
-        if os.path.isfile(config_file):
-            assemble_file = self.m_utils.generate_assemble_script(config_file)
-
-        # 4. run the assemble.sh script to do the heavy-lifting
-        if os.path.isfile(assemble_file):
-            assemble_ok = self.m_utils.run_assemble(assemble_file)
-        else:
-            assemble_ok = -1
-
-        # 5. save the assembly to KBase and, if everything has gone well, create a report
-        returnVal = self.save_assembly(params, assemble_ok, 'dedup.genome.scf.fasta')
-
-        return returnVal
-
-    def save_assembly(self, params, asmbl_ok, contig_fa_file='dedup.genome.scf.fasta'):
+    def save_assembly(self, params, asmbl_ok, contig_fa_file):
         """
         save the assembly to KBase and, if everything has gone well, create a report
         """
@@ -99,16 +79,16 @@ class MaSuRCA_Assembler(object):
         }
 
         wsname = params['workspace_name']
-
         fa_file_dir = self.find_file_path(self.proj_dir, contig_fa_file)
         if (asmbl_ok == 0 and fa_file_dir != ''):
             fa_file_dir = os.path.join(self.proj_dir, fa_file_dir)
-            log("Found contig_fa_file {} in folder {}".format(contig_fa_file, fa_file_dir))
+            # log("Found contig_fa_file {} in folder {}".format(contig_fa_file, fa_file_dir))
 
             fa_file_path = os.path.join(fa_file_dir, contig_fa_file)
             self.m_utils.save_assembly(fa_file_path, wsname, params[self.PARAM_IN_CS_NAME])
             if params['create_report'] == 1:
-                report_name, report_ref = self.m_utils.generate_report(fa_file_path, params, fa_file_dir, wsname)
+                report_name, report_ref = self.m_utils.generate_report(
+                                            fa_file_path, params, fa_file_dir, wsname)
                 returnVal = {'report_name': report_name, 'report_ref': report_ref}
         else:
             log("run_assemble process failed.")
@@ -117,61 +97,21 @@ class MaSuRCA_Assembler(object):
 
     def find_file_path(self, search_dir, search_file_name):
         for dirName, subdirList, fileList in os.walk(search_dir):
-            #log('Found directory: {}'.format(dirName))
             for fname in fileList:
                 if fname == search_file_name:
-                    log('Found file: {}'.format(fname))
+                    log('Found file {} in {}'.format(fname, dirName))
                     return dirName
+        log('Could not find file {}!'.format(search_file_name))
         return ''
-
-    def run_masurca_app_0(self, params):
-        # 1. validate & process the input parameters
-        validated_params = self.m_utils.validate_params(params)
-
-        # 2. create the configuration file 
-        config_file = self.m_utils.construct_masurca_config_0(validated_params)
-
-        # 3. run masurca against the configuration file to generate the assemble.sh script 
-        if os.path.isfile(config_file):
-            assemble_file = self.m_utils.generate_assemble_script(config_file)
-
-        # 4. run the assemble.sh script to do the heavy-lifting
-        if os.path.isfile(assemble_file):
-            assemble_ok = self.m_utils.run_assemble(assemble_file)
-        else:
-            assemble_ok = -1
-
-        # 5. save the assembly to KBase and, if everything has gone well, create a report
-        return self.save_assembly(params, assemble_ok, 'dedup.genome.scf.fasta')
-
-    def run_masurca_app_1(self, params):
-        # 1. validate & process the input parameters
-        validated_params = self.m_utils.validate_params(params)
-
-        # 2. create the configuration file 
-        config_file = self.m_utils.construct_masurca_config_1(validated_params)
-
-        # 3. run masurca against the configuration file to generate the assemble.sh script 
-        if os.path.isfile(config_file):
-            assemble_file = self.m_utils.generate_assemble_script(config_file)
-
-        # 4. run the assemble.sh script to do the heavy-lifting
-        if os.path.isfile(assemble_file):
-            assemble_ok = self.m_utils.run_assemble(assemble_file)
-        else:
-            assemble_ok = -1
-
-        # 5. save the assembly to KBase and, if everything has gone well, create a report
-        return self.save_assembly(params, assemble_ok, 'dedup.genome.scf.fasta')
 
     def run_masurca_app(self, params):
         # 1. validate & process the input parameters
         validated_params = self.m_utils.validate_params(params)
 
-        # 2. create the configuration file 
+        # 2. create the configuration file
         config_file = self.m_utils.construct_masurca_config(validated_params)
 
-        # 3. run masurca against the configuration file to generate the assemble.sh script 
+        # 3. run masurca against the configuration file to generate the assemble.sh script
         if os.path.isfile(config_file):
             assemble_file = self.m_utils.generate_assemble_script(config_file)
 
@@ -182,7 +122,27 @@ class MaSuRCA_Assembler(object):
             assemble_ok = -1
 
         # 5. save the assembly to KBase and, if everything has gone well, create a report
-        return self.save_assembly(params, assemble_ok, 'dedup.genome.scf.fasta')
+        return self.save_assembly(params, assemble_ok, self.MaSuRCA_final_scaffold_sequences)
+
+    def run_masurca_assembler(self, params):
+        # 1. validate & process the input parameters
+        validated_params = self.m_utils.validate_params(params)
+
+        # 2. create the configuration file
+        config_file = self.m_utils.construct_masurca_assembler_cfg(validated_params)
+
+        # 3. run masurca against the configuration file to generate the assemble.sh script
+        if os.path.isfile(config_file):
+            assemble_file = self.m_utils.generate_assemble_script(config_file)
+
+        # 4. run the assemble.sh script to do the heavy-lifting
+        if os.path.isfile(assemble_file):
+            assemble_ok = self.m_utils.run_assemble(assemble_file)
+        else:
+            assemble_ok = -1
+
+        # 5. save the assembly to KBase and, if everything has gone well, create a report
+        return self.save_assembly(params, assemble_ok, self.MaSuRCA_final_scaffold_sequences)
 
     def create_proj_dir(self, home_dir):
         """

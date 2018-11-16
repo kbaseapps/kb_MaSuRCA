@@ -104,7 +104,7 @@ class masurca_utils:
 
         return params
 
-    def construct_masurca_config_0(self, params):
+    def construct_masurca_config(self, params):
         # STEP 1: get the working folder housing the config.txt file and the masurca results
         wsname = params[self.PARAM_IN_WS]
         config_file_path = os.path.join(self.proj_dir, 'config.txt')
@@ -215,95 +215,6 @@ class masurca_utils:
         else:
             return config_file_path
 
-    def construct_masurca_config_1(self, params):
-        # STEP 1: get the working folder housing the config.txt file and the masurca results
-        wsname = params[self.PARAM_IN_WS]
-        config_file_path = os.path.join(self.proj_dir, 'config.txt')
-
-        # STEP 2: retrieve the reads data from input parameter
-        pe_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_READS_LIBS])
-        jp_reads_data = []
-        if params.get(self.PARAM_IN_JUMP_LIBS, None) is not None:
-            jp_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_JUMP_LIBS])
-
-        # STEP 3: construct and save the config.txt file for running masurca
-        try:
-            # STEP 3.1: replace the 'DATA...END' portion of the config_template.txt file
-            with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
-                with codecs.open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
-                                 mode='r', encoding='utf-8') as config_template_file:
-                    config_template = config_template_file.read()
-                    data_str = ''
-                    if pe_reads_data:
-                        log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data,
-                                                                indent=1)))
-                        i = 0
-                        for pe in pe_reads_data:
-                            i += 1
-                            if data_str != '':
-                                data_str += '\n'
-                            data_str += ('PE= ' + 'p' + str(i) + ' ' + str(params['pe_mean']) +
-                                         ' ' + str(params['pe_stdev']) + ' ' + pe['fwd_file'])
-                            if pe.get('rev_file', None) is not None:
-                                data_str += ' ' + pe['rev_file']
-
-                    if jp_reads_data:
-                        if ('jp_mean' not in params or type(params['jp_mean']) != int):
-                            params['jp_mean'] = 3600
-                        if ('pe_stdev' not in params or type(params['jp_stdev']) != int):
-                            params['pe_stdev'] = 200
-                        j = 0
-                        for jp in jp_reads_data:
-                            j += 1
-                            if data_str != '':
-                                data_str += '\n'
-                            data_str += ('JUMP= ' + 'j' + str(j) + ' ' + str(params['jp_mean']) +
-                                         ' ' + str(params['jp_stdev']) + ' ' + jp['fwd_file'])
-                            if jp.get('rev_file', None) is not None:
-                                data_str += ' ' + jp['rev_file']
-
-                    if data_str == '':  # no reads libraries are specified, no further actions
-                        return ''
-
-                    # TODO add the pacbio_reads and note that pcbio reads must be in a single
-                    # fasta file!
-                    # For example:
-                    # data_str += '\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/aligned_reads.fasta'
-                    # TODO add the other_frg_file inputs if any
-                    begin_patn1 = "DATA\n"
-                    end_patn1 = "END\nPARAMETERS\n"
-                    config_with_data = self._replaceSectionText(config_template, begin_patn1,
-                                                                end_patn1, data_str)
-                    config_file.write(config_with_data)
-                    # log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(
-                    # config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
-
-                # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
-                param_str = self._get_parameters_portion(params)
-                if param_str == '':  # no parameters are specified, no further actions
-                    return ''
-
-                previous_config = ''
-                with codecs.open(
-                            config_file_path, mode='r', encoding='utf-8') as previous_config_file:
-                    previous_config = previous_config_file.read()
-
-                begin_patn2 = "PARAMETERS\n"
-                end_patn2 = "END\n"
-                final_config = self._replaceSectionText(previous_config, begin_patn2,
-                                                        end_patn2, param_str)
-                log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(
-                                    final_config.encode('utf-8').decode('utf-8'), config_file_path))
-
-                with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
-                    config_file.write(final_config)
-        except IOError as ioerr:
-            log('Creation of the config.txt file raised error:\n')
-            pprint(ioerr)
-            return ''
-        else:
-            return config_file_path
-
     def construct_masurca_assembler_cfg(self, params):
         # STEP 1: get the working folder housing the config.txt file and the masurca results
         wsname = params[self.PARAM_IN_WS]
@@ -322,12 +233,12 @@ class masurca_utils:
         # PACBIO reads must be in a single FASTA file and supplied as PACBIO=reads.fa;
         pb_reads_file = ''
         if params.get('pacbio_assembly', None):
-            pb_reads_file = (self.get_fasta_from_assembly(params['pacbio_assembly'])).get('path','')
+            pb_reads_file = (self.get_fasta_from_assembly(params['pacbio_assembly'])).get('path', '')
 
         # NANOPORE reads must be in a single FASTA file and supplied as NANOPORE=reads.fa
         np_reads_file = ''
         if params.get('nanopore_assembly', None):
-            np_reads_file = (self.get_fasta_from_assembly(params['nanopore_assembly'])).get('path','')
+            np_reads_file = (self.get_fasta_from_assembly(params['nanopore_assembly'])).get('path', '')
 
         # any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into
         # Celera Assembler compatible .frg files
@@ -488,7 +399,8 @@ class masurca_utils:
             exit_code = self.prog_runner.run(m_cmd, f_dir)
 
             if exit_code == 0:
-                log('Created the assemble.sh file at {}.\n'.format(os.path.join(f_dir, 'assemble.sh')))
+                log('Created the assemble.sh file at {}.\n'.format(
+                    os.path.join(f_dir, 'assemble.sh')))
                 return os.path.join(f_dir, 'assemble.sh')
             else:
                 log('Creation of the assemble.sh file failed.\n')
@@ -514,7 +426,9 @@ class masurca_utils:
             f_dir, f_nm = os.path.split(asmbl_file)
             a_cmd = ['/bin/bash']
             a_cmd.append(asmbl_file)
-            log("The working directory is supposed to be {}\n".format(f_dir))
+            log("The working directory is {}\n".format(f_dir))
+            log("The assembling command is {}\n".format(' '.join(a_cmd)))
+
             p = subprocess.Popen(a_cmd, cwd=f_dir, shell=False)
             exit_code = p.wait()
             log('Return code: ' + str(exit_code))
@@ -524,7 +438,6 @@ class masurca_utils:
                                  str(p.returncode) + '\n')
             else:
                 exit_code = p.returncode
-            # exit_code = self.prog_runner.run(a_cmd, f_dir)
         else:
             log("The assemble.sh file {} is not found.".format(asmbl_file))
         return exit_code

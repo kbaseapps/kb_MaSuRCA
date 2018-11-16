@@ -135,7 +135,7 @@ class MaSuRCATest(unittest.TestCase):
         if hasattr(self.__class__, 'pairedEndLibInfo'):
             return self.__class__.pairedEndLibInfo
         # 1) upload files to shock
-        #shared_dir = "/kb/module/work/tmp"
+        # shared_dir = "/kb/module/work/tmp"
         forward_data_file = '../test/testReads/small.forward.fq'
         forward_file = os.path.join(self.scratch, os.path.basename(forward_data_file))
         shutil.copy(forward_data_file, forward_file)
@@ -153,8 +153,8 @@ class MaSuRCATest(unittest.TestCase):
         print('Loaded PairedEndReads: ' + pe_reads_ref)
         new_obj_info = self.wsClient.get_object_info_new({'objects': [{'ref': pe_reads_ref}]})
         self.__class__.pairedEndLibInfo = new_obj_info[0]
-        pprint (pformat(new_obj_info))
-        #return new_obj_info[0]
+        pprint(pformat(new_obj_info))
+        # return new_obj_info[0]
         return pe_reads_ref
 
 
@@ -168,7 +168,7 @@ class MaSuRCATest(unittest.TestCase):
         asmbl_ref2 = self.loadAssembly(os.path.join('../test/testReads', 'test_reference.fa'))
         pe_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'rhodo.art.q10.PE.reads.fastq'))
         pe_lib_ref1 = self.loadPairedEndReads()
-        m_params =     {
+        m_params = {
             'workspace_name': self.getWsName(),
             "jf_size": 100000000,
             "reads_libraries": [{
@@ -184,7 +184,7 @@ class MaSuRCATest(unittest.TestCase):
             }],
             "jump_libraries": [],
             "pacbio_assembly": asmbl_ref1,
-            #"nanopore_assembly": asmbl_ref2,
+            # "nanopore_assembly": asmbl_ref2,
             "other_frg_file": "",
             "output_contigset_name": "TestGroupmasurca.contigs",
             "graph_kmer_size": None,
@@ -202,9 +202,9 @@ class MaSuRCATest(unittest.TestCase):
         ret = self.getImpl().run_masurca_assembler(self.getContext(), m_params)
 
         # Validate the returned data
-        #self.assertEqual(ret[0]['n_initial_contigs'], 3)
-        #self.assertEqual(ret[0]['n_contigs_removed'], 1)
-        #self.assertEqual(ret[0]['n_contigs_remaining'], 2)
+        # self.assertEqual(ret[0]['n_initial_contigs'], 3)
+        # self.assertEqual(ret[0]['n_contigs_removed'], 1)
+        # self.assertEqual(ret[0]['n_contigs_remaining'], 2)
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     # Uncomment to skip this test
@@ -217,14 +217,14 @@ class MaSuRCATest(unittest.TestCase):
         m_params = {
                 'workspace_name': self.getWsName(),
                 'reads_libraries': [pe_lib_ref1, pe_lib_ref2],
-                #'jump_libraries': [se_lib_ref],
+                # 'jump_libraries': [se_lib_ref],
                 "jf_size": 100000000,
                 "pe_prefix": "pe",
                 "pe_mean": 180,
                 "pe_stdev": 20,
-                #"jp_prefix": "sh",
-                #"jp_mean": 3600,
-                #"jp_stdev": 200,
+                # "jp_prefix": "sh",
+                # "jp_mean": 3600,
+                # "jp_stdev": 200,
                 'jump_libraries': None,
                 "pacbio_reads": None,
                 "other_frg_file": None,
@@ -244,24 +244,24 @@ class MaSuRCATest(unittest.TestCase):
         ret = self.getImpl().run_masurca(self.getContext(), m_params)
 
         # Validate the returned data
-        #self.assertEqual(ret[0]['n_initial_contigs'], 3)
-        #self.assertEqual(ret[0]['n_contigs_removed'], 1)
-        #self.assertEqual(ret[0]['n_contigs_remaining'], 2)
+        # self.assertEqual(ret[0]['n_initial_contigs'], 3)
+        # self.assertEqual(ret[0]['n_contigs_removed'], 1)
+        # self.assertEqual(ret[0]['n_contigs_remaining'], 2)
 
     @unittest.skip("skipped test_run_masurca_err1")
     def test_run_masurca_err1(self):
         with self.assertRaises(ValueError) as errorContext:
             self.getImpl().run_masurca(self.getContext(),
-                                          {'workspace_name': self.getWsName(),
-                                           'assembly_input_ref': '1/fake/3',
-                                           'min_length': '-10'})
+                                       {'workspace_name': self.getWsName(),
+                                        'assembly_input_ref': '1/fake/3',
+                                        'min_length': '-10'})
         self.assertIn('min_length parameter cannot be negative', str(errorContext.exception))
 
     @unittest.skip("skipped test_run_masurca_err2")
     def test_run_masurca_err2(self):
         with self.assertRaises(ValueError) as errorContext:
             self.getImpl().run_masurca(self.getContext(),
-                                          {'workspace_name': self.getWsName(),
-                                           'assembly_input_ref': '1/fake/3',
-                                           'min_length': 'ten'})
+                                       {'workspace_name': self.getWsName(),
+                                        'assembly_input_ref': '1/fake/3',
+                                        'min_length': 'ten'})
         self.assertIn('Cannot parse integer from min_length parameter', str(errorContext.exception))
