@@ -4,7 +4,6 @@ import time
 import json
 import os
 import numpy as np
-import psutil
 import zipfile
 import subprocess
 from pprint import pprint, pformat
@@ -80,8 +79,6 @@ class masurca_utils:
             raise ValueError(self.PARAM_IN_WS + ' parameter is mandatory')
         if self.PARAM_IN_THREADN not in params:
             raise ValueError(self.PARAM_IN_THREADN + ' parameter is mandatory')
-
-        # params[self.PARAM_IN_THREADN] = min(params.get(self.PARAM_IN_THREADN), psutil.cpu_count())
 
         if params.get(self.PARAM_IN_JF_SIZE, None) is None:
             raise ValueError(self.PARAM_IN_JF_SIZE + ' parameter is mandatory')
