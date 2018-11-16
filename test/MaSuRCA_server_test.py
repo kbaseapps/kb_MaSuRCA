@@ -165,8 +165,8 @@ class MaSuRCATest(unittest.TestCase):
         # First load a test FASTA file as an KBase Assembly
         se_lib_ref1 = self.loadSEReads(os.path.join('../test/testReads', 'short_reads_1.fastq'))
         se_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'short_reads_2.fastq'))
-        asmbl_ref1 = self.loadAssembly(os.path.join('../test/testReads', 'long_reads_low_depth.fastq'))
-        asmbl_ref2 = self.loadAssembly(os.path.join('../test/testReads', 'long_reads_high_depth.fastq'))
+        asmbl_ref1 = self.loadAssembly(os.path.join('../test/testReads', 'test_long.fa'))
+        asmbl_ref2 = self.loadAssembly(os.path.join('../test/testReads', 'test_reads.fa'))
         pe_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'reference.fasta'))
         pe_lib_ref1 = self.loadPairedEndReads()
         m_params = {
