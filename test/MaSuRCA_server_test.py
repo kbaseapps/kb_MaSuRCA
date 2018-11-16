@@ -163,27 +163,28 @@ class MaSuRCATest(unittest.TestCase):
     # @unittest.skip("skipped test_run_masurca_assembler")
     def test_run_masurca_assembler(self):
         # First load a test FASTA file as an KBase Assembly
-        se_lib_ref = self.loadSEReads(os.path.join('../test/testReads', 'small.forward.fq'))
-        asmbl_ref1 = self.loadAssembly(os.path.join('../test/testReads', 'test_long.fa'))
-        asmbl_ref2 = self.loadAssembly(os.path.join('../test/testReads', 'test_reference.fa'))
-        pe_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'rhodo.art.q10.PE.reads.fastq'))
+        se_lib_ref1 = self.loadSEReads(os.path.join('../test/testReads', 'short_reads_1.fastq'))
+        se_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'short_reads_2.fastq'))
+        asmbl_ref1 = self.loadAssembly(os.path.join('../test/testReads', 'long_reads_low_depth.fastq'))
+        asmbl_ref2 = self.loadAssembly(os.path.join('../test/testReads', 'long_reads_high_depth.fastq'))
+        pe_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'reference.fasta'))
         pe_lib_ref1 = self.loadPairedEndReads()
         m_params = {
             'workspace_name': self.getWsName(),
             "jf_size": 100000000,
             "reads_libraries": [{
-                "pe_id": pe_lib_ref1,
+                "pe_id": asmbl_ref1,
                 "pe_prefix": "p1",
                 "pe_mean": 180,
                 "pe_stdev": 20
             }, {
-                "pe_id": pe_lib_ref2,
+                "pe_id": asmbl_ref2,
                 "pe_prefix": "p2",
                 "pe_mean": 180,
                 "pe_stdev": 20
             }],
-            "jump_libraries": [],
-            "pacbio_assembly": asmbl_ref1,
+            "jump_libraries": [se_lib_ref1, se_lib_ref2],
+            # "pacbio_assembly": asmbl_ref1,
             # "nanopore_assembly": asmbl_ref2,
             "other_frg_file": "",
             "output_contigset_name": "TestGroupmasurca.contigs",
