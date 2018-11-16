@@ -3,6 +3,7 @@ import re
 import time
 import uuid
 
+from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from MaSuRCA.core.masurca_utils import masurca_utils
 
 
