@@ -166,8 +166,8 @@ class MaSuRCATest(unittest.TestCase):
         se_lib_ref1 = self.loadSEReads(os.path.join('../test/testReads', 'short_reads_1.fastq'))
         se_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'short_reads_2.fastq'))
         asmbl_ref1 = self.loadAssembly(os.path.join('../test/testReads', 'test_long.fa'))
-        asmbl_ref2 = self.loadAssembly(os.path.join('../test/testReads', 'test_reads.fa'))
-        pe_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'reference.fasta'))
+        asmbl_ref2 = self.loadAssembly(os.path.join('../test/testReads', 'reference.fasta'))
+        pe_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'rtestreads.wt.fastq'))
         pe_lib_ref1 = self.loadPairedEndReads()
         m_params = {
             'workspace_name': self.getWsName(),
