@@ -34,7 +34,7 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
     ######################################### noqa
     VERSION = "1.1.0"
     GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA.git"
-    GIT_COMMIT_HASH = "a3591b022a930593798f7ba88e8aa4873488aa37"
+    GIT_COMMIT_HASH = "3df671f3812b9f9fabb8b649c6cffdec69fedcc7"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
