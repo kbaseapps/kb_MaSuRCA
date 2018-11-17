@@ -38,7 +38,7 @@ class MaSuRCA_Assembler(object):
     PARAM_IN_OTHER = 'read_libraries'
     MaSuRCAR_PROJECT_DIR = 'masurca_project_dir'
     MaSuRCA_OUT_DIR = 'MaSuRCA_Output'
-    MaSuRCA_final_scaffold_sequences = 'CA/final.genome.scf.fasta'  # 'dedup.genome.scf.fasta'
+    MaSuRCA_final_scaffold_sequences = 'final.genome.scf.fasta'  # 'dedup.genome.scf.fasta'
 
     def __init__(self, config, provenance):
         """
@@ -80,12 +80,13 @@ class MaSuRCA_Assembler(object):
 
         wsname = params['workspace_name']
         fa_file_dir = self.find_file_path(self.proj_dir, contig_fa_file)
-        if (asmbl_ok == 0 and fa_file_dir != ''):
+        if (asmbl_ok == 0 and fa_file_dir != ''):  # fa_file_dir should be 'CA'
             fa_file_dir = os.path.join(self.proj_dir, fa_file_dir)
-            # log("Found contig_fa_file {} in folder {}".format(contig_fa_file, fa_file_dir))
-
             fa_file_path = os.path.join(fa_file_dir, contig_fa_file)
-            self.m_utils.save_assembly(fa_file_path, wsname, params[self.PARAM_IN_CS_NAME])
+
+            log("Load assembly from fasta file {}...".format(fa_file_path))
+            self.m_utils.save_assembly(fa_file_path, wsname,
+                                       params[self.PARAM_IN_CS_NAME])
             if params['create_report'] == 1:
                 report_name, report_ref = self.m_utils.generate_report(
                                             fa_file_path, params, fa_file_dir, wsname)

@@ -461,9 +461,8 @@ class masurca_utils:
     def save_assembly(self, contig_fa, wsname, a_name):
         if os.path.isfile(contig_fa):
             log('Uploading FASTA file to Assembly...')
-            output_contigs = os.path.join(self.proj_dir, contig_fa)
             self.au.save_assembly_from_fasta(
-                            {'file': {'path': output_contigs},
+                            {'file': {'path': contig_fa},
                              'workspace_name': wsname,
                              'assembly_name': a_name})
         else:
