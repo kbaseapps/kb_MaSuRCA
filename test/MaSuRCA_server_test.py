@@ -177,16 +177,14 @@ class MaSuRCATest(unittest.TestCase):
                 "pe_prefix": "p1",
                 "pe_mean": 180,
                 "pe_stdev": 20
-            }],
-            '''
+            },
             {
                 "pe_id": pe_lib_ref2,
                 "pe_prefix": "p2",
                 "pe_mean": 180,
                 "pe_stdev": 20
             }],
-            "jump_libraries": [se_lib_ref1, se_lib_ref2],
-            '''
+            # "jump_libraries": [se_lib_ref1, se_lib_ref2],
             # "pacbio_assembly": asmbl_ref1,
             # "nanopore_assembly": asmbl_ref2,
             "other_frg_file": "",

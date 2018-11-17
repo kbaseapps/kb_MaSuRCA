@@ -160,8 +160,8 @@ class masurca_utils:
                                                             end_patn1, data_str)
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
                 config_file.write(config_with_data)
-                log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(
-                        config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
+                # log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(
+                #        config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
 
             # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
             previous_config = ''
@@ -216,8 +216,8 @@ class masurca_utils:
                                                     end_patn2, param_str)
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
                 config_file.write(final_config)
-            log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(
-                            final_config.encode('utf-8').decode('utf-8'), config_file_path))
+            # log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(
+            #                 final_config.encode('utf-8').decode('utf-8'), config_file_path))
         except IOError as ioerr:
             log('Creation of the config.txt file raised error:\n')
             pprint(ioerr)
@@ -277,8 +277,8 @@ class masurca_utils:
             end_patn1 = "END\nPARAMETERS\n"
             config_with_data = self._replaceSectionText(config_template, begin_patn1,
                                                         end_patn1, data_str)
-            log("\n***After DATA section replacement:\n{}\nSaved at {}".format(
-                        config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
+            # log("\n***After DATA section replacement:\n{}\nSaved at {}".format(
+            #             config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
 
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
                 config_file.write(config_with_data)
@@ -492,8 +492,8 @@ class masurca_utils:
 
     def _unique_prefix_check(self, pfix, refs):
         prefix_lookup = {}
-        for k in range(0, len(refs)):
-            pre = refs[k].get(pfix)[0:2]
+        for ref in refs:
+            pre = ref[pfix][0:2]
             if pre not in prefix_lookup:
                 prefix_lookup[pre] = 1
             else:
