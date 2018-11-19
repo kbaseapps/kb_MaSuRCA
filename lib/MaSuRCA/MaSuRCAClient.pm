@@ -276,8 +276,8 @@ masurcaAssemblerParams is a reference to a hash where the following keys are def
 	jf_size has a value which is an int
 	reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.paired_readsParams
 	jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.jump_readsParams
-	pacbio_assembly has a value which is a kb_MaSuRCA.obj_ref
-	nanopore_assembly has a value which is a kb_MaSuRCA.obj_ref
+	pacbio_reads has a value which is a kb_MaSuRCA.obj_ref
+	nanopore_reads has a value which is a kb_MaSuRCA.obj_ref
 	other_frg_file has a value which is a string
 	graph_kmer_size has a value which is a string
 	use_linking_mates has a value which is a kb_MaSuRCA.bool
@@ -319,8 +319,8 @@ masurcaAssemblerParams is a reference to a hash where the following keys are def
 	jf_size has a value which is an int
 	reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.paired_readsParams
 	jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.jump_readsParams
-	pacbio_assembly has a value which is a kb_MaSuRCA.obj_ref
-	nanopore_assembly has a value which is a kb_MaSuRCA.obj_ref
+	pacbio_reads has a value which is a kb_MaSuRCA.obj_ref
+	nanopore_reads has a value which is a kb_MaSuRCA.obj_ref
 	other_frg_file has a value which is a string
 	graph_kmer_size has a value which is a string
 	use_linking_mates has a value which is a kb_MaSuRCA.bool
@@ -708,8 +708,10 @@ consisting of 5 fields: 1)two_letter_prefix 2)mean 3)stdev 4)fastq(.gz)_fwd_read
 e.g.,
         PE= pe 180 20  /FULL_PATH/frag_1.fastq  /FULL_PATH/frag_2.fastq
         JUMP= sh 3600 200  /FULL_PATH/short_1.fastq  /FULL_PATH/short_2.fastq
-        #pacbio reads must be in a single fasta file! make sure you provide absolute path
+        #pacbio OR nanopore reads must be in a single fasta or fastq file with absolute path, can be gzipped
+        #if you have both types of reads supply them both as NANOPORE type
         PACBIO=/FULL_PATH/pacbio.fa
+        NANOPORE=/FULL_PATH/nanopore.fa
         OTHER=/FULL_PATH/file.frg
 
 2. PARAMETERS
@@ -829,8 +831,8 @@ num_threads has a value which is an int
 jf_size has a value which is an int
 reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.paired_readsParams
 jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.jump_readsParams
-pacbio_assembly has a value which is a kb_MaSuRCA.obj_ref
-nanopore_assembly has a value which is a kb_MaSuRCA.obj_ref
+pacbio_reads has a value which is a kb_MaSuRCA.obj_ref
+nanopore_reads has a value which is a kb_MaSuRCA.obj_ref
 other_frg_file has a value which is a string
 graph_kmer_size has a value which is a string
 use_linking_mates has a value which is a kb_MaSuRCA.bool
@@ -855,8 +857,8 @@ num_threads has a value which is an int
 jf_size has a value which is an int
 reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.paired_readsParams
 jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.jump_readsParams
-pacbio_assembly has a value which is a kb_MaSuRCA.obj_ref
-nanopore_assembly has a value which is a kb_MaSuRCA.obj_ref
+pacbio_reads has a value which is a kb_MaSuRCA.obj_ref
+nanopore_reads has a value which is a kb_MaSuRCA.obj_ref
 other_frg_file has a value which is a string
 graph_kmer_size has a value which is a string
 use_linking_mates has a value which is a kb_MaSuRCA.bool

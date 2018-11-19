@@ -41,9 +41,11 @@ class kb_MaSuRCA(object):
            DATA consisting of 5 fields: 1)two_letter_prefix 2)mean 3)stdev
            4)fastq(.gz)_fwd_reads 5)fastq(.gz)_rev_reads. e.g., PE= pe 180 20
            /FULL_PATH/frag_1.fastq  /FULL_PATH/frag_2.fastq JUMP= sh 3600 200
-           /FULL_PATH/short_1.fastq  /FULL_PATH/short_2.fastq #pacbio reads
-           must be in a single fasta file! make sure you provide absolute
-           path PACBIO=/FULL_PATH/pacbio.fa OTHER=/FULL_PATH/file.frg 2.
+           /FULL_PATH/short_1.fastq  /FULL_PATH/short_2.fastq #pacbio OR
+           nanopore reads must be in a single fasta or fastq file with
+           absolute path, can be gzipped #if you have both types of reads
+           supply them both as NANOPORE type PACBIO=/FULL_PATH/pacbio.fa
+           NANOPORE=/FULL_PATH/nanopore.fa OTHER=/FULL_PATH/file.frg 2.
            PARAMETERS string graph_kmer_size - the k-mer size for deBruijn
            graph values between 25 and 127 are supported, 'auto' will compute
            the optimal size based on the read data and GC content bool
@@ -128,9 +130,9 @@ class kb_MaSuRCA(object):
            structure: parameter "jp_id" of type "obj_ref" (An X/Y/Z style
            KBase object reference), parameter "jp_prefix" of String,
            parameter "jp_mean" of Long, parameter "jp_stdev" of Long,
-           parameter "pacbio_assembly" of type "obj_ref" (An X/Y/Z style
-           KBase object reference), parameter "nanopore_assembly" of type
-           "obj_ref" (An X/Y/Z style KBase object reference), parameter
+           parameter "pacbio_reads" of type "obj_ref" (An X/Y/Z style KBase
+           object reference), parameter "nanopore_reads" of type "obj_ref"
+           (An X/Y/Z style KBase object reference), parameter
            "other_frg_file" of String, parameter "graph_kmer_size" of String,
            parameter "use_linking_mates" of type "bool" (A boolean - 0 for
            false, 1 for true. @range (0, 1)), parameter "limit_jump_coverage"

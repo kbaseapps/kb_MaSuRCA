@@ -33,9 +33,6 @@ class MaSuRCA_Assembler(object):
 
     PARAM_IN_CS_NAME = 'output_contigset_name'
     PARAM_IN_READ_LIB = 'read_libraries'
-    PARAM_IN_JUMP_LIB = 'jump_libraries'
-    PARAM_IN_PACBIOS = 'pacbios'
-    PARAM_IN_OTHER = 'read_libraries'
     MaSuRCAR_PROJECT_DIR = 'masurca_project_dir'
     MaSuRCA_OUT_DIR = 'MaSuRCA_Output'
     MaSuRCA_final_scaffold_sequences = 'final.genome.scf.fasta'  # 'dedup.genome.scf.fasta'

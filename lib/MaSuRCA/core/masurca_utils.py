@@ -242,15 +242,15 @@ class masurca_utils:
 
         # STEP 2.2: PACBIO reads must be in a single FASTA file and supplied as PACBIO=reads.fa;
         pb_reads_file = ''
-        if params.get('pacbio_assembly', None):
+        if params.get('pacbio_reads', None):
             pb_reads_file = (self.get_fasta_from_assembly(
-                params['pacbio_assembly'])).get('path', '')
+                params['pacbio_reads'])).get('path', '')
 
         # STEP 2.3: NANOPORE reads must be in a single FASTA file and supplied as NANOPORE=reads.fa
         np_reads_file = ''
-        if params.get('nanopore_assembly', None):
+        if params.get('nanopore_reads', None):
             np_reads_file = (self.get_fasta_from_assembly(
-                params['nanopore_assembly'])).get('path', '')
+                params['nanopore_reads'])).get('path', '')
 
         # STEP 2.4: any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into
         # Celera Assembler compatible .frg files
@@ -338,10 +338,14 @@ class masurca_utils:
         # Note that pcbio reads must be in a single fasta file!
         # For example:
         # data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/pacbio_reads.fasta'
+        # ***if you have both types of reads supply them both as NANOPORE type***
         if pacbio_reads_file != '':
             if data_str != '':
                 data_str += '\n'
-            data_str += 'PACBIO= ' + pacbio_reads_file
+            if nanopore_reads_file != '': 
+                data_str += 'NANOPORE=' + pacbio_reads_file
+            else:
+                data_str += 'PACBIO=' + pacbio_reads_file                
 
         # Adding the nanopore_reads and note that nanopore reads must be in a single fasta file!
         # For example:
@@ -358,7 +362,7 @@ class masurca_utils:
         if other_frg_file != '':
             if data_str != '':
                 data_str += '\n'
-            data_str += 'OTHER= ' + other_frg_file
+            data_str += 'OTHER=' + other_frg_file
 
         return data_str
 

@@ -16,16 +16,16 @@ class Program_Runner:
         if not cwd_dir:
             cwd_dir = self.work_dir
 
-        print('\nRunning: ' + ' '.join(cmmd))
+        print('\nRunning: ', cmmd)
         res = subprocess.Popen(cmmd, cwd=cwd_dir, shell=False)
 
         exitCode = res.wait()
 
         if (exitCode == 0):
-            print('\n' + ' '.join(cmmd) +
+            print('\n', cmmd,
                   ' was executed successfully, exit code was: ' + str(exitCode))
         else:
-            print('Error > ' + sys.exc_info()[0])
+            print('Error > ', sys.exc_info()[0])
             raise ValueError('Error running command: ' + ' '.join(cmmd) + '\n' +
                              'Exit Code: ' + str(exitCode))
 

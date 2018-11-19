@@ -55,8 +55,10 @@ module kb_MaSuRCA {
         e.g.,
                 PE= pe 180 20  /FULL_PATH/frag_1.fastq  /FULL_PATH/frag_2.fastq
                 JUMP= sh 3600 200  /FULL_PATH/short_1.fastq  /FULL_PATH/short_2.fastq
-                #pacbio reads must be in a single fasta file! make sure you provide absolute path
+                #pacbio OR nanopore reads must be in a single fasta or fastq file with absolute path, can be gzipped
+                #if you have both types of reads supply them both as NANOPORE type
                 PACBIO=/FULL_PATH/pacbio.fa
+                NANOPORE=/FULL_PATH/nanopore.fa
                 OTHER=/FULL_PATH/file.frg
 
         2. PARAMETERS
@@ -126,8 +128,8 @@ module kb_MaSuRCA {
         list<paired_readsParams> reads_libraries;    
         list<jump_readsParams> jump_libraries;
        
-        obj_ref pacbio_assembly;
-        obj_ref nanopore_assembly;
+        obj_ref pacbio_reads;
+        obj_ref nanopore_reads;
         string other_frg_file;   
         string graph_kmer_size;
         bool use_linking_mates;

@@ -129,27 +129,27 @@ class MaSuRCATest(unittest.TestCase):
         return reads_ref
 
 
-    # borrowed from Megahit - call this method to get the WS object info of a Paired End Library (will
-    # upload the example data if this is the first time the method is called during tests)
-    def loadPairedEndReads(self):
-        if hasattr(self.__class__, 'pairedEndLibInfo'):
-            return self.__class__.pairedEndLibInfo
+    # borrowed from Megahit - call this method to get the WS object info of a Paired End Library
+    # (will upload the example data if this is the first time the method is called during tests)
+    def loadPairedEndReads(self, forward_data_file, reverse_data_file, reads_name):
+        # if hasattr(self.__class__, 'pairedEndLibInfo'):
+        #    return self.__class__.pairedEndLibInfo
         # 1) upload files to shock
         # shared_dir = "/kb/module/work/tmp"
-        forward_data_file = '../test/testReads/small.forward.fq'
+        # forward_data_file = '../test/testReads/small.forward.fq'
         forward_file = os.path.join(self.scratch, os.path.basename(forward_data_file))
         shutil.copy(forward_data_file, forward_file)
-        reverse_data_file = '../test/testReads/small.reverse.fq'
+        # reverse_data_file = '../test/testReads/small.reverse.fq'
         reverse_file = os.path.join(self.scratch, os.path.basename(reverse_data_file))
         shutil.copy(reverse_data_file, reverse_file)
 
         ru = ReadsUtils(os.environ['SDK_CALLBACK_URL'])
         pe_reads_ref = ru.upload_reads({'fwd_file': forward_file, 'rev_file': reverse_file,
-                                          'sequencing_tech': 'artificial reads',
-                                          'interleaved': 0, 'wsname': self.getWsName(),
-                                          'name': 'test_pe_reads'})['obj_ref']
+                                        'sequencing_tech': 'artificial reads',
+                                        'interleaved': 0, 'wsname': self.getWsName(),
+                                        'name': reads_name})['obj_ref']
 
-        self.__class__.pe_reads_ref = pe_reads_ref
+        # self.__class__.pe_reads_ref = pe_reads_ref
         print('Loaded PairedEndReads: ' + pe_reads_ref)
         new_obj_info = self.wsClient.get_object_info_new({'objects': [{'ref': pe_reads_ref}]})
         self.__class__.pairedEndLibInfo = new_obj_info[0]
@@ -165,28 +165,36 @@ class MaSuRCATest(unittest.TestCase):
         # First load a test FASTA file as an KBase Assembly
         # se_lib_ref1 = self.loadSEReads(os.path.join('../test/testReads', 'short_reads_1.fastq'))
         # se_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'short_reads_2.fastq'))
-        # asmbl_ref1 = self.loadAssembly(os.path.join('../test/testReads', 'test_reference.fa'))
-        # asmbl_ref2 = self.loadAssembly(os.path.join('../test/testReads', 'reference.fasta'))
-        pe_lib_ref2 = self.loadSEReads(os.path.join('../test/testReads', 'testreads.wt.fastq'))
-        pe_lib_ref1 = self.loadPairedEndReads()
+        se_lib_ref3 = self.loadSEReads(os.path.join('../test/testReads', 'testreads.wt.fastq'))
+        asmbl_ref1 = self.loadAssembly(os.path.join('../test/testReads', 'test_reference.fa'))
+        asmbl_ref2 = self.loadAssembly(os.path.join('../test/testReads', 'reference.fasta'))
+        pe_lib_ref1 = self.loadPairedEndReads('../test/testReads/small.forward.fq',
+                                              '../test/testReads/small.reverse.fq', 'small')
+        pe_lib_ref2 = self.loadPairedEndReads('../test/testReads/short_reads_1.fastq',
+                                              '../test/testReads/short_reads_2.fastq', 'short')
+
         m_params = {
             "workspace_name": self.getWsName(),
             "jf_size": 100000000,
             "reads_libraries": [{
                 "pe_id": pe_lib_ref1,
-                "pe_prefix": "p1",
+                "pe_prefix": "pe",
                 "pe_mean": 180,
                 "pe_stdev": 20
-            },
-            {
-                "pe_id": pe_lib_ref2,
-                "pe_prefix": "p2",
+            }, {
+                "pe_id": se_lib_ref3,
+                "pe_prefix": "se",
                 "pe_mean": 180,
                 "pe_stdev": 20
             }],
-            # "jump_libraries": [se_lib_ref1, se_lib_ref2],
-            # "pacbio_assembly": asmbl_ref1,
-            # "nanopore_assembly": asmbl_ref2,
+            "jump_libraries": [{
+                "jp_id": pe_lib_ref2,
+                "jp_prefix": "sh",
+                "jp_mean": 3600,
+                "jp_stdev": 200
+            }],
+            "pacbio_reads": asmbl_ref1,
+            "nanopore_reads": asmbl_ref2,
             "other_frg_file": "",
             "output_contigset_name": "TestGroupmasurca.contigs",
             "graph_kmer_size": None,

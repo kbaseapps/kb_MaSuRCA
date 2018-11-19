@@ -14,10 +14,9 @@ DATA
 #Illumina paired end reads supplied as <two-character prefix> <fragment mean> <fragment stdev> <forward_reads> <reverse_reads>
 #if single-end, do not specify <reverse_reads>
 #MUST HAVE Illumina paired end reads to use MaSuRCA
-DATA
 PE= pe 180 20  /kb/module/testReads/small.forward.fq  /kb/module/testReads/small.reverse.fq
 #Illumina mate pair reads supplied as <two-character prefix> <fragment mean> <fragment stdev> <forward_reads> <reverse_reads>
-JUMP= sh 3600 200  /kb/module/testReads/small.forward.fq  /kb/module/testReads/small.reverse.fq
+JUMP= sh 3600 200  /FULL_PATH/short_1.fastq  /FULL_PATH/short_2.fastq
 #pacbio OR nanopore reads must be in a single fasta or fastq file with absolute path, can be gzipped
 #if you have both types of reads supply them both as NANOPORE type
 #PACBIO=/FULL_PATH/pacbio.fa
