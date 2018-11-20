@@ -422,6 +422,10 @@ class masurca_utils:
             if param_str != '':
                 param_str += '\n'
             param_str += 'JF_SIZE=' + str(params['jf_size'])
+        if params.get('kmer_count_threshold', None):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'KMER_COUNT_THRESHOLD=' + str(params['kmer_count_threshold'])
         if params.get('do_homopolymer_trim', None):
             if param_str != '':
                 param_str += '\n'
@@ -429,6 +433,20 @@ class masurca_utils:
                 param_str += 'DO_HOMOPOLYMER_TRIM=1'
             else:
                 param_str += 'DO_HOMOPOLYMER_TRIM=0'
+        if params.get('close_gaps', None):
+            if param_str != '':
+                param_str += '\n'
+            if params['close_gaps'] == 1:
+                param_str += 'CLOSE_GAPS=1'
+            else:
+                param_str += 'CLOSE_GAPS=0'
+        if params.get('soap_assembly', None):
+            if param_str != '':
+                param_str += '\n'
+            if params['soap_assembly'] == 1:
+                param_str += 'SOAP_ASSEMBLY=1'
+            else:
+                param_str += 'SOAP_ASSEMBLY=0'
         return param_str
 
     def generate_assemble_script(self, config_file):
