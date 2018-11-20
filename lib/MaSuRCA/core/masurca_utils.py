@@ -89,8 +89,8 @@ class masurca_utils:
 
         if (params.get(self.PARAM_IN_CS_NAME, None) is None or
                 not self.valid_string(params[self.PARAM_IN_CS_NAME])):
-            raise ValueError("Parameter output_contigset_name is required and" +
-                             " must be a valid Workspace object string, " +
+            raise ValueError("Parameter output_contigset_name is required and " +
+                             "must be a valid Workspace object string, " +
                              "not {}".format(params.get(self.PARAM_IN_CS_NAME, None)))
         if ('pe_prefix' not in params):
             params['pe_prefix'] = 'pe'
@@ -241,19 +241,43 @@ class masurca_utils:
                 params['jp_stdev'] = 200
 
         # STEP 2.2: PACBIO reads must be in a single FASTA file and supplied as PACBIO=reads.fa;
+        assbl_types = ['KBaseFile.Assembly',
+                       'KBaseGenomeAnnotations.Assembly',
+                       'KBaseGenomes.ContigSet']
+        reads_types = ['KBaseAssembly.SingleEndLibrary',
+                       'KBaseFile.SingleEndLibrary',
+                       'KBaseAssembly.PairedEndLibrary',
+                       'KBaseFile.PairedEndLibrary']
         pb_reads_file = ''
         if params.get('pacbio_reads', None):
-            pb_reads_file = (self.get_fasta_from_assembly(
-                params['pacbio_reads'])).get('path', '')
+            pb_ref = params['pacbio_reads']
+            pb_type = self.get_object_type(pb_ref)
+            if self.check_ref_type(pb_ref, assbl_types):
+                pb_reads_file = (self.get_fasta_from_assembly(pb_ref)).get('path', '')
+            else:
+                if self.check_ref_type(pb_ref, reads_types):
+                    pb_rd = self._getKBReadsInfo(wsname, pb_ref)
+                    pb_reads_file = pb_rd[0]['fwd_file']
+                    if pb_rd[0].get('rev_file', None):
+                        pb_reads_file += ' ' + pb_rd[0]['rev_file']
 
-        # STEP 2.3: NANOPORE reads must be in a single FASTA file and supplied as NANOPORE=reads.fa
+        # STEP 2.3: NANOPORE reads must be in a single FASTA/FASTQ file and supplied as NANOPORE=reads.fa
         np_reads_file = ''
         if params.get('nanopore_reads', None):
-            np_reads_file = (self.get_fasta_from_assembly(
-                params['nanopore_reads'])).get('path', '')
+            np_ref = params['nanopore_reads']
+            np_type = self.get_object_type(np_ref)
+            log('nanopore_reads is of {} type'.format(np_type))
+            if self.check_ref_type(np_type, assbl_types):
+                np_reads_file = (self.get_fasta_from_assembly(np_ref)).get('path', '')
+            else:
+                if self.check_ref_type(np_type, reads_types):
+                    np_rd = self._getKBReadsInfo(wsname, np_ref)
+                    np_reads_file = np_rd[0]['fwd_file']
+                    if np_rd[0].get('rev_file', None):
+                        np_reads_file += ' ' + np_rd[0]['rev_file']
 
-        # STEP 2.4: any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into
-        # Celera Assembler compatible .frg files
+        # STEP 2.4: any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first
+        # converted into Celera Assembler compatible .frg files
         # (see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
         other_frg = ''
         if params.get('other_frg_file', None):
@@ -342,10 +366,10 @@ class masurca_utils:
         if pacbio_reads_file != '':
             if data_str != '':
                 data_str += '\n'
-            if nanopore_reads_file != '': 
+            if nanopore_reads_file != '':
                 data_str += 'NANOPORE=' + pacbio_reads_file
             else:
-                data_str += 'PACBIO=' + pacbio_reads_file                
+                data_str += 'PACBIO=' + pacbio_reads_file
 
         # Adding the nanopore_reads and note that nanopore reads must be in a single fasta file!
         # For example:
@@ -664,7 +688,6 @@ class masurca_utils:
                 raise
 
         #log('Downloaded reads data from KBase:\n' + pformat(reads))
-
         reads_data = []
         for ref in reads_refs:
             reads_name = reftoname[ref]
@@ -683,20 +706,19 @@ class masurca_utils:
 
         return reads_data
 
-
     def get_fasta_from_assembly(self, assembly_ref):
         """
-        From an assembly or contigset, this uses a data file util to build a FASTA file and return the
-        path to it.
+        From an assembly or contigset, this uses a data file to build a FASTA file
+        and return the path to it.
         """
         allowed_types = ['KBaseFile.Assembly',
                          'KBaseGenomeAnnotations.Assembly',
                          'KBaseGenomes.ContigSet']
         if not self.check_ref_type(assembly_ref, allowed_types):
-            raise ValueError("The reference {} cannot be used to fetch a FASTA file".format(assembly_ref))
+            raise ValueError(
+                "The reference {} cannot be used to fetch a FASTA file".format(assembly_ref))
         au = AssemblyUtil(self.callback_url)
         return au.get_assembly_as_fasta({'ref': assembly_ref})
-
 
     def generate_report(self, contig_file_name, params, out_dir, wsname):
         log('Generating and saving report')
@@ -742,7 +764,6 @@ class masurca_utils:
         report_ref = report_output['ref']
         return report_name, report_ref
 
-
     def _generate_output_file_list(self, out_dir):
         """
         _generate_output_file_list: zip result files and generate file_links for report
@@ -762,7 +783,6 @@ class masurca_utils:
                              'description': 'Output file(s) generated by MaSuRCA'})
 
         return output_files
-
 
     def _zip_folder(self, folder_path, output_path):
         """
@@ -784,7 +804,6 @@ class masurca_utils:
         #    print 'Checking the zipped file......\n'
         #    for info in f.infolist():
         #        print info.filename, info.date_time, info.file_size, info.compress_size
-
 
     def load_stats(self, input_file_name):
         log('Starting conversion of FASTA to KBaseGenomeAnnotations.Assembly')
@@ -821,13 +840,11 @@ class masurca_utils:
             fasta_dict[contig_id] = sequence_len
         return fasta_dict
 
-
     def valid_string(self, s_str, is_ref=False):
         is_valid = isinstance(s_str, basestring) and len(s_str.strip()) > 0
         if is_valid and is_ref:
             is_valid = check_reference(s_str)
         return is_valid
-
 
     def check_reference(self, ref):
         """
@@ -840,7 +857,6 @@ class masurca_utils:
             if not obj_ref_regex.match(step):
                 return False
         return True
-
 
     def check_ref_type(self, ref, allowed_types):
         """
@@ -862,7 +878,6 @@ class masurca_utils:
             if t.lower() in obj_type:
                 return True
         return False
-
 
     def get_object_type(self, ref):
         """
