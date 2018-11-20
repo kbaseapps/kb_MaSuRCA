@@ -251,7 +251,6 @@ class masurca_utils:
         pb_reads_file = ''
         if params.get('pacbio_reads', None):
             pb_ref = params['pacbio_reads']
-            pb_type = self.get_object_type(pb_ref)
             if self.check_ref_type(pb_ref, assbl_types):
                 pb_reads_file = (self.get_fasta_from_assembly(pb_ref)).get('path', '')
             else:
@@ -265,12 +264,10 @@ class masurca_utils:
         np_reads_file = ''
         if params.get('nanopore_reads', None):
             np_ref = params['nanopore_reads']
-            np_type = self.get_object_type(np_ref)
-            log('nanopore_reads is of {} type'.format(np_type))
-            if self.check_ref_type(np_type, assbl_types):
+            if self.check_ref_type(np_ref, assbl_types):
                 np_reads_file = (self.get_fasta_from_assembly(np_ref)).get('path', '')
             else:
-                if self.check_ref_type(np_type, reads_types):
+                if self.check_ref_type(np_ref, reads_types):
                     np_rd = self._getKBReadsInfo(wsname, np_ref)
                     np_reads_file = np_rd[0]['fwd_file']
                     if np_rd[0].get('rev_file', None):
@@ -891,4 +888,3 @@ class masurca_utils:
             raise RuntimeError("An error occurred while fetching type info from the Workspace. "
                                "No information returned for reference {}".format(ref))
         return obj_info[2]
-
