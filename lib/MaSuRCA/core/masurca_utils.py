@@ -255,7 +255,7 @@ class masurca_utils:
                 pb_reads_file = (self.get_fasta_from_assembly(pb_ref)).get('path', '')
             else:
                 if self.check_ref_type(pb_ref, reads_types):
-                    pb_rd = self._getKBReadsInfo(wsname, pb_ref)
+                    pb_rd = self._getKBReadsInfo(wsname, [pb_ref])
                     pb_reads_file = pb_rd[0]['fwd_file']
                     if pb_rd[0].get('rev_file', None):
                         pb_reads_file += ' ' + pb_rd[0]['rev_file']
@@ -268,7 +268,7 @@ class masurca_utils:
                 np_reads_file = (self.get_fasta_from_assembly(np_ref)).get('path', '')
             else:
                 if self.check_ref_type(np_ref, reads_types):
-                    np_rd = self._getKBReadsInfo(wsname, np_ref)
+                    np_rd = self._getKBReadsInfo(wsname, [np_ref])
                     np_reads_file = np_rd[0]['fwd_file']
                     if np_rd[0].get('rev_file', None):
                         np_reads_file += ' ' + np_rd[0]['rev_file']
