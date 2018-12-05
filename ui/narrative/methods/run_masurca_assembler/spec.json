@@ -15,7 +15,7 @@
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": ["100000000"],
+            "default_values": ["200000000"],
             "field_type": "text",
             "text_options": {
                 "validate_as": "int"
@@ -116,7 +116,7 @@
         {   
             "id": "pacbio_reads",
             "optional": true,
-            "advanced": true,
+            "advanced": false,
             "allow_multiple": false,
             "default_values": [ "" ],
             "field_type": "text",
@@ -127,7 +127,7 @@
         {   
             "id": "nanopore_reads",
             "optional": true,
-            "advanced": true,
+            "advanced": false,
             "allow_multiple": false,
             "default_values": [ "" ],
             "field_type": "text",
@@ -163,11 +163,10 @@
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ ""],
+            "default_values": [ "auto"],
             "field_type": "text",
             "text_options": {
-                "validate_as" : "int",
-                "min_int" : 1 
+                "validate_as" : "text"
             }
         },
         {
@@ -211,7 +210,7 @@
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "0" ],
+            "default_values": [ "1" ],
             "field_type": "checkbox",
             "checkbox_options":{
                 "checked_value": 1,

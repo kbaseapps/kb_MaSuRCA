@@ -168,15 +168,16 @@ class masurca_utils:
             with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
                 previous_config = previous_config_file.read()
             param_str = ''
-            if params.get('graph_kmer_size', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'GRAPH_KMER_SIZE=' + str(params['graph_kmer_size'])
             if (params.get('graph_kmer_size', None) is None or
-                    type(params['graph_kmer_size']) != int):
+                    type(params['graph_kmer_size']) == str):
                 if param_str != '':
                     param_str += '\n'
                 param_str += 'GRAPH_KMER_SIZE=auto'
+            elif params.get('graph_kmer_size', None) and
+                type(params['graph_kmer_size']) != str):
+                if param_str != '':
+                    param_str += '\n'
+                param_str += 'GRAPH_KMER_SIZE=' + str(int(params['graph_kmer_size']))
             if params.get('use_linking_mates', None) is not None:
                 if param_str != '':
                     param_str += '\n'

@@ -32,7 +32,9 @@ suggestions:
 parameters :
     pe_id :
         ui-name : Reads object id<font color=red>*</font>
-        short-hint : Reads libraries
+        short-hint : Reads libraries--MUST HAVE Illumina paired end reads to use MaSuRCA
+        long-hint : |
+            <p>Illumina paired end reads supplied as <two-character prefix> <fragment mean> <fragment stdev> <forward_reads> <reverse_reads>. If single-end, do not specify <reverse_reads>.</p>
     pe_prefix :
         ui-name : |
             prefix for defining the reads<font color=red>*</font>
@@ -51,6 +53,8 @@ parameters :
     jp_id :
         ui-name : Reads object id<font color=red>*</font>
         short-hint : Reads libraries
+        long-hint : |
+            <p>Illumina mate pair reads supplied as <two-character prefix> <fragment mean> <fragment stdev> <forward_reads> <reverse_reads></p>
     jp_prefix :
         ui-name : |
             prefix for defining the jump reads<font color=red>*</font>
@@ -69,12 +73,18 @@ parameters :
     pacbio_reads :
         ui-name : PacBio Reads
         short-hint : supports KBaseAssembly.SingleEndLibrary,KBaseFile.SingleEndLibrary,KBaseAssembly.PairedEndLibrary,KBaseFile.PairedEndLibrary
+        long-hint: |
+            <p>pacbio OR nanopore reads must be in a single fasta or fastq file with absolute path, can be gzipped. If you have both types of reads supply them both as NANOPORE type</p>
     nanopore_reads :
         ui-name : NanoPore Reads
         short-hint : supports KBaseAssembly.SingleEndLibrary,KBaseFile.SingleEndLibrary,KBaseAssembly.PairedEndLibrary,KBaseFile.PairedEndLibrary
+        long-hint: |
+            <p>pacbio OR nanopore reads must be in a single fasta or fastq file with absolute path, can be gzipped. If you have both types of reads supply them both as NANOPORE type</p>
     other_frg_file:
         ui-name : Other FRG
         short-hint : must have been converted into a Celera Assembler compatible .frg file
+        long_hint: |
+            <p>Other reads (Sanger, 454, etc) one frg file, concatenate your frg files into one if you have many</p>
     jf_size :
         ui-name : jellyfish_size<font color=red>*</font>
         short-hint : |
@@ -88,26 +98,30 @@ parameters :
         ui-name : |
             graph_kmer_size
         short-hint : |
-            The kmer size to be used for super reads; k-mer size for deBruijn graph values between 25 and 101 are supported
+            kmer size to be used for super reads
+        long-hint: |
+            <p>this is k-mer size for deBruijn graph values between 25 and 127 are supported, auto will compute the optimal size based on the read data and GC content</p>
     use_linking_mates :
         ui-name : |
             use_linking_mates
         short-hint : |
             Those that do not end up in the same super read are called 'linking mates'
-        long-hint : |
-           The best assembly results are achieved by setting this parameter to 1 for Illumina-only assemblies to use the 'linking mates'.
+        long-hint: |
+            <p>Check this for all Illumina-only assemblies; uncheck if you have more than 15x coverage by long reads (Pacbio or Nanopore) or any other long reads/mate pairs (Illumina MP, Sanger, 454, etc)</p>
     limit_jump_coverage :
         ui-name : |
             limit_jump_coverage
         short-hint : |
-             setting this parameter to have assembler down-sample the jumping library to 60x (from above) coverage
+             set this parameter to have assembler down-sample the jumping library to 60x (from above) coverage
+        long-hint: |
+            <p>This parameter is useful if you have too many Illumina jumping library mates. Typically set it to 60 for bacteria and 300 for the other organisms</p>
     cgwErrorRate :
         ui-name : |
             cgwErrorRate
         short-hint : |
-            these are the additional parameters to Celera Assembler
-        long-hint : |
-            set cgwErrorRate=0.25 for bacteria, i.e., CA_PARAMETERS = cgwErrorRate=0.25
+            additional parameters to Celera Assembler
+        long-hint: |
+            <p>Set cgwErrorRate=0.25 for bacteria and 0.1<=cgwErrorRate<=0.15 for other organisms.</p>
     kmer_count_threshold :
         ui-name : |
             kmer_count_threshold
@@ -124,7 +138,7 @@ parameters :
         ui-name : |
             soap_assembly
         short-hint : |
-            <p>set this to 1 to use SOAPdenovo contigging/scaffolding module.  Assembly will be worse but will run faster. Useful for very large (>5Gbp) genomes</p>
+            <p>set this to 1 to use SOAPdenovo contigging/scaffolding module.  Assembly will be worse but will run faster. Useful for very large (>5Gbp) genomes from Illumina-only data</p>
     do_homopolymer_trim :
         ui-name : |
             do_homopolymer_trim
