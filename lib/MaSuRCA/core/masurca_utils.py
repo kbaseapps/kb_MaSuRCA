@@ -173,8 +173,7 @@ class masurca_utils:
                 if param_str != '':
                     param_str += '\n'
                 param_str += 'GRAPH_KMER_SIZE=auto'
-            elif params.get('graph_kmer_size', None) and
-                type(params['graph_kmer_size']) != str):
+            elif params.get('graph_kmer_size', None) and type(params['graph_kmer_size']) != str:
                 if param_str != '':
                     param_str += '\n'
                 param_str += 'GRAPH_KMER_SIZE=' + str(int(params['graph_kmer_size']))
