@@ -108,20 +108,13 @@ parameters :
             Those that do not end up in the same super read are called 'linking mates'
         long-hint: |
             Check this for all Illumina-only assemblies; uncheck if you have more than 15x coverage by long reads (Pacbio or Nanopore) or any other long reads/mate pairs (Illumina MP, Sanger, 454, etc)
-    limit_jump_coverage :
+    dna_source :
         ui-name : |
-            limit_jump_coverage
+            dna_source
         short-hint : |
-             set this parameter to have assembler down-sample the jumping library to 60x (from above) coverage
+            bacteria or other organisms
         long-hint: |
-            This parameter is useful if you have too many Illumina jumping library mates. Typically set it to 60 for bacteria and 300 for the other organisms
-    cgwErrorRate :
-        ui-name : |
-            cgwErrorRate
-        short-hint : |
-            additional parameters to Celera Assembler
-        long-hint: |
-            Set cgwErrorRate=0.25 for bacteria and 0.1<=cgwErrorRate<=0.15 for other organisms.
+            This parameter is useful if you have too many Illumina jumping library mates. It decides to set the limit_jump_coverage to 60 for bacteria and 300 for the other organisms; cgwErrorRate to 0.25 for bacteria and 0.15 for the other organisms
     kmer_count_threshold :
         ui-name : |
             kmer_count_threshold

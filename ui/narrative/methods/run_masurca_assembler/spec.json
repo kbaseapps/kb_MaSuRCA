@@ -59,7 +59,7 @@
             "optional": false,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "180" ],
+            "default_values": [ "500" ],
             "field_type": "text",
             "text_options": {
                 "validate_as" : "int",
@@ -71,7 +71,7 @@
             "optional": false,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "20" ],
+            "default_values": [ "50" ],
             "field_type": "text",
             "text_options": {
                 "validate_as" : "int",
@@ -182,28 +182,28 @@
             }
         },
         {
-            "id": "limit_jump_coverage",
+            "id": "dna_source",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "60" ],
-            "field_type": "text",
-            "text_options": {
-                "validate_as" : "int",
-                "min_int" : 60,
-                "max_int" : 300
-            }
-        },
-        {
-            "id": "cgwErrorRate",
-            "optional": true,
-            "advanced": true,
-            "allow_multiple": false,
-            "default_values": [ "0.25" ],
-            "field_type": "text",
-            "text_options": {
-                "validate_as" : "float"
-            }
+            "default_values": [ "bacteria"],
+            "field_type" : "dropdown",
+            "dropdown_options":{
+             "options": [
+               {
+                 "value": "bacteria",
+                 "display": "Bacteria",
+                 "id": "B",
+                 "ui_name": "Bacteria"
+               },
+               {
+                 "value": "others",
+                 "display": "Other organisms",
+                 "id": "O",
+                 "ui_name": "Other organisms"
+               }
+             ]
+           }
         },
         {
             "id": "close_gaps",
@@ -298,7 +298,7 @@
                     "input_parameter": "reads_libraries",
                     "target_property": "reads_libraries"
                 },
-		{
+		        {
                     "input_parameter": "jump_libraries",
                     "target_property": "jump_libraries"
                 },
@@ -329,12 +329,8 @@
                     "target_property": "use_linking_mates"
                 },
                 {
-                    "input_parameter": "limit_jump_coverage",
-                    "target_property": "limit_jump_coverage"
-                },
-                {
-                    "input_parameter": "cgwErrorRate",
-                    "target_property": "cgwErrorRate"
+                    "input_parameter": "dna_source",
+                    "target_property": "dna_source"
                 },
                 {
                     "input_parameter": "kmer_count_threshold",

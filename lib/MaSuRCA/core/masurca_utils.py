@@ -68,6 +68,132 @@ class masurca_utils:
         self.proj_dir = prj_dir
         self.prog_runner = Program_Runner(self.MaSuRCA_BIN, self.proj_dir)
 
+    def _has_long_reads(self, params):
+        """
+        _has_long_reads: check if a long reads input exists in the parameters
+        """
+        return (params.get('pacbio_reads', None) or params.get('nanopore_reads', None))
+
+    def _get_data_portion(self, pe_reads_data, jp_reads_data=None, pacbio_reads_file='',
+                          nanopore_reads_file='', other_frg_file=''):
+        """
+        _get_data_portion: build the 'DATA...END' portion for the config.txt file
+        """
+        data_str = ''
+        if pe_reads_data:
+                log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
+                for pe in pe_reads_data:
+                    if data_str != '':
+                        data_str += '\n'
+                    data_str += 'PE= ' + pe['pe_prefix'] + ' ' + str(pe['pe_mean']) + ' ' + \
+                                str(pe['pe_stdev']) + ' ' + pe['fwd_file']
+                    if pe.get('rev_file', None):
+                        data_str += ' ' + pe['rev_file']
+
+        if jp_reads_data:
+            log('JUMP reads data details:\n{}'.format(json.dumps(jp_reads_data, indent=1)))
+            for jp in jp_reads_data:
+                if data_str != '':
+                    data_str += '\n'
+                data_str += 'JUMP= ' + jp['jp_prefix'] + ' ' + str(jp['jp_mean']) + ' ' + \
+                            str(jp['jp_stdev']) + ' ' + jp['fwd_file']
+                if jp.get('rev_file', None):
+                    data_str += ' ' + jp['rev_file']
+
+        # Adding the pacbio_reads
+        # Note that pcbio reads must be in a single fasta file!
+        # For example:
+        # data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/pacbio_reads.fasta'
+        # ***if you have both types of reads supply them both as NANOPORE type***
+        if pacbio_reads_file != '':
+            if data_str != '':
+                data_str += '\n'
+            if nanopore_reads_file != '':
+                data_str += 'NANOPORE=' + pacbio_reads_file
+            else:
+                data_str += 'PACBIO=' + pacbio_reads_file
+
+        # Adding the nanopore_reads and note that nanopore reads must be in a single fasta file!
+        # For example:
+        # data_str +='\nNANOPORE= /pool/genomics/frandsenp/masurca/NanoPore/nanopore_reads.fasta'
+        if nanopore_reads_file != '':
+            if data_str != '':
+                data_str += '\n'
+            data_str += 'NANOPORE= ' + nanopore_reads_file
+
+        # Adding the other_frg_file inputs if any
+        # any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into 
+        # Celera Assembler compatible .frg file
+        # (see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
+        if other_frg_file != '':
+            if data_str != '':
+                data_str += '\n'
+            data_str += 'OTHER=' + other_frg_file
+
+        return data_str
+
+    def _get_parameters_portion(self, params):
+        """
+        build the 'PARAMETERS...END' portion for the config.txt file
+        """
+        param_str = ''
+        if params.get('graph_kmer_size', None):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'GRAPH_KMER_SIZE=' + str(params['graph_kmer_size'])
+        if (params.get('graph_kmer_size', None) is None or type(params['graph_kmer_size']) != int):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'GRAPH_KMER_SIZE=auto'
+        if params.get('use_linking_mates', None):
+            if param_str != '':
+                param_str += '\n'
+            if params['use_linking_mates'] == 1 and not self._has_long_reads(params):
+                param_str += 'USE_LINKING_MATES=1'
+            else:
+                param_str += 'USE_LINKING_MATES=0'
+        if params.get('limit_jump_coverage', None):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'LIMIT_JUMP_COVERAGE = ' + str(params['limit_jump_coverage'])
+        if params.get('cgwErrorRate', None):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'CA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
+        if params.get('num_threads', None):
+            if param_str != '':
+                param_str += '\n'
+        if params.get('jf_size', None):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'JF_SIZE=' + str(params['jf_size'])
+        if params.get('kmer_count_threshold', None):
+            if param_str != '':
+                param_str += '\n'
+            param_str += 'KMER_COUNT_THRESHOLD=' + str(params['kmer_count_threshold'])
+        if params.get('do_homopolymer_trim', None):
+            if param_str != '':
+                param_str += '\n'
+            if params['do_homopolymer_trim'] == 1:
+                param_str += 'DO_HOMOPOLYMER_TRIM=1'
+            else:
+                param_str += 'DO_HOMOPOLYMER_TRIM=0'
+        if params.get('close_gaps', None):
+            if param_str != '':
+                param_str += '\n'
+            if params['close_gaps'] == 1:
+                param_str += 'CLOSE_GAPS=1'
+            else:
+                param_str += 'CLOSE_GAPS=0'
+        if params.get('soap_assembly', None):
+            if param_str != '':
+                param_str += '\n'
+            if params['soap_assembly'] == 1:
+                param_str += 'SOAP_ASSEMBLY=1'
+            else:
+                param_str += 'SOAP_ASSEMBLY=0'
+        return param_str
+
     def validate_params(self, params):
         """
         validate_params: checks params passed to run_masurca_app method and set default values
@@ -99,131 +225,20 @@ class masurca_utils:
         if ('pe_stdev' not in params or type(params['pe_stdev']) != int):
             params['pe_stdev'] = 20
         if ('jp_prefix' not in params):
-            params['jp_prefix'] = 'jp'
+            params['jp_prefix'] = 'sh'
+        if ('dna_source' in params):
+            dna_src = params.get('dna_source')
+            if dna_src == 'bacteria':
+                params['limit_jump_coverage'] = 60
+                params['cgwErrorRate'] = 0.25
+            else:
+                params['limit_jump_coverage'] = 300
+                params['cgwErrorRate'] = 0.15
+
         if params.get('create_report', None) is None:
             params['create_report'] = 0
 
         return params
-
-    def construct_masurca_config(self, params):
-        # STEP 1: get the working folder housing the config.txt file and the masurca results
-        wsname = params[self.PARAM_IN_WS]
-        config_file_path = os.path.join(self.proj_dir, 'config.txt')
-
-        # STEP 2: retrieve the reads data from input parameter
-        pe_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_READS_LIBS])
-        jp_reads_data = []
-        if params.get(self.PARAM_IN_JUMP_LIBS, None):
-            jp_reads_data = self._getKBReadsInfo(wsname, params[self.PARAM_IN_JUMP_LIBS])
-            if ('jp_mean' not in params or type(params['jp_mean']) != int):
-                params['jp_mean'] = 3600
-            if ('jp_stdev' not in params or type(params['jp_stdev']) != int):
-                params['jp_stdev'] = 200
-
-        # STEP 3: construct and save the config.txt file for running masurca
-        try:
-            # STEP 3.1: replace the 'DATA...END' portion of the config_template.txt file
-            data_str = ''
-            if pe_reads_data:
-                log('PE reads data details:\n{}'.format(
-                    json.dumps(pe_reads_data, indent=1)))
-                data_str += ('PE= ' + params['pe_prefix'] +
-                                ' ' + str(params['pe_mean']) +
-                                ' ' + str(params['pe_stdev']) +
-                                ' ' + pe_reads_data[0]['fwd_file'])
-                if pe_reads_data[0].get('rev_file', None):
-                    data_str += ' ' + pe_reads_data[0]['rev_file']
-
-            if jp_reads_data:
-                if ('jp_mean' not in params or type(params['jp_mean']) != int):
-                    params['jp_mean'] = 3600
-                if ('pe_stdev' not in params or type(params['jp_stdev']) != int):
-                    params['pe_stdev'] = 200
-                if data_str != '':
-                    data_str += '\n'
-                data_str += ('JUMP= ' + params['jp_prefix'] +
-                                ' ' + str(params['jp_mean']) +
-                                ' ' + str(params['jp_stdev']) +
-                                ' ' + jp_reads_data[0]['fwd_file'])
-                if jp_reads_data[0].get('rev_file', None):
-                    data_str += ' ' + jp_reads_data[0]['rev_file']
-
-            with codecs.open(os.path.join(os.path.dirname(__file__), 'config_template.txt'),
-                             mode='r', encoding='utf-8') as config_template_file:
-                config_template = config_template_file.read()
-                # TODO add the pacbio_reads and other_frg_file inputs if any
-                begin_patn1 = "DATA\n"
-                end_patn1 = "END\nPARAMETERS\n"
-                log("\nBefore DATA section replacement:\n{} with: {}\n".format(
-                        config_with_data.encode('utf-8').decode('utf-8')), data_str)
-                config_with_data = self._replaceSectionText(config_template, begin_patn1,
-                                                            end_patn1, data_str)
-            with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
-                config_file.write(config_with_data)
-                # log("\nAfter DATA section replacement:\n{}\nSaved at {}".format(
-                #        config_with_data.encode('utf-8').decode('utf-8'), config_file_path))
-
-            # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
-            previous_config = ''
-            with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
-                previous_config = previous_config_file.read()
-            param_str = ''
-            if (params.get('graph_kmer_size', None) is None or
-                    type(params['graph_kmer_size']) == str):
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'GRAPH_KMER_SIZE=auto'
-            elif params.get('graph_kmer_size', None) and type(params['graph_kmer_size']) != str:
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'GRAPH_KMER_SIZE=' + str(int(params['graph_kmer_size']))
-            if params.get('use_linking_mates', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                if params['use_linking_mates'] == 1:
-                    param_str += 'USE_LINKING_MATES=1'
-                else:
-                    param_str += 'USE_LINKING_MATES=0'
-            if params.get('limit_jump_coverage', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'LIMIT_JUMP_COVERAGE = ' + str(params['limit_jump_coverage'])
-            if params.get('cgwErrorRate', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'CA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
-            if params.get('num_threads', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'NUM_THREADS=' + str(params['num_threads'])
-            if params.get('jf_size', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                param_str += 'JF_SIZE=' + str(params['jf_size'])
-            if params.get('do_homopolymer_trim', None) is not None:
-                if param_str != '':
-                    param_str += '\n'
-                if params['do_homopolymer_trim'] == 1:
-                    param_str += 'DO_HOMOPOLYMER_TRIM=1'
-                else:
-                    param_str += 'DO_HOMOPOLYMER_TRIM=0'
-
-            begin_patn2 = "PARAMETERS\n"
-            end_patn2 = "END\n"
-            log("\nBefore DATA section replacement:\n{} with: {}\n".format(
-                            preious_config.encode('utf-8').decode('utf-8')), param_str)
-            final_config = self._replaceSectionText(previous_config, begin_patn2,
-                                                    end_patn2, param_str)
-            with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
-                config_file.write(final_config)
-            # log("\nAfter PARAMETER section replacement:\n{}\nSaved at {}".format(
-            #                 final_config.encode('utf-8').decode('utf-8'), config_file_path))
-        except IOError as ioerr:
-            log('Creation of the config.txt file raised error:\n')
-            pprint(ioerr)
-            return ''
-        else:
-            return config_file_path
 
     def construct_masurca_assembler_cfg(self, params):
         # STEP 1: get the working folder housing the config.txt file and the masurca results
@@ -328,126 +343,6 @@ class masurca_utils:
             return ''
         else:
             return config_file_path
-
-    def _get_data_portion(self, pe_reads_data, jp_reads_data=None, pacbio_reads_file='',
-                          nanopore_reads_file='', other_frg_file=''):
-        """
-        build the 'DATA...END' portion for the config.txt file
-        """
-        data_str = ''
-        if pe_reads_data:
-                log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
-                for pe in pe_reads_data:
-                    if data_str != '':
-                        data_str += '\n'
-                    data_str += 'PE= ' + pe['pe_prefix'] + ' ' + str(pe['pe_mean']) + ' ' + \
-                                str(pe['pe_stdev']) + ' ' + pe['fwd_file']
-                    if pe.get('rev_file', None):
-                        data_str += ' ' + pe['rev_file']
-
-        if jp_reads_data:
-            log('JUMP reads data details:\n{}'.format(json.dumps(jp_reads_data, indent=1)))
-            for jp in jp_reads_data:
-                if data_str != '':
-                    data_str += '\n'
-                data_str += 'JUMP= ' + jp['jp_prefix'] + ' ' + str(jp['jp_mean']) + ' ' + \
-                            str(jp['jp_stdev']) + ' ' + jp['fwd_file']
-                if jp.get('rev_file', None):
-                    data_str += ' ' + jp['rev_file']
-
-        # Adding the pacbio_reads
-        # Note that pcbio reads must be in a single fasta file!
-        # For example:
-        # data_str +='\nPACBIO= /pool/genomics/frandsenp/masurca/PacBio/pacbio_reads.fasta'
-        # ***if you have both types of reads supply them both as NANOPORE type***
-        if pacbio_reads_file != '':
-            if data_str != '':
-                data_str += '\n'
-            if nanopore_reads_file != '':
-                data_str += 'NANOPORE=' + pacbio_reads_file
-            else:
-                data_str += 'PACBIO=' + pacbio_reads_file
-
-        # Adding the nanopore_reads and note that nanopore reads must be in a single fasta file!
-        # For example:
-        # data_str +='\nNANOPORE= /pool/genomics/frandsenp/masurca/NanoPore/nanopore_reads.fasta'
-        if nanopore_reads_file != '':
-            if data_str != '':
-                data_str += '\n'
-            data_str += 'NANOPORE= ' + nanopore_reads_file
-        
-        # Adding the other_frg_file inputs if any
-        # any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into 
-        # Celera Assembler compatible .frg file
-        # (see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
-        if other_frg_file != '':
-            if data_str != '':
-                data_str += '\n'
-            data_str += 'OTHER=' + other_frg_file
-
-        return data_str
-
-    def _get_parameters_portion(self, params):
-        """
-        build the 'PARAMETERS...END' portion for the config.txt file
-        """
-        param_str = ''
-        if params.get('graph_kmer_size', None):
-            if param_str != '':
-                param_str += '\n'
-            param_str += 'GRAPH_KMER_SIZE=' + str(params['graph_kmer_size'])
-        if (params.get('graph_kmer_size', None) is None or type(params['graph_kmer_size']) != int):
-            if param_str != '':
-                param_str += '\n'
-            param_str += 'GRAPH_KMER_SIZE=auto'
-        if params.get('use_linking_mates', None):
-            if param_str != '':
-                param_str += '\n'
-            if params['use_linking_mates'] == 1:
-                param_str += 'USE_LINKING_MATES=1'
-            else:
-                param_str += 'USE_LINKING_MATES=0'
-        if params.get('limit_jump_coverage', None):
-            if param_str != '':
-                param_str += '\n'
-            param_str += 'LIMIT_JUMP_COVERAGE = ' + str(params['limit_jump_coverage'])
-        if params.get('cgwErrorRate', None):
-            if param_str != '':
-                param_str += '\n'
-            param_str += 'CA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
-        if params.get('num_threads', None):
-            if param_str != '':
-                param_str += '\n'
-        if params.get('jf_size', None):
-            if param_str != '':
-                param_str += '\n'
-            param_str += 'JF_SIZE=' + str(params['jf_size'])
-        if params.get('kmer_count_threshold', None):
-            if param_str != '':
-                param_str += '\n'
-            param_str += 'KMER_COUNT_THRESHOLD=' + str(params['kmer_count_threshold'])
-        if params.get('do_homopolymer_trim', None):
-            if param_str != '':
-                param_str += '\n'
-            if params['do_homopolymer_trim'] == 1:
-                param_str += 'DO_HOMOPOLYMER_TRIM=1'
-            else:
-                param_str += 'DO_HOMOPOLYMER_TRIM=0'
-        if params.get('close_gaps', None):
-            if param_str != '':
-                param_str += '\n'
-            if params['close_gaps'] == 1:
-                param_str += 'CLOSE_GAPS=1'
-            else:
-                param_str += 'CLOSE_GAPS=0'
-        if params.get('soap_assembly', None):
-            if param_str != '':
-                param_str += '\n'
-            if params['soap_assembly'] == 1:
-                param_str += 'SOAP_ASSEMBLY=1'
-            else:
-                param_str += 'SOAP_ASSEMBLY=0'
-        return param_str
 
     def generate_assemble_script(self, config_file):
         exit_code = 1

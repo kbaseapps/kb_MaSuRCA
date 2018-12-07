@@ -64,6 +64,7 @@ module kb_MaSuRCA {
         2. PARAMETERS
         string graph_kmer_size - the k-mer size for deBruijn graph values between 25 and 127 are supported, 'auto' will compute the optimal size based on the read data and GC content
         bool use_linking_mates - set this to 1 for all Illumina-only assemblies; set this to 1 if you have less than 20x long reads (454, Sanger, Pacbio) and less than 50x CLONE coverage by Illumina, Sanger or 454 mate pairs; otherwise keep at 0
+        string dna_source - indicate 'bacteria' or 'other organisms' for setting limit_jump_coverage and cgwErrorRate values
         int limit_jump_coverage - this parameter is useful if you have too many Illumina jumping library mates. Typically set it to 60 for bacteria and 300 for the other organisms
         CA_PARAMETERS: these are the additional parameters to Celera Assembler.  do not worry about performance, number or processors or batch sizes -- these are computed automatically. 
         float cgwErrorRate=0.15 - set cgwErrorRate=0.25 for bacteria and 0.1<=cgwErrorRate<=0.15 for other organisms.
@@ -79,47 +80,16 @@ module kb_MaSuRCA {
         list<paired_end_lib> read_libraries - Illumina PairedEndLibrary files to assemble
 
         @optional jump_libraries
-        @optional jp_mean
-        @optional jp_stdev
         @optional pacbio_reads
         @optional other_frg_file
         @optional graph_kmer_size
         @optional use_linking_mates
-        @optional limit_jump_coverage
-        @optional cgwErrorRate
+        @optional dna_source
         @optional kmer_count_threshold
         @optional close_gaps
         @optional soap_assembly
         @optional do_homopolymer_trim
      */
-
-    typedef structure {
-        string workspace_name;
-        int num_threads;
-        int jf_size;
-        list<read_lib> reads_libraries;
-        string pe_prefix;
-        int pe_mean;
-        int pe_stdev;
-
-        list<read_lib> jump_libraries;
-        string jp_prefix;
-        int jp_mean;
-        int jp_stdev;
-        read_lib pacbio_reads;
-        string other_frg_file;   
-        string graph_kmer_size;
-        bool use_linking_mates;
-        int limit_jump_coverage;
-        float cgwErrorRate;
-        int kmer_count_threshold;
-        bool close_gaps;
-        bool soap_assembly;
-        bool do_homopolymer_trim;
-
-        string output_contigset_name;
-        bool create_report;
-    } masurcaParams;      
 
     typedef structure {
         string workspace_name;
@@ -133,8 +103,7 @@ module kb_MaSuRCA {
         string other_frg_file;   
         string graph_kmer_size;
         bool use_linking_mates;
-        int limit_jump_coverage;
-        float cgwErrorRate;
+        string dna_source;
         int kmer_count_threshold;
         bool close_gaps;
         bool soap_assembly;
@@ -144,21 +113,14 @@ module kb_MaSuRCA {
         bool create_report;
     } masurcaAssemblerParams;
            
-    /* Output parameter items for run_masurca and run_masurca_assembler
-
+    /* Output parameter items for run_masurca_assembler
     report_name - the name of the KBaseReport.Report workspace object.
     report_ref - the workspace reference of the report.
-
     */
     typedef structure {
         string report_name;
         string report_ref;
     } masurcaResults;
-    
-    /* 
-        Definition of run_masurca
-     */
-    funcdef run_masurca(masurcaParams params) returns (masurcaResults output) authentication required;
     
     /* 
         Definition of run_masurca_assembler
