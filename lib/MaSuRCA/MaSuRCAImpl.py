@@ -100,7 +100,7 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
                  json.dumps(params, indent=1)))
 
         for key, value in params.iteritems():
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 params[key] = value.strip()
 
         masurca_assembler = MaSuRCA_Assembler(self.config, ctx.provenance())
