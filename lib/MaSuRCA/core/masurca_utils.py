@@ -139,10 +139,8 @@ class masurca_utils:
         build the 'PARAMETERS...END' portion for the config.txt file
         """
         # set the default parameters as suggested in the example configuration file
-        param_str = """
-        EXTEND_JUMP_READS=0\nUSE_GRID=0\nGRID_QUEUE=all.q\nGRID_BATCH_SIZE=300000000\n
-        LHE_COVERAGE=25\nMEGA_READS_ONE_PASS=0
-        """
+        param_str = ("EXTEND_JUMP_READS=0\nUSE_GRID=0\nGRID_QUEUE=all.q\nGRID_BATCH_SIZE" +
+                     "=300000000\nLHE_COVERAGE=25\nMEGA_READS_ONE_PASS=0")
         if (params.get('graph_kmer_size', None) and
                 type(params['graph_kmer_size']) == int):
             if param_str != '':
@@ -336,11 +334,11 @@ class masurca_utils:
             with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
                 previous_config = previous_config_file.read()
 
-            begin_patn2 = "PARAMETERS\n"
+            begin_patn2 = "PARAMETERS"
             end_patn2 = "END\n"
             final_config = self._replaceSectionText(previous_config, begin_patn2,
                                                     end_patn2, param_str)
-            log("\n***After PARAMETER section replacement:\n{}\nSaved at {}".format(
+            log("\n***Configuration file content:\n{}\nSaved at {}".format(
                         final_config.encode('utf-8').decode('utf-8'), config_file_path))
 
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
