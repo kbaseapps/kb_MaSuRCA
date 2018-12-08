@@ -334,7 +334,7 @@ class masurca_utils:
             with codecs.open(config_file_path, mode='r', encoding='utf-8') as previous_config_file:
                 previous_config = previous_config_file.read()
 
-            begin_patn2 = "PARAMETERS"
+            begin_patn2 = "PARAMETERS\n"
             end_patn2 = "END\n"
             final_config = self._replaceSectionText(previous_config, begin_patn2,
                                                     end_patn2, param_str)
