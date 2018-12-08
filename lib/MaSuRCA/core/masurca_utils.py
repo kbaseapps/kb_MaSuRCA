@@ -83,17 +83,17 @@ class masurca_utils:
         """
         data_str = ''
         if pe_reads_data:
-                log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
-                for pe in pe_reads_data:
-                    if data_str != '':
-                        data_str += '\n'
-                    data_str += 'PE= ' + pe['pe_prefix'] + ' ' + str(pe['pe_mean']) + ' ' + \
-                                str(pe['pe_stdev']) + ' ' + pe['fwd_file']
-                    if pe.get('rev_file', None):
-                        data_str += ' ' + pe['rev_file']
+            # log('PE reads data details:\n{}'.format(json.dumps(pe_reads_data, indent=1)))
+            for pe in pe_reads_data:
+                if data_str != '':
+                    data_str += '\n'
+                data_str += 'PE= ' + pe['pe_prefix'] + ' ' + str(pe['pe_mean']) + ' ' + \
+                            str(pe['pe_stdev']) + ' ' + pe['fwd_file']
+                if pe.get('rev_file', None):
+                    data_str += ' ' + pe['rev_file']
 
         if jp_reads_data:
-            log('JUMP reads data details:\n{}'.format(json.dumps(jp_reads_data, indent=1)))
+            # log('JUMP reads data details:\n{}'.format(json.dumps(jp_reads_data, indent=1)))
             for jp in jp_reads_data:
                 if data_str != '':
                     data_str += '\n'
@@ -167,10 +167,10 @@ class masurca_utils:
             if param_str != '':
                 param_str += '\n'
             param_str += 'CA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
-        if params.get(PARAM_IN_THREADN, None):
+        if params.get(self.PARAM_IN_THREADN, None):
             if param_str != '':
                 param_str += '\n'
-            param_str += 'NUM_THREADS = ' + str(params[PARAM_IN_THREADN])
+            param_str += 'NUM_THREADS = ' + str(params[self.PARAM_IN_THREADN])
         if params.get('jf_size', None):
             if param_str != '':
                 param_str += '\n'
@@ -605,7 +605,7 @@ class masurca_utils:
             else:
                 raise
 
-        #log('Downloaded reads data from KBase:\n' + pformat(reads))
+        # log('Downloaded reads data from KBase:\n' + pformat(reads))
         reads_data = []
         for ref in reads_refs:
             reads_name = reftoname[ref]
