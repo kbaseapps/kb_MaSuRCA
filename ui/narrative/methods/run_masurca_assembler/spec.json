@@ -11,17 +11,6 @@
     },
     "parameters": [ 
         {
-            "id": "jf_size",
-            "optional": false,
-            "advanced": false,
-            "allow_multiple": false,
-            "default_values": ["200000000"],
-            "field_type": "text",
-            "text_options": {
-                "validate_as": "int"
-            }
-        },
-        {
             "id": "pe_id",
             "optional": false,
             "advanced": true,
@@ -29,7 +18,7 @@
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+                "valid_ws_types": ["KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
             }
         },
         {
@@ -40,7 +29,7 @@
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+                "valid_ws_types": ["KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
             }
         },
         {
@@ -121,7 +110,7 @@
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+                "valid_ws_types": ["KBaseGenomes.ContigSet","KBaseGenomeAnnotations.Assembly","KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
             }   
         },  
         {   
@@ -132,7 +121,7 @@
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+                "valid_ws_types": ["KBaseGenomes.ContigSet","KBaseGenomeAnnotations.Assembly","KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
             }   
         },  
         {
@@ -160,7 +149,7 @@
         },
         {
             "id": "graph_kmer_size",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "auto"],
@@ -171,7 +160,7 @@
         },
         {
             "id": "use_linking_mates",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "1" ],
@@ -183,7 +172,7 @@
         },
         {
             "id": "dna_source",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "bacteria"],
@@ -250,6 +239,17 @@
             "field_type": "text",
             "text_options": {
                 "validate_as" : "int"
+            }
+        },
+        {
+            "id": "jf_size",
+            "optional": false,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": ["200000000"],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int"
             }
         }
     ],

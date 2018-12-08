@@ -72,7 +72,9 @@ class masurca_utils:
         """
         _has_long_reads: check if a long reads input exists in the parameters
         """
-        return (params.get('pacbio_reads', None) or params.get('nanopore_reads', None))
+        return (params.get('pacbio_reads', None) or
+                params.get('nanopore_reads', None) or
+                params.get('other_frg_file', None))
 
     def _get_data_portion(self, pe_reads_data, jp_reads_data=None, pacbio_reads_file='',
                           nanopore_reads_file='', other_frg_file=''):
@@ -136,12 +138,17 @@ class masurca_utils:
         """
         build the 'PARAMETERS...END' portion for the config.txt file
         """
-        param_str = ''
-        if params.get('graph_kmer_size', None):
+        # set the default parameters as suggested in the example configuration file
+        param_str = """
+        EXTEND_JUMP_READS=0\nUSE_GRID=0\nGRID_QUEUE=all.q\nGRID_BATCH_SIZE=300000000\n
+        LHE_COVERAGE=25\nMEGA_READS_ONE_PASS=0
+        """
+        if (params.get('graph_kmer_size', None) and
+                type(params['graph_kmer_size']) == int):
             if param_str != '':
                 param_str += '\n'
             param_str += 'GRAPH_KMER_SIZE=' + str(params['graph_kmer_size'])
-        if (params.get('graph_kmer_size', None) is None or type(params['graph_kmer_size']) != int):
+        else:
             if param_str != '':
                 param_str += '\n'
             param_str += 'GRAPH_KMER_SIZE=auto'
@@ -160,9 +167,10 @@ class masurca_utils:
             if param_str != '':
                 param_str += '\n'
             param_str += 'CA_PARAMETERS = cgwErrorRate=' + str(params['cgwErrorRate'])
-        if params.get('num_threads', None):
+        if params.get(PARAM_IN_THREADN, None):
             if param_str != '':
                 param_str += '\n'
+            param_str += 'NUM_THREADS = ' + str(params[PARAM_IN_THREADN])
         if params.get('jf_size', None):
             if param_str != '':
                 param_str += '\n'
@@ -414,8 +422,8 @@ class masurca_utils:
             begin_patn2 = "PARAMETERS\n"
             end_patn1 = "END\nPARAMETERS\n"
             end_patn2 = "END\n"
-            repl_txt1 = 'PE= pe 180 20 /kb/module/work/testReads/small.forward.fq /kb/module/work/testReads/small.reverse.fq\n'
-            repl_txt2 = 'GRAPH_KMER_SIZE=auto\nUSE_LINKING_MATES=1\nLIMIT_JUMP_COVERAGE = 60\nCA_PARAMETERS = cgwErrorRate=0.15\nNUM_THREADS= 64\nJF_SIZE=100000000\nDO_HOMOPOLYMER_TRIM=0\n' 
+            repl_txt1 = 'PE= pe 500 50 /kb/module/work/testReads/small.forward.fq /kb/module/work/testReads/small.reverse.fq\n'
+            repl_txt2 = 'GRAPH_KMER_SIZE=auto\nUSE_LINKING_MATES=1\nLIMIT_JUMP_COVERAGE = 60\nCA_PARAMETERS = cgwErrorRate=0.15\nNUM_THREADS= 64\nJF_SIZE=100000000\nDO_HOMOPOLYMER_TRIM=0\n'
         """
         if repl_txt != '':
             # create regular expression pattern
