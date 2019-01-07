@@ -24,11 +24,6 @@ module kb_MaSuRCA {
     /* An X/Y/Z style KBase object reference
     */
     typedef string obj_ref;
-
-   /* The workspace object name of a SingleEndLibrary or PairedEndLibrary file, whether of the
-       KBaseAssembly or KBaseFile type.
-    */
-    typedef string read_lib;
        
     /* parameter groups
     */
@@ -77,7 +72,7 @@ module kb_MaSuRCA {
 
         string workspace_name - the name of the workspace from which to take input and store output.
         string output_contigset_name - the name of the output contigset
-        list<paired_end_lib> read_libraries - Illumina PairedEndLibrary files to assemble
+        list<paired_readsParams> read_libraries - Illumina PairedEndLibrary files to assemble
 
         @optional jump_libraries
         @optional pacbio_reads

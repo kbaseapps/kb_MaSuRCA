@@ -1,23 +1,21 @@
 # -*- coding: utf-8 -*-
 import re
 import time
-import json
 import os
-inport errno
-import numpy as np
+import errno
 import zipfile
 import subprocess
-from pprint import pprint, pformat
 import codecs
 import uuid
 import copy
+import numpy as np
+from pprint import pprint
 
 from MaSuRCA.core.Program_Runner import Program_Runner
-from Workspace.WorkspaceClient import Workspace as Workspace
+from Workspace.WorkspaceClient import Workspace
 from KBaseReport.KBaseReportClient import KBaseReport
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from kb_quast.kb_quastClient import kb_quast
-from kb_quast.baseclient import ServerError as QUASTError
 from ReadsUtils.ReadsUtilsClient import ReadsUtils
 from ReadsUtils.baseclient import ServerError
 
@@ -43,6 +41,9 @@ def _mkdir_p(path):
 
 
 class masurca_utils:
+    """
+    masurca_utils: defining a system of utils for running masurca
+    """
     MaSuRCA_VERSION = 'MaSuRCA-3.2.9'
     MaSuRCA_BIN = '/kb/module/' + MaSuRCA_VERSION + '/bin/masurca'
     PARAM_IN_WS = 'workspace_name'
@@ -125,7 +126,7 @@ class masurca_utils:
             data_str += 'NANOPORE= ' + nanopore_reads_file
 
         # Adding the other_frg_file inputs if any
-        # any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into 
+        # any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into
         # Celera Assembler compatible .frg file
         # (see http://wgsassembler.sourceforge.com) and supplied as OTHER=file.frg
         if other_frg_file != '':
@@ -209,8 +210,11 @@ class masurca_utils:
             begin_patn2 = "PARAMETERS\n"
             end_patn1 = "END\nPARAMETERS\n"
             end_patn2 = "END\n"
-            repl_txt1 = 'PE= pe 500 50 /kb/module/work/testReads/small.forward.fq /kb/module/work/testReads/small.reverse.fq\n'
-            repl_txt2 = 'GRAPH_KMER_SIZE=auto\nUSE_LINKING_MATES=1\nLIMIT_JUMP_COVERAGE = 60\nCA_PARAMETERS = cgwErrorRate=0.15\nNUM_THREADS= 64\nJF_SIZE=100000000\nDO_HOMOPOLYMER_TRIM=0\n'
+            repl_txt1 = ('PE= pe 500 50 /kb/module/work/testReads/small.forward.fq' +
+                          ' /kb/module/work/testReads/small.reverse.fq\n')
+            repl_txt2 = ('GRAPH_KMER_SIZE=auto\nUSE_LINKING_MATES=1\nLIMIT_JUMP_COVERAGE = 60\n' +
+                          'CA_PARAMETERS = cgwErrorRate=0.15\nNUM_THREADS= 64\nJF_SIZE=100000000\n
+                          DO_HOMOPOLYMER_TRIM=0\n')
         """
         if repl_txt != '':
             # create regular expression pattern
@@ -232,9 +236,9 @@ class masurca_utils:
             else:
                 raise ValueError('The first two letters in \'' + ref[pfix] + '\' has been used.')
 
-    def _getReadsInfo_PE(self, input_params):
+    def _get_pereads_info(self, input_params):
         """
-        _getReadsInfo_PE--from a list of paired_readsParams structures fetches the corresponding
+        _get_pereads_info--from a list of paired_readsParams structures fetches the corresponding
         reads info with the paired_readsParams[pe_id]
         returns a list of reads data in the following structure:
         reads_data = {
@@ -260,7 +264,7 @@ class masurca_utils:
             for rds_lib in rds_params['reads_libraries']:
                 if 'pe_id' in rds_lib:
                     rds_refs.append(rds_lib['pe_id'])
-            rds_data = self._getKBReadsInfo(wsname, rds_refs)
+            rds_data = self._get_kbreads_info(wsname, rds_refs)
 
             for rds_lib in rds_params['reads_libraries']:
                 i = 0
@@ -270,25 +274,25 @@ class masurca_utils:
                         if 'pe_prefix' in rds_lib:
                             rds['pe_prefix'] = rds_lib['pe_prefix'][:1] + str(i)
                         else:
-                            raise ValueError("Parameter pe_prefix is required for reads {}".format(
-                                rds[reads_ref]))
+                            raise ValueError("Parameter pe_prefix is required for reads " +
+                                             rds['read_ref'])
                         if 'pe_mean' in rds_lib:
                             rds['pe_mean'] = rds_lib['pe_mean']
                         else:
-                            raise ValueError("Parameter pe_mean is required for reads {}".format(
-                                rds[reads_ref]))
+                            raise ValueError("Parameter pe_mean is required for reads " +
+                                             rds['read_ref'])
                         if 'pe_stdev' in rds_lib:
                             rds['pe_stdev'] = rds_lib['pe_stdev']
                         else:
-                            raise ValueError("Parameter pe_stdev is required for reads {}".format(
-                                rds[reads_ref]))
+                            raise ValueError("Parameter pe_stdev is required for reads " +
+                                             rds['read_ref'])
         else:
             raise ValueError("Parameter {} is required for reads {}".format('reads_libraries'))
         return rds_data
 
-    def _getReadsInfo_JP(self, input_params):
+    def _get_jpreadsInfo(self, input_params):
         """
-        _getReadsInfo_JP--from a list of jump_readsParams structures fetches the corresponding
+        _get_jpreadsInfo--from a list of jump_readsParams structures fetches the corresponding
         reads info with the paired_readsParams[pe_id]
         returns a list of reads data in the following structure:
         reads_data = {
@@ -314,7 +318,7 @@ class masurca_utils:
             for rds_lib in rds_params['jump_libraries']:
                 if 'jp_id' in rds_lib:
                     rds_refs.append(rds_lib['jp_id'])
-            rds_data = self._getKBReadsInfo(wsname, rds_refs)
+            rds_data = self._get_kbreads_info(wsname, rds_refs)
 
             for rds_lib in rds_params['jump_libraries']:
                 i = 0
@@ -325,23 +329,24 @@ class masurca_utils:
                             rds['jp_prefix'] = rds_lib['jp_prefix'][:1] + str(i)
                         else:
                             raise ValueError("Parameter jp_prefix is required for reads {}".format(
-                                rds[reads_ref]))
+                                rds['reads_ref']))
                         if 'jp_mean' in rds_lib:
                             rds['jp_mean'] = rds_lib['jp_mean']
                         else:
-                            raise ValueError(
-                                "Parameter jp_mean is required for reads {}".format(rds[reads_ref]))
+                            raise ValueError("Parameter jp_mean is required for reads {}".format(
+                                rds['reads_ref']))
                         if 'jp_stdev' in rds_lib:
                             rds['jp_stdev'] = rds_lib['jp_stdev']
                         else:
                             raise ValueError("Parameter pe_stdev is required for reads {}".format(
-                                rds[reads_ref]))
+                                rds['reads_ref']))
         return rds_data
 
-    def _getKBReadsInfo(self, wsname, reads_refs):
+    def _get_kbreads_info(self, wsname, reads_refs):
         """
-        _getKBReadsInfo--from a set of given KBase reads refs, fetches the corresponding reads info
-        with as deinterleaved fastq files and returns a list of reads data in the following structure:
+        _get_kbreads_info--from a set of given KBase reads refs, fetches the corresponding
+         reads info with as deinterleaved fastq files and returns a list of reads data in
+         the following structure:
         reads_data = {
                 'fwd_file': path_to_fastq_file,
                 'type': reads_type, #('interleaved', 'paired', or 'single'
@@ -477,7 +482,7 @@ class masurca_utils:
                     fasta_header = current_line.replace('>', '').strip()
                     try:
                         contig_id = fasta_header.strip().split(' ', 1)[0]
-                    except:
+                    except (IndexError, KeyError, ValueError):
                         contig_id = fasta_header.strip()
                 else:
                     sequence_len += len(re.sub(pattern, '', current_line))
@@ -555,6 +560,9 @@ class masurca_utils:
         return au.get_assembly_as_fasta({'ref': assembly_ref})
 
     def generate_report(self, contig_file_name, params, out_dir, wsname):
+        """
+        generate_report: reporting results
+        """
         log('Generating and saving report')
 
         contig_file_with_path = os.path.join(out_dir, contig_file_name)
@@ -602,7 +610,8 @@ class masurca_utils:
         """
         validate_params: checks params passed to run_masurca_app method and set default values
         """
-        # log('Start validating run_masurca_app parameters:\n{}'.format(json.dumps(params, indent=1)))
+        # log('Start validating run_masurca_app parameters:\n{}'.format(
+        # json.dumps(params, indent=1)))
 
         # check for mandatory parameters
         if params.get(self.PARAM_IN_WS, None) is None:
@@ -650,10 +659,10 @@ class masurca_utils:
         config_file_path = os.path.join(self.proj_dir, 'config.txt')
 
         # STEP 2.1: retrieve the reads data from input parameter
-        pe_reads_data = self._getReadsInfo_PE(params)
+        pe_reads_data = self._get_pereads_info(params)
         jp_reads_data = []
         if params.get(self.PARAM_IN_JUMP_LIBS, None):
-            jp_reads_data = self._getReadsInfo_JP(params)
+            jp_reads_data = self._get_jpreadsInfo(params)
             if ('jp_mean' not in params or type(params['jp_mean']) != int):
                 params['jp_mean'] = 3600
             if ('jp_stdev' not in params or type(params['jp_stdev']) != int):
@@ -674,12 +683,13 @@ class masurca_utils:
                 pb_reads_file = (self._get_fasta_from_assembly(pb_ref)).get('path', '')
             else:
                 if self._check_ref_type(pb_ref, reads_types):
-                    pb_rd = self._getKBReadsInfo(wsname, [pb_ref])
+                    pb_rd = self._get_kbreads_info(wsname, [pb_ref])
                     pb_reads_file = pb_rd[0]['fwd_file']
                     if pb_rd[0].get('rev_file', None):
                         pb_reads_file += ' ' + pb_rd[0]['rev_file']
 
-        # STEP 2.3: NANOPORE reads must be in a single FASTA/FASTQ file and supplied as NANOPORE=reads.fa
+        # STEP 2.3: NANOPORE reads must be in a single FASTA/FASTQ file and supplied
+        # as NANOPORE=reads.fa
         np_reads_file = ''
         if params.get('nanopore_reads', None):
             np_ref = params['nanopore_reads']
@@ -687,7 +697,7 @@ class masurca_utils:
                 np_reads_file = (self._get_fasta_from_assembly(np_ref)).get('path', '')
             else:
                 if self._check_ref_type(np_ref, reads_types):
-                    np_rd = self._getKBReadsInfo(wsname, [np_ref])
+                    np_rd = self._get_kbreads_info(wsname, [np_ref])
                     np_reads_file = np_rd[0]['fwd_file']
                     if np_rd[0].get('rev_file', None):
                         np_reads_file += ' ' + np_rd[0]['rev_file']
@@ -723,7 +733,7 @@ class masurca_utils:
             with codecs.open(config_file_path, mode='w', encoding='utf-8') as config_file:
                 config_file.write(config_with_data)
 
-            # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved in STEP 3.1
+            # STEP 3.2: replace the 'PARAMETERS...END' portion of the config_file file saved above
             param_str = self._get_parameters_portion(params)
             if param_str == '':  # no parameters are specified, no further actions
                 return ''

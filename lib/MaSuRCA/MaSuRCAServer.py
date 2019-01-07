@@ -333,10 +333,6 @@ class Application(object):
         self.serverlog.set_log_level(6)
         self.rpc_service = JSONRPCServiceCustom()
         self.method_authentication = dict()
-        self.rpc_service.add(impl_kb_MaSuRCA.run_masurca,
-                             name='kb_MaSuRCA.run_masurca',
-                             types=[dict])
-        self.method_authentication['kb_MaSuRCA.run_masurca'] = 'required'  # noqa
         self.rpc_service.add(impl_kb_MaSuRCA.run_masurca_assembler,
                              name='kb_MaSuRCA.run_masurca_assembler',
                              types=[dict])

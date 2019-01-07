@@ -33,12 +33,12 @@ class kb_MaSuRCA(object):
             trust_all_ssl_certificates=trust_all_ssl_certificates,
             auth_svc=auth_svc)
 
-    def run_masurca(self, params, context=None):
+    def run_masurca_assembler(self, params, context=None):
         """
-        Definition of run_masurca
-        :param params: instance of type "masurcaParams" (Arguments for
-           run_masurca *******for creating the sr_config.txt file******* 1.
-           DATA consisting of 5 fields: 1)two_letter_prefix 2)mean 3)stdev
+        Definition of run_masurca_assembler
+        :param params: instance of type "masurcaAssemblerParams" (Arguments
+           for run_masurca *******for creating the sr_config.txt file*******
+           1. DATA consisting of 5 fields: 1)two_letter_prefix 2)mean 3)stdev
            4)fastq(.gz)_fwd_reads 5)fastq(.gz)_rev_reads. e.g., PE= pe 180 20
            /FULL_PATH/frag_1.fastq  /FULL_PATH/frag_2.fastq JUMP= sh 3600 200
            /FULL_PATH/short_1.fastq  /FULL_PATH/short_2.fastq #pacbio OR
@@ -52,7 +52,9 @@ class kb_MaSuRCA(object):
            use_linking_mates - set this to 1 for all Illumina-only
            assemblies; set this to 1 if you have less than 20x long reads
            (454, Sanger, Pacbio) and less than 50x CLONE coverage by
-           Illumina, Sanger or 454 mate pairs; otherwise keep at 0 int
+           Illumina, Sanger or 454 mate pairs; otherwise keep at 0 string
+           dna_source - indicate 'bacteria' or 'other organisms' for setting
+           limit_jump_coverage and cgwErrorRate values int
            limit_jump_coverage - this parameter is useful if you have too
            many Illumina jumping library mates. Typically set it to 60 for
            bacteria and 300 for the other organisms CA_PARAMETERS: these are
@@ -74,82 +76,40 @@ class kb_MaSuRCA(object):
            trim long runs of homopolymers string workspace_name - the name of
            the workspace from which to take input and store output. string
            output_contigset_name - the name of the output contigset
-           list<paired_end_lib> read_libraries - Illumina PairedEndLibrary
-           files to assemble @optional jump_libraries @optional jp_mean
-           @optional jp_stdev @optional pacbio_reads @optional other_frg_file
-           @optional graph_kmer_size @optional use_linking_mates @optional
-           limit_jump_coverage @optional cgwErrorRate @optional
-           kmer_count_threshold @optional close_gaps @optional soap_assembly
-           @optional do_homopolymer_trim) -> structure: parameter
-           "workspace_name" of String, parameter "num_threads" of Long,
-           parameter "jf_size" of Long, parameter "reads_libraries" of list
-           of type "read_lib" (The workspace object name of a
-           SingleEndLibrary or PairedEndLibrary file, whether of the
-           KBaseAssembly or KBaseFile type.), parameter "pe_prefix" of
-           String, parameter "pe_mean" of Long, parameter "pe_stdev" of Long,
-           parameter "jump_libraries" of list of type "read_lib" (The
-           workspace object name of a SingleEndLibrary or PairedEndLibrary
-           file, whether of the KBaseAssembly or KBaseFile type.), parameter
-           "jp_prefix" of String, parameter "jp_mean" of Long, parameter
-           "jp_stdev" of Long, parameter "pacbio_reads" of type "read_lib"
-           (The workspace object name of a SingleEndLibrary or
-           PairedEndLibrary file, whether of the KBaseAssembly or KBaseFile
-           type.), parameter "other_frg_file" of String, parameter
+           list<paired_readsParams> read_libraries - Illumina
+           PairedEndLibrary files to assemble @optional jump_libraries
+           @optional pacbio_reads @optional other_frg_file @optional
+           graph_kmer_size @optional use_linking_mates @optional dna_source
+           @optional kmer_count_threshold @optional close_gaps @optional
+           soap_assembly @optional do_homopolymer_trim) -> structure:
+           parameter "workspace_name" of String, parameter "num_threads" of
+           Long, parameter "jf_size" of Long, parameter "reads_libraries" of
+           list of type "paired_readsParams" (parameter groups) -> structure:
+           parameter "pe_id" of type "obj_ref" (An X/Y/Z style KBase object
+           reference), parameter "pe_prefix" of String, parameter "pe_mean"
+           of Long, parameter "pe_stdev" of Long, parameter "jump_libraries"
+           of list of type "jump_readsParams" -> structure: parameter "jp_id"
+           of type "obj_ref" (An X/Y/Z style KBase object reference),
+           parameter "jp_prefix" of String, parameter "jp_mean" of Long,
+           parameter "jp_stdev" of Long, parameter "pacbio_reads" of type
+           "obj_ref" (An X/Y/Z style KBase object reference), parameter
+           "nanopore_reads" of type "obj_ref" (An X/Y/Z style KBase object
+           reference), parameter "other_frg_file" of String, parameter
            "graph_kmer_size" of String, parameter "use_linking_mates" of type
            "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
-           parameter "limit_jump_coverage" of Long, parameter "cgwErrorRate"
-           of Double, parameter "kmer_count_threshold" of Long, parameter
-           "close_gaps" of type "bool" (A boolean - 0 for false, 1 for true.
-           @range (0, 1)), parameter "soap_assembly" of type "bool" (A
-           boolean - 0 for false, 1 for true. @range (0, 1)), parameter
-           "do_homopolymer_trim" of type "bool" (A boolean - 0 for false, 1
-           for true. @range (0, 1)), parameter "output_contigset_name" of
-           String, parameter "create_report" of type "bool" (A boolean - 0
-           for false, 1 for true. @range (0, 1))
-        :returns: instance of type "masurcaResults" (Output parameter items
-           for run_masurca and run_masurca_assembler report_name - the name
-           of the KBaseReport.Report workspace object. report_ref - the
-           workspace reference of the report.) -> structure: parameter
-           "report_name" of String, parameter "report_ref" of String
-        """
-        return self._client.call_method(
-            'kb_MaSuRCA.run_masurca',
-            [params], self._service_ver, context)
-
-    def run_masurca_assembler(self, params, context=None):
-        """
-        Definition of run_masurca_assembler
-        :param params: instance of type "masurcaAssemblerParams" ->
-           structure: parameter "workspace_name" of String, parameter
-           "num_threads" of Long, parameter "jf_size" of Long, parameter
-           "reads_libraries" of list of type "paired_readsParams" (parameter
-           groups) -> structure: parameter "pe_id" of type "obj_ref" (An
-           X/Y/Z style KBase object reference), parameter "pe_prefix" of
-           String, parameter "pe_mean" of Long, parameter "pe_stdev" of Long,
-           parameter "jump_libraries" of list of type "jump_readsParams" ->
-           structure: parameter "jp_id" of type "obj_ref" (An X/Y/Z style
-           KBase object reference), parameter "jp_prefix" of String,
-           parameter "jp_mean" of Long, parameter "jp_stdev" of Long,
-           parameter "pacbio_reads" of type "obj_ref" (An X/Y/Z style KBase
-           object reference), parameter "nanopore_reads" of type "obj_ref"
-           (An X/Y/Z style KBase object reference), parameter
-           "other_frg_file" of String, parameter "graph_kmer_size" of String,
-           parameter "use_linking_mates" of type "bool" (A boolean - 0 for
-           false, 1 for true. @range (0, 1)), parameter "limit_jump_coverage"
-           of Long, parameter "cgwErrorRate" of Double, parameter
-           "kmer_count_threshold" of Long, parameter "close_gaps" of type
-           "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
-           parameter "soap_assembly" of type "bool" (A boolean - 0 for false,
-           1 for true. @range (0, 1)), parameter "do_homopolymer_trim" of
+           parameter "dna_source" of String, parameter "kmer_count_threshold"
+           of Long, parameter "close_gaps" of type "bool" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter "soap_assembly" of
            type "bool" (A boolean - 0 for false, 1 for true. @range (0, 1)),
-           parameter "output_contigset_name" of String, parameter
-           "create_report" of type "bool" (A boolean - 0 for false, 1 for
-           true. @range (0, 1))
+           parameter "do_homopolymer_trim" of type "bool" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter
+           "output_contigset_name" of String, parameter "create_report" of
+           type "bool" (A boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "masurcaResults" (Output parameter items
-           for run_masurca and run_masurca_assembler report_name - the name
-           of the KBaseReport.Report workspace object. report_ref - the
-           workspace reference of the report.) -> structure: parameter
-           "report_name" of String, parameter "report_ref" of String
+           for run_masurca_assembler report_name - the name of the
+           KBaseReport.Report workspace object. report_ref - the workspace
+           reference of the report.) -> structure: parameter "report_name" of
+           String, parameter "report_ref" of String
         """
         return self._client.call_method(
             'kb_MaSuRCA.run_masurca_assembler',

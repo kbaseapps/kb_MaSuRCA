@@ -117,146 +117,6 @@ sub new
 
 
 
-=head2 run_masurca
-
-  $output = $obj->run_masurca($params)
-
-=over 4
-
-=item Parameter and return types
-
-=begin html
-
-<pre>
-$params is a kb_MaSuRCA.masurcaParams
-$output is a kb_MaSuRCA.masurcaResults
-masurcaParams is a reference to a hash where the following keys are defined:
-	workspace_name has a value which is a string
-	num_threads has a value which is an int
-	jf_size has a value which is an int
-	reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
-	pe_prefix has a value which is a string
-	pe_mean has a value which is an int
-	pe_stdev has a value which is an int
-	jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
-	jp_prefix has a value which is a string
-	jp_mean has a value which is an int
-	jp_stdev has a value which is an int
-	pacbio_reads has a value which is a kb_MaSuRCA.read_lib
-	other_frg_file has a value which is a string
-	graph_kmer_size has a value which is a string
-	use_linking_mates has a value which is a kb_MaSuRCA.bool
-	limit_jump_coverage has a value which is an int
-	cgwErrorRate has a value which is a float
-	kmer_count_threshold has a value which is an int
-	close_gaps has a value which is a kb_MaSuRCA.bool
-	soap_assembly has a value which is a kb_MaSuRCA.bool
-	do_homopolymer_trim has a value which is a kb_MaSuRCA.bool
-	output_contigset_name has a value which is a string
-	create_report has a value which is a kb_MaSuRCA.bool
-read_lib is a string
-bool is an int
-masurcaResults is a reference to a hash where the following keys are defined:
-	report_name has a value which is a string
-	report_ref has a value which is a string
-
-</pre>
-
-=end html
-
-=begin text
-
-$params is a kb_MaSuRCA.masurcaParams
-$output is a kb_MaSuRCA.masurcaResults
-masurcaParams is a reference to a hash where the following keys are defined:
-	workspace_name has a value which is a string
-	num_threads has a value which is an int
-	jf_size has a value which is an int
-	reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
-	pe_prefix has a value which is a string
-	pe_mean has a value which is an int
-	pe_stdev has a value which is an int
-	jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
-	jp_prefix has a value which is a string
-	jp_mean has a value which is an int
-	jp_stdev has a value which is an int
-	pacbio_reads has a value which is a kb_MaSuRCA.read_lib
-	other_frg_file has a value which is a string
-	graph_kmer_size has a value which is a string
-	use_linking_mates has a value which is a kb_MaSuRCA.bool
-	limit_jump_coverage has a value which is an int
-	cgwErrorRate has a value which is a float
-	kmer_count_threshold has a value which is an int
-	close_gaps has a value which is a kb_MaSuRCA.bool
-	soap_assembly has a value which is a kb_MaSuRCA.bool
-	do_homopolymer_trim has a value which is a kb_MaSuRCA.bool
-	output_contigset_name has a value which is a string
-	create_report has a value which is a kb_MaSuRCA.bool
-read_lib is a string
-bool is an int
-masurcaResults is a reference to a hash where the following keys are defined:
-	report_name has a value which is a string
-	report_ref has a value which is a string
-
-
-=end text
-
-=item Description
-
-Definition of run_masurca
-
-=back
-
-=cut
-
- sub run_masurca
-{
-    my($self, @args) = @_;
-
-# Authentication: required
-
-    if ((my $n = @args) != 1)
-    {
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function run_masurca (received $n, expecting 1)");
-    }
-    {
-	my($params) = @args;
-
-	my @_bad_arguments;
-        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
-        if (@_bad_arguments) {
-	    my $msg = "Invalid arguments passed to run_masurca:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-								   method_name => 'run_masurca');
-	}
-    }
-
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "kb_MaSuRCA.run_masurca",
-	    params => \@args,
-    });
-    if ($result) {
-	if ($result->is_error) {
-	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
-					       code => $result->content->{error}->{code},
-					       method_name => 'run_masurca',
-					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
-					      );
-	} else {
-	    return wantarray ? @{$result->result} : $result->result->[0];
-	}
-    } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method run_masurca",
-					    status_line => $self->{client}->status_line,
-					    method_name => 'run_masurca',
-				       );
-    }
-}
- 
-
-
 =head2 run_masurca_assembler
 
   $output = $obj->run_masurca_assembler($params)
@@ -281,8 +141,7 @@ masurcaAssemblerParams is a reference to a hash where the following keys are def
 	other_frg_file has a value which is a string
 	graph_kmer_size has a value which is a string
 	use_linking_mates has a value which is a kb_MaSuRCA.bool
-	limit_jump_coverage has a value which is an int
-	cgwErrorRate has a value which is a float
+	dna_source has a value which is a string
 	kmer_count_threshold has a value which is an int
 	close_gaps has a value which is a kb_MaSuRCA.bool
 	soap_assembly has a value which is a kb_MaSuRCA.bool
@@ -324,8 +183,7 @@ masurcaAssemblerParams is a reference to a hash where the following keys are def
 	other_frg_file has a value which is a string
 	graph_kmer_size has a value which is a string
 	use_linking_mates has a value which is a kb_MaSuRCA.bool
-	limit_jump_coverage has a value which is an int
-	cgwErrorRate has a value which is a float
+	dna_source has a value which is a string
 	kmer_count_threshold has a value which is an int
 	close_gaps has a value which is a kb_MaSuRCA.bool
 	soap_assembly has a value which is a kb_MaSuRCA.bool
@@ -583,38 +441,6 @@ a string
 
 
 
-=head2 read_lib
-
-=over 4
-
-
-
-=item Description
-
-The workspace object name of a SingleEndLibrary or PairedEndLibrary file, whether of the
-KBaseAssembly or KBaseFile type.
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a string
-</pre>
-
-=end html
-
-=begin text
-
-a string
-
-=end text
-
-=back
-
-
-
 =head2 paired_readsParams
 
 =over 4
@@ -692,7 +518,7 @@ jp_stdev has a value which is an int
 
 
 
-=head2 masurcaParams
+=head2 masurcaAssemblerParams
 
 =over 4
 
@@ -717,6 +543,7 @@ e.g.,
 2. PARAMETERS
 string graph_kmer_size - the k-mer size for deBruijn graph values between 25 and 127 are supported, 'auto' will compute the optimal size based on the read data and GC content
 bool use_linking_mates - set this to 1 for all Illumina-only assemblies; set this to 1 if you have less than 20x long reads (454, Sanger, Pacbio) and less than 50x CLONE coverage by Illumina, Sanger or 454 mate pairs; otherwise keep at 0
+string dna_source - indicate 'bacteria' or 'other organisms' for setting limit_jump_coverage and cgwErrorRate values
 int limit_jump_coverage - this parameter is useful if you have too many Illumina jumping library mates. Typically set it to 60 for bacteria and 300 for the other organisms
 CA_PARAMETERS: these are the additional parameters to Celera Assembler.  do not worry about performance, number or processors or batch sizes -- these are computed automatically. 
 float cgwErrorRate=0.15 - set cgwErrorRate=0.25 for bacteria and 0.1<=cgwErrorRate<=0.15 for other organisms.
@@ -729,17 +556,14 @@ bool do_homopolymer_trim - specifies if we do (1) or do not (0) want to trim lon
 
 string workspace_name - the name of the workspace from which to take input and store output.
 string output_contigset_name - the name of the output contigset
-list<paired_end_lib> read_libraries - Illumina PairedEndLibrary files to assemble
+list<paired_readsParams> read_libraries - Illumina PairedEndLibrary files to assemble
 
 @optional jump_libraries
-@optional jp_mean
-@optional jp_stdev
 @optional pacbio_reads
 @optional other_frg_file
 @optional graph_kmer_size
 @optional use_linking_mates
-@optional limit_jump_coverage
-@optional cgwErrorRate
+@optional dna_source
 @optional kmer_count_threshold
 @optional close_gaps
 @optional soap_assembly
@@ -755,80 +579,6 @@ a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 num_threads has a value which is an int
 jf_size has a value which is an int
-reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
-pe_prefix has a value which is a string
-pe_mean has a value which is an int
-pe_stdev has a value which is an int
-jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
-jp_prefix has a value which is a string
-jp_mean has a value which is an int
-jp_stdev has a value which is an int
-pacbio_reads has a value which is a kb_MaSuRCA.read_lib
-other_frg_file has a value which is a string
-graph_kmer_size has a value which is a string
-use_linking_mates has a value which is a kb_MaSuRCA.bool
-limit_jump_coverage has a value which is an int
-cgwErrorRate has a value which is a float
-kmer_count_threshold has a value which is an int
-close_gaps has a value which is a kb_MaSuRCA.bool
-soap_assembly has a value which is a kb_MaSuRCA.bool
-do_homopolymer_trim has a value which is a kb_MaSuRCA.bool
-output_contigset_name has a value which is a string
-create_report has a value which is a kb_MaSuRCA.bool
-
-</pre>
-
-=end html
-
-=begin text
-
-a reference to a hash where the following keys are defined:
-workspace_name has a value which is a string
-num_threads has a value which is an int
-jf_size has a value which is an int
-reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
-pe_prefix has a value which is a string
-pe_mean has a value which is an int
-pe_stdev has a value which is an int
-jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.read_lib
-jp_prefix has a value which is a string
-jp_mean has a value which is an int
-jp_stdev has a value which is an int
-pacbio_reads has a value which is a kb_MaSuRCA.read_lib
-other_frg_file has a value which is a string
-graph_kmer_size has a value which is a string
-use_linking_mates has a value which is a kb_MaSuRCA.bool
-limit_jump_coverage has a value which is an int
-cgwErrorRate has a value which is a float
-kmer_count_threshold has a value which is an int
-close_gaps has a value which is a kb_MaSuRCA.bool
-soap_assembly has a value which is a kb_MaSuRCA.bool
-do_homopolymer_trim has a value which is a kb_MaSuRCA.bool
-output_contigset_name has a value which is a string
-create_report has a value which is a kb_MaSuRCA.bool
-
-
-=end text
-
-=back
-
-
-
-=head2 masurcaAssemblerParams
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a reference to a hash where the following keys are defined:
-workspace_name has a value which is a string
-num_threads has a value which is an int
-jf_size has a value which is an int
 reads_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.paired_readsParams
 jump_libraries has a value which is a reference to a list where each element is a kb_MaSuRCA.jump_readsParams
 pacbio_reads has a value which is a kb_MaSuRCA.obj_ref
@@ -836,8 +586,7 @@ nanopore_reads has a value which is a kb_MaSuRCA.obj_ref
 other_frg_file has a value which is a string
 graph_kmer_size has a value which is a string
 use_linking_mates has a value which is a kb_MaSuRCA.bool
-limit_jump_coverage has a value which is an int
-cgwErrorRate has a value which is a float
+dna_source has a value which is a string
 kmer_count_threshold has a value which is an int
 close_gaps has a value which is a kb_MaSuRCA.bool
 soap_assembly has a value which is a kb_MaSuRCA.bool
@@ -862,8 +611,7 @@ nanopore_reads has a value which is a kb_MaSuRCA.obj_ref
 other_frg_file has a value which is a string
 graph_kmer_size has a value which is a string
 use_linking_mates has a value which is a kb_MaSuRCA.bool
-limit_jump_coverage has a value which is an int
-cgwErrorRate has a value which is a float
+dna_source has a value which is a string
 kmer_count_threshold has a value which is an int
 close_gaps has a value which is a kb_MaSuRCA.bool
 soap_assembly has a value which is a kb_MaSuRCA.bool
@@ -886,10 +634,9 @@ create_report has a value which is a kb_MaSuRCA.bool
 
 =item Description
 
-Output parameter items for run_masurca and run_masurca_assembler
-
-    report_name - the name of the KBaseReport.Report workspace object.
-    report_ref - the workspace reference of the report.
+Output parameter items for run_masurca_assembler
+report_name - the name of the KBaseReport.Report workspace object.
+report_ref - the workspace reference of the report.
 
 
 =item Definition
