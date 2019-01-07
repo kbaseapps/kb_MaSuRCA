@@ -33,9 +33,9 @@ RUN \
 ENV BOOST_ROOT=/opt/BOOST/boost_1_65_1
 
 ENV M_VERSION='3.2.9'
-WORKDIR /kb/module
+
 RUN \
-  wget https://github.com/alekseyzimin/masurca/releases/download/3.2.9/MaSuRCA-${M_VERSION}.tar.gz && \
+  wget https://github.com/alekseyzimin/masurca/releases/download/${M_VERSION}/MaSuRCA-${M_VERSION}.tar.gz && \
   tar zxf MaSuRCA-${M_VERSION}.tar.gz && \
   rm -f MaSuRCA-${M_VERSION}.tar.gz && \
   cd MaSuRCA-${M_VERSION} && \
