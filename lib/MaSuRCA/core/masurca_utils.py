@@ -494,11 +494,12 @@ class masurca_utils:
         return fasta_dict
 
     def _valid_string(self, s_str, is_ref=False):
+        """
         try:
             basestring
         except NameError:
             basestring = str
-
+        """
         is_valid = isinstance(s_str, basestring) and len(s_str.strip()) > 0
         if is_valid and is_ref:
             is_valid = self._check_reference(s_str)
