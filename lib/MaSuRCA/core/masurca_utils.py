@@ -234,12 +234,12 @@ class masurca_utils:
             if pre not in prefix_lookup:
                 prefix_lookup[pre] = 1
             else:
-                raise ValueError('The first two letters in \'' + ref[pfix] + '\' has been used.')
+                raise ValueError('The first two characters in \'' + ref[pfix] + '\' has been used.')
 
     def _get_pereads_info(self, input_params):
         """
-        _get_pereads_info--from a list of paired_readsParams structures fetches the corresponding
-        reads info with the paired_readsParams[pe_id]
+        _get_pereads_info--from a list of paired_readsParams structures fetches the
+        corresponding reads info with the paired_readsParams[pe_id]
         returns a list of reads data in the following structure:
         reads_data = {
                 'fwd_file': path_to_fastq_file,
@@ -257,42 +257,44 @@ class masurca_utils:
         wsname = rds_params[self.PARAM_IN_WS]
         rds_refs = []
         rds_data = []
-        self._unique_prefix_check('pe_prefix', rds_params[self.PARAM_IN_READS_LIBS])
 
         # reads_libraries grouped params
-        if 'reads_libraries' in rds_params and rds_params['reads_libraries']:
-            for rds_lib in rds_params['reads_libraries']:
-                if 'pe_id' in rds_lib:
-                    rds_refs.append(rds_lib['pe_id'])
+        if rds_params.get(self.PARAM_IN_READS_LIBS, None):
+            pe_reads_libs = rds_params[self.PARAM_IN_READS_LIBS]
+
+            for pe_lib in pe_reads_libs:
+                if pe_lib.get('pe_id', None):
+                    rds_refs.append(pe_lib['pe_id'])
             rds_data = self._get_kbreads_info(wsname, rds_refs)
 
-            for rds_lib in rds_params['reads_libraries']:
+            for pe_lib in pe_reads_libs:
                 i = 0
                 for rds in rds_data:
                     i += 1
-                    if ('pe_id' in rds_lib and rds_lib['pe_id'] == rds['reads_ref']):
-                        if 'pe_prefix' in rds_lib:
-                            rds['pe_prefix'] = rds_lib['pe_prefix'][:1] + str(i)
+                    if ('pe_id' in pe_lib and pe_lib['pe_id'] == rds['reads_ref']):
+                        if pe_lib.get('pe_prefix', None):
+                            rds['pe_prefix'] = pe_lib['pe_prefix'][0]
                         else:
-                            raise ValueError("Parameter pe_prefix is required for reads " +
-                                             rds['read_ref'])
-                        if 'pe_mean' in rds_lib:
-                            rds['pe_mean'] = rds_lib['pe_mean']
+                            rds['pe_prefix'] = 'p'
+                        rds['pe_prefix'] += str(i)
+
+                        if pe_lib.get('pe_mean', None):
+                            rds['pe_mean'] = pe_lib['pe_mean']
                         else:
-                            raise ValueError("Parameter pe_mean is required for reads " +
-                                             rds['read_ref'])
-                        if 'pe_stdev' in rds_lib:
-                            rds['pe_stdev'] = rds_lib['pe_stdev']
+                            rds['pe_mean'] = 500
+
+                        if pe_lib.get('pe_stdev', None):
+                            rds['pe_stdev'] = pe_lib['pe_stdev']
                         else:
-                            raise ValueError("Parameter pe_stdev is required for reads " +
-                                             rds['read_ref'])
+                            rds['pe_stdev'] = 50
+            self._unique_prefix_check('pe_prefix', pe_reads_libs)
         else:
-            raise ValueError("Parameter {} is required for reads {}".format('reads_libraries'))
+            raise ValueError("Parameter {} is required.".format(self.PARAM_IN_READS_LIBS))
         return rds_data
 
-    def _get_jpreadsInfo(self, input_params):
+    def _get_jpreads_info(self, input_params):
         """
-        _get_jpreadsInfo--from a list of jump_readsParams structures fetches the corresponding
+        _get_jpreads_info--from a list of jump_readsParams structures fetches the corresponding
         reads info with the paired_readsParams[pe_id]
         returns a list of reads data in the following structure:
         reads_data = {
@@ -313,33 +315,34 @@ class masurca_utils:
         rds_data = []
 
         # jump_libraries grouped params
-        if 'jump_libraries' in rds_params and rds_params['jump_libraries']:
-            self._unique_prefix_check('jp_prefix', rds_params['jump_libraries'])
-            for rds_lib in rds_params['jump_libraries']:
-                if 'jp_id' in rds_lib:
-                    rds_refs.append(rds_lib['jp_id'])
+        if rds_params.get(self.PARAM_IN_JUMP_LIBS, None):
+            jp_reads_libs = rds_params[self.PARAM_IN_JUMP_LIBS]
+            for jp_lib in jp_reads_libs:
+                if jp_lib.get('jp_id', None):
+                    rds_refs.append(jp_lib['jp_id'])
             rds_data = self._get_kbreads_info(wsname, rds_refs)
 
-            for rds_lib in rds_params['jump_libraries']:
+            for jp_lib in jp_reads_libs:
                 i = 0
                 for rds in rds_data:
                     i += 1
-                    if ('jp_id' in rds_lib and rds_lib['jp_id'] == rds['reads_ref']):
-                        if 'jp_prefix' in rds_lib:
-                            rds['jp_prefix'] = rds_lib['jp_prefix'][:1] + str(i)
+                    if ('jp_id' in jp_lib and jp_lib['jp_id'] == rds['reads_ref']):
+                        if jp_lib.get('jp_prefix', None):
+                            rds['jp_prefix'] = jp_lib['jp_prefix'][0]
                         else:
-                            raise ValueError("Parameter jp_prefix is required for reads {}".format(
-                                rds['reads_ref']))
-                        if 'jp_mean' in rds_lib:
-                            rds['jp_mean'] = rds_lib['jp_mean']
+                            rds['jp_prefix'] = 's'
+                        rds['jp_prefix'] += str(i)
+
+                        if jp_lib.get('jp_mean', None):
+                            rds['jp_mean'] = jp_lib['jp_mean']
                         else:
-                            raise ValueError("Parameter jp_mean is required for reads {}".format(
-                                rds['reads_ref']))
-                        if 'jp_stdev' in rds_lib:
-                            rds['jp_stdev'] = rds_lib['jp_stdev']
+                            rds['jp_mean'] = 3600
+
+                        if jp_lib.get('jp_stdev', None):
+                            rds['jp_stdev'] = jp_lib['jp_stdev']
                         else:
-                            raise ValueError("Parameter pe_stdev is required for reads {}".format(
-                                rds['reads_ref']))
+                            rds['jp_stdev'] = 200
+            self._unique_prefix_check('jp_prefix', jp_reads_libs)
         return rds_data
 
     def _get_kbreads_info(self, wsname, reads_refs):
@@ -637,14 +640,7 @@ class masurca_utils:
             raise ValueError("Parameter output_contigset_name is required and " +
                              "must be a valid Workspace object string, " +
                              "not {}".format(params.get(self.PARAM_IN_CS_NAME, None)))
-        if ('pe_prefix' not in params):
-            params['pe_prefix'] = 'pe'
-        if ('pe_mean' not in params or type(params['pe_mean']) != int):
-            params['pe_mean'] = 180
-        if ('pe_stdev' not in params or type(params['pe_stdev']) != int):
-            params['pe_stdev'] = 20
-        if ('jp_prefix' not in params):
-            params['jp_prefix'] = 'sh'
+
         if ('dna_source' in params):
             dna_src = params.get('dna_source')
             if dna_src == 'bacteria':
@@ -668,7 +664,7 @@ class masurca_utils:
         pe_reads_data = self._get_pereads_info(params)
         jp_reads_data = []
         if params.get(self.PARAM_IN_JUMP_LIBS, None):
-            jp_reads_data = self._get_jpreadsInfo(params)
+            jp_reads_data = self._get_jpreads_info(params)
             if ('jp_mean' not in params or type(params['jp_mean']) != int):
                 params['jp_mean'] = 3600
             if ('jp_stdev' not in params or type(params['jp_stdev']) != int):
