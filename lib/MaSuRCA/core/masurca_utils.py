@@ -25,9 +25,9 @@ def log(message, prefix_newline=False):
     print(('\n' if prefix_newline else '') + '{0:.2f}'.format(time.time()) + ': ' + str(message))
 
 
-def _mkdir_p(path):
+def mkdir_p(path):
     """
-    _mkdir_p: make directory for given path
+    mkdir_p: make directory for given path
     """
     if not path:
         return
@@ -428,7 +428,7 @@ class masurca_utils:
         output_files = list()
 
         output_directory = os.path.join(self.proj_dir, str(uuid.uuid4()))
-        _mkdir_p(output_directory)
+        mkdir_p(output_directory)
         masurca_output = os.path.join(output_directory, 'masurca_output.zip')
         self._zip_folder(out_dir, masurca_output)
 

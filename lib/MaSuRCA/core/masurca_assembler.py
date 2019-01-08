@@ -12,9 +12,9 @@ def log(message, prefix_newline=False):
     print(('\n' if prefix_newline else '') + '{0:.2f}'.format(time.time()) + ': ' + str(message))
 
 
-def _mkdir_p(path):
+def mkdir_p(path):
     """
-    _mkdir_p: make directory for given path
+    mkdir_p: make directory for given path
     """
     if not path:
         return
@@ -32,10 +32,8 @@ class MaSuRCA_Assembler(object):
     INVALID_WS_NAME_RE = re.compile('[^\\w:._-]')
 
     PARAM_IN_CS_NAME = 'output_contigset_name'
-    PARAM_IN_READ_LIB = 'read_libraries'
     MaSuRCAR_PROJECT_DIR = 'masurca_project_dir'
-    MaSuRCA_OUT_DIR = 'MaSuRCA_Output'
-    MaSuRCA_final_scaffold_sequences = 'final.genome.scf.fasta'  # 'dedup.genome.scf.fasta'
+    MaSuRCA_final_scaffold_sequences = 'final.genome.scf.fasta'
 
     def __init__(self, config, provenance):
         """
@@ -50,7 +48,7 @@ class MaSuRCA_Assembler(object):
         self.au = AssemblyUtil(self.callback_url)
 
         self.scratch = os.path.join(config['scratch'], str(uuid.uuid4()))
-        _mkdir_p(self.scratch)
+        mkdir_p(self.scratch)
 
         self.masurca_version = 'MaSuRCA-' + os.environ['M_VERSION']
         self.proj_dir = self._create_proj_dir(self.scratch)
@@ -66,7 +64,7 @@ class MaSuRCA_Assembler(object):
         # END_CONSTRUCTOR
         pass
 
-    def save_assembly(self, params, asmbl_ok, contig_fa_file):
+    def _save_assembly(self, params, asmbl_ok, contig_fa_file):
         """
         save_assembly: save the assembly to KBase and, if everything has gone well, create a report
         """
@@ -110,9 +108,7 @@ class MaSuRCA_Assembler(object):
         _creating the project directory for MaSuRCA
         """
         prjdir = os.path.join(home_dir, self.MaSuRCAR_PROJECT_DIR)
-        _mkdir_p(prjdir)
-        self.proj_dir = prjdir
-
+        mkdir_p(prjdir)
         return prjdir
 
     def _get_version_from_subactions(self, module_name, subactions):
@@ -153,4 +149,4 @@ class MaSuRCA_Assembler(object):
             assemble_ok = -1
 
         # 5. save the assembly to KBase and, if everything has gone well, create a report
-        return self.save_assembly(params, assemble_ok, self.MaSuRCA_final_scaffold_sequences)
+        return self._save_assembly(params, assemble_ok, self.MaSuRCA_final_scaffold_sequences)

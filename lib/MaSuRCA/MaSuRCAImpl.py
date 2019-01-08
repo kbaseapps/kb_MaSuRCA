@@ -57,7 +57,6 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
         #END_CONSTRUCTOR
         pass
 
-
     def run_masurca_assembler(self, ctx, params):
         """
         Definition of run_masurca_assembler
