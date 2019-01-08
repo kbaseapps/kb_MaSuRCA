@@ -277,16 +277,16 @@ class masurca_utils:
                         else:
                             rds['pe_prefix'] = 'p'
                         rds['pe_prefix'] += str(i)
+                        pe_lib['pe_prefix'] = rds['pe_prefix']
 
-                        if pe_lib.get('pe_mean', None):
-                            rds['pe_mean'] = pe_lib['pe_mean']
-                        else:
-                            rds['pe_mean'] = 500
+                        if pe_lib.get('pe_mean', None) is None:
+                            pe_lib['pe_mean'] = 500
+                        rds['pe_mean'] = pe_lib['pe_mean']
 
-                        if pe_lib.get('pe_stdev', None):
-                            rds['pe_stdev'] = pe_lib['pe_stdev']
-                        else:
-                            rds['pe_stdev'] = 50
+                        if pe_lib.get('pe_stdev', None) is None:
+                            pe_lib['pe_stdev'] = 50
+                        rds['pe_stdev'] = pe_lib['pe_stdev']
+
             self._unique_prefix_check('pe_prefix', pe_reads_libs)
         else:
             raise ValueError("Parameter {} is required.".format(self.PARAM_IN_READS_LIBS))
@@ -332,16 +332,16 @@ class masurca_utils:
                         else:
                             rds['jp_prefix'] = 's'
                         rds['jp_prefix'] += str(i)
+                        jp_lib['jp_prefix'] = rds['jp_prefix']
 
-                        if jp_lib.get('jp_mean', None):
-                            rds['jp_mean'] = jp_lib['jp_mean']
-                        else:
-                            rds['jp_mean'] = 3600
+                        if jp_lib.get('jp_mean', None) is None:
+                            jp_lib['jp_mean'] = 3600
+                        rds['jp_mean'] = jp_lib['jp_mean']
 
-                        if jp_lib.get('jp_stdev', None):
-                            rds['jp_stdev'] = jp_lib['jp_stdev']
-                        else:
-                            rds['jp_stdev'] = 200
+                        if jp_lib.get('jp_stdev', None) is None:
+                            jp_lib['jp_stdev'] = 200
+                        rds['jp_stdev'] = jp_lib['jp_stdev']
+
             self._unique_prefix_check('jp_prefix', jp_reads_libs)
         return rds_data
 
