@@ -53,6 +53,8 @@ class masurca_utils:
     PARAM_IN_JF_SIZE = 'jf_size'
     PARAM_IN_CS_NAME = 'output_contigset_name'
 
+    INVALID_WS_OBJ_NAME_RE = re.compile('[^\\w\\|._-]')
+
     def __init__(self, prj_dir, config):
         self.workspace_url = config['workspace-url']
         self.callback_url = config['SDK_CALLBACK_URL']
@@ -496,18 +498,6 @@ class masurca_utils:
             fasta_dict[contig_id] = sequence_len
         return fasta_dict
 
-    def _valid_string(self, s_str, is_ref=False):
-        """
-        try:
-            basestring
-        except NameError:
-            basestring = str
-        """
-        is_valid = isinstance(s_str, basestring) and len(s_str.strip()) > 0
-        if is_valid and is_ref:
-            is_valid = self._check_reference(s_str)
-        return is_valid
-
     def _check_reference(self, ref):
         """
         Tests the given ref string to make sure it conforms to the expected
@@ -635,11 +625,11 @@ class masurca_utils:
         if type(params[self.PARAM_IN_READS_LIBS]) != list:
             raise ValueError(self.PARAM_IN_READS_LIBS + ' must be a list')
 
-        if (params.get(self.PARAM_IN_CS_NAME, None) is None or
-                not self._valid_string(params[self.PARAM_IN_CS_NAME])):
-            raise ValueError("Parameter output_contigset_name is required and " +
-                             "must be a valid Workspace object string, " +
-                             "not {}".format(params.get(self.PARAM_IN_CS_NAME, None)))
+        if params.get(self.PARAM_IN_CS_NAME, None) is None:
+            raise ValueError('Parameter {} is mandatory!'.format(self.PARAM_IN_CS_NAME))
+        if self.INVALID_WS_OBJ_NAME_RE.search(params[self.PARAM_IN_CS_NAME]):
+            raise ValueError('Invalid workspace object name: {}.'.format(
+                             params[self.PARAM_IN_CS_NAME]))
 
         if ('dna_source' in params):
             dna_src = params.get('dna_source')

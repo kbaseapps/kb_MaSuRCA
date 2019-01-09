@@ -1,4 +1,3 @@
-import os
 import sys
 import subprocess
 
@@ -54,7 +53,7 @@ class Program_Runner:
             print('OSError > ' + e.errno)
             print('OSError > ' + e.strerror)
             print('OSError > ' + e.filename)
-        except:
+        except Exception:
             print('Error > ' + sys.exc_info()[0])
 
         return exitCode
