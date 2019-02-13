@@ -3,7 +3,6 @@ import unittest
 import os  # noqa: F401
 import json  # noqa: F401
 import time
-import requests
 import shutil
 
 from os import environ
@@ -18,9 +17,9 @@ from biokbase.workspace.client import Workspace as workspaceService
 from MaSuRCA.MaSuRCAImpl import kb_MaSuRCA
 from MaSuRCA.MaSuRCAServer import MethodContext
 from MaSuRCA.authclient import KBaseAuth as _KBaseAuth
-from ReadsUtils.baseclient import ServerError
-from ReadsUtils.ReadsUtilsClient import ReadsUtils
-from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
+from installed_clients.ReadsUtilsClient import ReadsUtils
+from installed_clients.AssemblyUtilClient import AssemblyUtil
+
 
 class MaSuRCATest(unittest.TestCase):
 
@@ -109,13 +108,13 @@ class MaSuRCATest(unittest.TestCase):
                                                     'workspace_name': self.getWsName(),
                                                     'assembly_name': assembly_nm.split('.')[0]
                                                     })
-        #self.__class__.assembly_ref = assembly_ref
+        # self.__class__.assembly_ref = assembly_ref
         print('Loaded Assembly:{} with ref of{}.'.format(assembly_nm, assembly_ref))
         return assembly_ref
 
     def loadSEReads(self, reads_file_path):
-        #if hasattr(self.__class__, 'reads_ref'):
-            #return self.__class__.reads_ref
+        #  if hasattr(self.__class__, 'reads_ref'):
+        #      return self.__class__.reads_ref
         se_reads_name = os.path.basename(reads_file_path)
         fq_path = os.path.join(self.scratch, se_reads_name)
         shutil.copy(reads_file_path, fq_path)
@@ -125,11 +124,10 @@ class MaSuRCATest(unittest.TestCase):
                                         'wsname': self.getWsName(),
                                         'name': se_reads_name.split('.')[0],
                                         'sequencing_tech': 'kb reads'})['obj_ref']
-        #self.__class__.reads_ref = reads_ref
+        #  self.__class__.reads_ref = reads_ref
         return reads_ref
 
-
-    # borrowed from Megahit - call this method to get the WS object info of a Paired End Library
+    #  borrowed from Megahit - call this method to get the WS object info of a Paired End Library
     # (will upload the example data if this is the first time the method is called during tests)
     def loadPairedEndReads(self, forward_data_file, reverse_data_file, reads_name):
         # if hasattr(self.__class__, 'pairedEndLibInfo'):
@@ -156,7 +154,6 @@ class MaSuRCATest(unittest.TestCase):
         pprint(pformat(new_obj_info))
         # return new_obj_info[0]
         return pe_reads_ref
-
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     # Uncomment to skip this test
@@ -212,9 +209,9 @@ class MaSuRCATest(unittest.TestCase):
         ret = self.getImpl().run_masurca_assembler(self.getContext(), m_params)
 
         # Validate the returned data
-        # self.assertEqual(ret[0]['n_initial_contigs'], 3)
-        # self.assertEqual(ret[0]['n_contigs_removed'], 1)
-        # self.assertEqual(ret[0]['n_contigs_remaining'], 2)
+        self.assertEqual(ret[0]['n_initial_contigs'], 3)
+        self.assertEqual(ret[0]['n_contigs_removed'], 1)
+        self.assertEqual(ret[0]['n_contigs_remaining'], 2)
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     # Uncomment to skip this test
@@ -254,9 +251,9 @@ class MaSuRCATest(unittest.TestCase):
         ret = self.getImpl().run_masurca(self.getContext(), m_params)
 
         # Validate the returned data
-        # self.assertEqual(ret[0]['n_initial_contigs'], 3)
-        # self.assertEqual(ret[0]['n_contigs_removed'], 1)
-        # self.assertEqual(ret[0]['n_contigs_remaining'], 2)
+        self.assertEqual(ret[0]['n_initial_contigs'], 3)
+        self.assertEqual(ret[0]['n_contigs_removed'], 1)
+        self.assertEqual(ret[0]['n_contigs_remaining'], 2)
 
     @unittest.skip("skipped test_run_masurca_err1")
     def test_run_masurca_err1(self):

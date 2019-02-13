@@ -12,12 +12,12 @@ import numpy as np
 from pprint import pprint
 
 from MaSuRCA.core.Program_Runner import Program_Runner
-from Workspace.WorkspaceClient import Workspace
-from KBaseReport.KBaseReportClient import KBaseReport
-from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
-from kb_quast.kb_quastClient import kb_quast
-from ReadsUtils.ReadsUtilsClient import ReadsUtils
-from ReadsUtils.baseclient import ServerError
+from installed_clients.WorkspaceClient import Workspace
+from installed_clients.KBaseReportClient import KBaseReport
+from installed_clients.AssemblyUtilClient import AssemblyUtil
+from installed_clients.kb_quastClient import kb_quast
+from installed_clients.ReadsUtilsClient import ReadsUtils
+from installed_clients.baseclient import ServerError
 
 
 def log(message, prefix_newline=False):
