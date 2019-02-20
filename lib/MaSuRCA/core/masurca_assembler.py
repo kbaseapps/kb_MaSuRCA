@@ -53,14 +53,6 @@ class MaSuRCA_Assembler(object):
         self.masurca_version = 'MaSuRCA-' + os.environ['M_VERSION']
         self.proj_dir = self._create_proj_dir(self.scratch)
         self.m_utils = masurca_utils(self.proj_dir, config)
-
-        # from the provenance, extract out the version to run by exact hash if possible
-        self.my_version = 'release'
-        if len(provenance) > 0:
-            if 'subactions' in provenance[0]:
-                self.my_version = self._get_version_from_subactions(
-                                    'kb_MaSuRCA', provenance[0]['subactions'])
-        print('Running kb_MaSuRCA version = ' + self.my_version)
         # END_CONSTRUCTOR
         pass
 
@@ -84,10 +76,12 @@ class MaSuRCA_Assembler(object):
                                        params[self.PARAM_IN_CS_NAME])
             if params['create_report'] == 1:
                 report_name, report_ref = self.m_utils.generate_report(
-                                            fa_file_path, params, fa_file_dir, wsname)
-                returnVal = {'report_name': report_name, 'report_ref': report_ref}
+                                            fa_file_path, params,
+                                            fa_file_dir, wsname)
+                returnVal = {'report_name': report_name,
+                             'report_ref': report_ref}
         else:
-            log("run_assemble process failed.")
+            raise ValueError('masurca assemble process failed')
 
         return returnVal
 

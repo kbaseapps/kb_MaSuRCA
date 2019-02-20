@@ -12,7 +12,7 @@ from __future__ import print_function
 try:
     # baseclient and this client are in a package
     from .baseclient import BaseClient as _BaseClient  # @UnusedImport
-except:
+except ImportError:
     # no they aren't
     from baseclient import BaseClient as _BaseClient  # @Reimport
 
@@ -23,7 +23,7 @@ class kb_MaSuRCA(object):
             self, url=None, timeout=30 * 60, user_id=None,
             password=None, token=None, ignore_authrc=False,
             trust_all_ssl_certificates=False,
-            auth_svc='https://kbase.us/services/authorization/Sessions/Login'):
+            auth_svc='https://ci.kbase.us/services/auth/api/legacy/KBase/Sessions/Login'):
         if url is None:
             raise ValueError('A url is required')
         self._service_ver = None
@@ -37,10 +37,11 @@ class kb_MaSuRCA(object):
         """
         Definition of run_masurca_assembler
         :param params: instance of type "masurcaAssemblerParams" (Arguments
-           for run_masurca *******for creating the sr_config.txt file*******
-           1. DATA consisting of 5 fields: 1)two_letter_prefix 2)mean 3)stdev
-           4)fastq(.gz)_fwd_reads 5)fastq(.gz)_rev_reads. e.g., PE= pe 180 20
-           /FULL_PATH/frag_1.fastq  /FULL_PATH/frag_2.fastq JUMP= sh 3600 200
+           for run_masurca_assembler *******for creating the sr_config.txt
+           file******* 1. DATA consisting of 5 fields: 1)two_letter_prefix
+           2)mean 3)stdev 4)fastq(.gz)_fwd_reads 5)fastq(.gz)_rev_reads.
+           e.g., PE= pe 180 20  /FULL_PATH/frag_1.fastq 
+           /FULL_PATH/frag_2.fastq JUMP= sh 3600 200 
            /FULL_PATH/short_1.fastq  /FULL_PATH/short_2.fastq #pacbio OR
            nanopore reads must be in a single fasta or fastq file with
            absolute path, can be gzipped #if you have both types of reads
@@ -111,9 +112,8 @@ class kb_MaSuRCA(object):
            reference of the report.) -> structure: parameter "report_name" of
            String, parameter "report_ref" of String
         """
-        return self._client.call_method(
-            'kb_MaSuRCA.run_masurca_assembler',
-            [params], self._service_ver, context)
+        return self._client.call_method('kb_MaSuRCA.run_masurca_assembler',
+                                        [params], self._service_ver, context)
 
     def status(self, context=None):
         return self._client.call_method('kb_MaSuRCA.status',

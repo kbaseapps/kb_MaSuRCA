@@ -4,7 +4,6 @@ import time
 import os
 import errno
 import zipfile
-import subprocess
 import codecs
 import uuid
 import copy
@@ -751,20 +750,19 @@ class masurca_utils:
             return config_file_path
 
     def generate_assemble_script(self, config_file):
-        exit_code = 1
         if os.path.isfile(config_file):
             f_dir, f_nm = os.path.split(config_file)
             m_cmd = [self.MaSuRCA_BIN]
             m_cmd.append(config_file)
-            exit_code = self.prog_runner.run(m_cmd, f_dir)
-
-            if exit_code == 0:
+            try:
+                self.prog_runner.run(m_cmd, f_dir)
+                assemble_file = os.path.join(f_dir, 'assemble.sh')
                 log('Created the assemble.sh file at {}.\n'.format(
-                    os.path.join(f_dir, 'assemble.sh')))
-                return os.path.join(f_dir, 'assemble.sh')
-            else:
-                log('Creation of the assemble.sh file failed.\n')
-                return ''
+                    assemble_file))
+                return assemble_file
+            except ValueError as ve:
+                log('Error generating assemble.sh file: \n{}'.format(ve))
+                raise ValueError('Failed to generate assemble.sh file!')
         else:
             log("The config file {} is not found.\n".format(config_file))
             log('NO assemble.sh file created.\n')
@@ -779,16 +777,10 @@ class masurca_utils:
             a_cmd.append(asmbl_file)
             log("The working directory is {}\n".format(f_dir))
             log("The assembling command is {}\n".format(' '.join(a_cmd)))
-
-            p = subprocess.Popen(a_cmd, cwd=f_dir, shell=False)
-            exit_code = p.wait()
-            log('Return code: ' + str(exit_code))
-
-            if p.returncode != 0:
-                raise ValueError('Error running assemble.sh, return code: ' +
-                                 str(p.returncode) + '\n')
-            else:
-                exit_code = p.returncode
+            try:
+                exit_code = self.prog_runner.run(a_cmd, f_dir)
+            except ValueError as ve:
+                log('Error running assemble: \n{}'.format(ve))
         else:
             log("The assemble.sh file {} is not found.".format(asmbl_file))
         return exit_code

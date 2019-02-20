@@ -526,7 +526,7 @@ jp_stdev has a value which is an int
 
 =item Description
 
-Arguments for run_masurca
+Arguments for run_masurca_assembler
 
 *******for creating the sr_config.txt file*******
 1. DATA

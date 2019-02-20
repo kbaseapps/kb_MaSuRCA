@@ -32,9 +32,9 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "1.1.0"
+    VERSION = "1.1.1"
     GIT_URL = "https://github.com/kbaseapps/kb_MaSuRCA.git"
-    GIT_COMMIT_HASH = "e33498cb9ba85e49d437ac684382a136fd7717b2"
+    GIT_COMMIT_HASH = "83810758cf1a0dce025a88800ee80bf7a9379da0"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
@@ -57,14 +57,16 @@ ftp://ftp.genome.umd.edu/pub/MaSuRCA/latest/
         #END_CONSTRUCTOR
         pass
 
+
     def run_masurca_assembler(self, ctx, params):
         """
         Definition of run_masurca_assembler
         :param params: instance of type "masurcaAssemblerParams" (Arguments
-           for run_masurca *******for creating the sr_config.txt file*******
-           1. DATA consisting of 5 fields: 1)two_letter_prefix 2)mean 3)stdev
-           4)fastq(.gz)_fwd_reads 5)fastq(.gz)_rev_reads. e.g., PE= pe 180 20
-           /FULL_PATH/frag_1.fastq  /FULL_PATH/frag_2.fastq JUMP= sh 3600 200
+           for run_masurca_assembler *******for creating the sr_config.txt
+           file******* 1. DATA consisting of 5 fields: 1)two_letter_prefix
+           2)mean 3)stdev 4)fastq(.gz)_fwd_reads 5)fastq(.gz)_rev_reads.
+           e.g., PE= pe 180 20  /FULL_PATH/frag_1.fastq
+           /FULL_PATH/frag_2.fastq JUMP= sh 3600 200
            /FULL_PATH/short_1.fastq  /FULL_PATH/short_2.fastq #pacbio OR
            nanopore reads must be in a single fasta or fastq file with
            absolute path, can be gzipped #if you have both types of reads
