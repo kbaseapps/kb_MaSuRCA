@@ -11,17 +11,6 @@
     },
     "parameters": [ 
         {
-            "id": "jf_size",
-            "optional": false,
-            "advanced": false,
-            "allow_multiple": false,
-            "default_values": ["100000000"],
-            "field_type": "text",
-            "text_options": {
-                "validate_as": "int"
-            }
-        },
-        {
             "id": "pe_id",
             "optional": false,
             "advanced": true,
@@ -29,7 +18,7 @@
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+                "valid_ws_types": ["KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
             }
         },
         {
@@ -40,7 +29,7 @@
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
+                "valid_ws_types": ["KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
             }
         },
         {
@@ -59,7 +48,7 @@
             "optional": false,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "180" ],
+            "default_values": [ "500" ],
             "field_type": "text",
             "text_options": {
                 "validate_as" : "int",
@@ -71,7 +60,7 @@
             "optional": false,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "20" ],
+            "default_values": [ "50" ],
             "field_type": "text",
             "text_options": {
                 "validate_as" : "int",
@@ -114,25 +103,25 @@
             }
         },
         {   
-            "id": "pacbio_assembly",
+            "id": "pacbio_reads",
             "optional": true,
-            "advanced": true,
+            "advanced": false,
             "allow_multiple": false,
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseFile.Assembly","KBaseGenomeAnnotation.Assembly", "KBaseGenomes.ContigSet"]
+                "valid_ws_types": ["KBaseGenomes.ContigSet","KBaseGenomeAnnotations.Assembly","KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
             }   
         },  
         {   
-            "id": "nanopore_assembly",
+            "id": "nanopore_reads",
             "optional": true,
-            "advanced": true,
+            "advanced": false,
             "allow_multiple": false,
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseFile.Assembly","KBaseGenomeAnnotation.Assembly", "KBaseGenomes.ContigSet"]
+                "valid_ws_types": ["KBaseGenomes.ContigSet","KBaseGenomeAnnotations.Assembly","KBaseAssembly.SingleEndLibrary","KBaseFile.SingleEndLibrary","KBaseAssembly.PairedEndLibrary","KBaseFile.PairedEndLibrary"]
             }   
         },  
         {
@@ -160,19 +149,18 @@
         },
         {
             "id": "graph_kmer_size",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ ""],
+            "default_values": [ "auto"],
             "field_type": "text",
             "text_options": {
-                "validate_as" : "int",
-                "min_int" : 1 
+                "validate_as" : "text"
             }
         },
         {
             "id": "use_linking_mates",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "1" ],
@@ -183,35 +171,35 @@
             }
         },
         {
-            "id": "limit_jump_coverage",
-            "optional": true,
+            "id": "dna_source",
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "60" ],
-            "field_type": "text",
-            "text_options": {
-                "validate_as" : "int",
-                "min_int" : 60,
-                "max_int" : 300
-            }
-        },
-        {
-            "id": "cgwErrorRate",
-            "optional": true,
-            "advanced": true,
-            "allow_multiple": false,
-            "default_values": [ "0.25" ],
-            "field_type": "text",
-            "text_options": {
-                "validate_as" : "float"
-            }
+            "default_values": [ "bacteria"],
+            "field_type" : "dropdown",
+            "dropdown_options":{
+             "options": [
+               {
+                 "value": "bacteria",
+                 "display": "Bacteria",
+                 "id": "B",
+                 "ui_name": "Bacteria"
+               },
+               {
+                 "value": "others",
+                 "display": "Other organisms",
+                 "id": "O",
+                 "ui_name": "Other organisms"
+               }
+             ]
+           }
         },
         {
             "id": "close_gaps",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "0" ],
+            "default_values": [ "1" ],
             "field_type": "checkbox",
             "checkbox_options":{
                 "checked_value": 1,
@@ -251,6 +239,17 @@
             "field_type": "text",
             "text_options": {
                 "validate_as" : "int"
+            }
+        },
+        {
+            "id": "jf_size",
+            "optional": false,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": ["200000000"],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int"
             }
         }
     ],
@@ -299,7 +298,7 @@
                     "input_parameter": "reads_libraries",
                     "target_property": "reads_libraries"
                 },
-		{
+		        {
                     "input_parameter": "jump_libraries",
                     "target_property": "jump_libraries"
                 },
@@ -308,13 +307,13 @@
                     "target_property": "output_contigset_name"
                 },
                 {
-                    "input_parameter": "pacbio_assembly",
-                    "target_property": "pacbio_assembly",
+                    "input_parameter": "pacbio_reads",
+                    "target_property": "pacbio_reads",
                     "target_type_transform": "resolved-ref"
                 },
                 {
-                    "input_parameter": "nanopore_assembly",
-                    "target_property": "nanopore_assembly",
+                    "input_parameter": "nanopore_reads",
+                    "target_property": "nanopore_reads",
                     "target_type_transform": "resolved-ref"
                 },
                 {
@@ -330,12 +329,8 @@
                     "target_property": "use_linking_mates"
                 },
                 {
-                    "input_parameter": "limit_jump_coverage",
-                    "target_property": "limit_jump_coverage"
-                },
-                {
-                    "input_parameter": "cgwErrorRate",
-                    "target_property": "cgwErrorRate"
+                    "input_parameter": "dna_source",
+                    "target_property": "dna_source"
                 },
                 {
                     "input_parameter": "kmer_count_threshold",

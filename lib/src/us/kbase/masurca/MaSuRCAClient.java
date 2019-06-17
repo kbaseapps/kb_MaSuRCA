@@ -18,7 +18,7 @@ import us.kbase.common.service.UnauthorizedException;
  * <pre>
  * Name of module: MaSuRCA
  * This KBase module wraps the genome assembly software MaSuRCA(Maryland Super-Read Celera Assembler).
- * MaSuRCA 3.2.3
+ * MaSuRCA 3.2.9
  * References:
  * https://academic.oup.com/bioinformatics/article/29/21/2669/195975/The-MaSuRCA-genome-assembler
  * https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btt476
