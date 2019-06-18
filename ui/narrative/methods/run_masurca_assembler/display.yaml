@@ -3,7 +3,7 @@
 #
 name: MaSuRCA Assembler - v3.2.9
 tooltip: |
-      MaSuRCA consists of three main steps:1.Create config.txt file 2.Generate assemble.sh 3.Assemble reads
+      Assemble reads using the MaSuRCA assembler.
 
 icon: masurca-blue.png
 
@@ -31,130 +31,115 @@ suggestions:
 #
 parameters :
     pe_id :
-        ui-name : Reads object id<font color=red>*</font>
-        short-hint : Reads libraries--MUST HAVE Illumina paired end reads to use MaSuRCA
-        long-hint : |
-            Illumina paired end reads supplied as <two-character prefix> <fragment mean> <fragment stdev> <forward_reads> <reverse_reads>. If single-end, do not specify <reverse_reads>.
+        ui-name : Reads Object ID
+        short-hint : Reads libraries--MUST HAVE Illumina paired end reads to use MaSuRCA. The reads must be supplied as <two-character prefix> <fragment mean> <fragment stdev> <forward_reads> <reverse_reads>. If single-end, do not specify <reverse_reads>.
     pe_prefix :
         ui-name : |
-            prefix for defining the reads<font color=red>*</font>
+            Prefix for Defining the Reads
         short-hint : |
-            two-letter prefix for defining reads in the config.txt file
+            A two-letter prefix for defining reads in the config.txt file.
     pe_mean :
         ui-name : |
-            mean for defining the reads<font color=red>*</font>
+            Mean for Defining the Reads
         short-hint : |
-            the mean for defining reads in the config.txt file
+            The mean for defining reads in the config.txt file.
     pe_stdev :
         ui-name : |
-            standard deviation for defining the reads<font color=red>*</font>
+            Standard Deviation for Defining the Reads
         short-hint : |
-            the standard deviation for defining reads in the config.txt file
+            The standard deviation for defining reads in the config.txt file.
     jp_id :
-        ui-name : Reads object id<font color=red>*</font>
-        short-hint : Reads libraries
-        long-hint : |
-            Illumina mate pair reads supplied as <two-character prefix> <fragment mean> <fragment stdev> <forward_reads> <reverse_reads>
+        ui-name : Reads Object ID
+        short-hint : Reads libraries. Illumina mate pair reads must be supplied as <two-character prefix> <fragment mean> <fragment stdev> <forward_reads> <reverse_reads>.
     jp_prefix :
         ui-name : |
-            prefix for defining the jump reads<font color=red>*</font>
+            Prefix for Defining the Jump Reads
         short-hint : |
-            two-letter prefix for defining the jump reads in the config.txt file
+            A two-letter prefix for defining the jump reads in the config.txt file.
     jp_mean :
         ui-name : |
-            mean for defining the jump reads<font color=red>*</font>
+            Mean for Defining the Jump Reads
         short-hint : |
-            the mean for defining the jump reads in the config.txt file
+            The mean for defining the jump reads in the config.txt file.
     jp_stdev :
         ui-name : |
-            standard deviation for defining the jump reads<font color=red>*</font>
+            Standard Deviation for Defining the Jump Reads
         short-hint : |
-            the standard deviation for defining the jump reads in the config.txt file
+            The standard deviation for defining the jump reads in the config.txt file.
     pacbio_reads :
         ui-name : PacBio Reads
-        short-hint : supports KBaseAssembly.SingleEndLibrary,KBaseFile.SingleEndLibrary,KBaseAssembly.PairedEndLibrary,KBaseFile.PairedEndLibrary
-        long-hint: |
-            pacbio OR nanopore reads must be in a single fasta or fastq file with absolute path, can be gzipped. If you have both types of reads supply them both as NANOPORE type
+        short-hint : PacBio OR NanoPore reads must be in a single fasta or fastq file with absolute path; can be gzipped. If you have both types of reads supply them both as NANOPORE type. Supports KBaseAssembly.SingleEndLibrary, KBaseFile.SingleEndLibrary, KBaseAssembly.PairedEndLibrary, and KBaseFile.PairedEndLibrary.
     nanopore_reads :
         ui-name : NanoPore Reads
-        short-hint : supports KBaseAssembly.SingleEndLibrary,KBaseFile.SingleEndLibrary,KBaseAssembly.PairedEndLibrary,KBaseFile.PairedEndLibrary
-        long-hint: |
-            pacbio OR nanopore reads must be in a single fasta or fastq file with absolute path, can be gzipped. If you have both types of reads supply them both as NANOPORE type
+        short-hint : PacBio OR NanoPore reads must be in a single fasta or fastq file with absolute path; can be gzipped. If you have both types of reads supply them both as NANOPORE type. Supports KBaseAssembly.SingleEndLibrary, KBaseFile.SingleEndLibrary, KBaseAssembly.PairedEndLibrary, and KBaseFile.PairedEndLibrary.
     other_frg_file:
         ui-name : Other FRG
-        short-hint : must have been converted into a Celera Assembler compatible .frg file
-        long_hint: |
-            Other reads (Sanger, 454, etc) one frg file, concatenate your frg files into one if you have many
+        short-hint : Must have been converted into a Celera Assembler compatible .frg file. Other reads (Sanger, 454, etc) one frg file, concatenate your frg files into one if you have many.
     jf_size :
-        ui-name : jellyfish_size<font color=red>*</font>
+        ui-name : Jellyfish Size<
         short-hint : |
-            An integer for the mandatory jellyfish hash size
+            An integer for the mandatory jellyfish hash size.
     output_contigset_name :
         ui-name : |
-            Output ContigSet Name<font color=red>*</font>
+            Output ContigSet Name
         short-hint : |
-            The name for the resulting ContigSet will be saved in KBase
+            The name for the resulting ContigSet that will be saved in KBase.
     graph_kmer_size :
         ui-name : |
-            graph_kmer_size
+            Graph K-mer Size
         short-hint : |
-            kmer size to be used for super reads
-        long-hint: |
-            this is k-mer size for deBruijn graph values between 25 and 127 are supported, auto will compute the optimal size based on the read data and GC content
+            The k-mer size to be used for super reads. This is k-mer size for deBruijn graph (values between 25 and 127 are supported). Auto will compute the optimal size based on the read data and GC content.
     use_linking_mates :
         ui-name : |
-            use_linking_mates
+            Use Linking Mates
         short-hint : |
-            Those that do not end up in the same super read are called 'linking mates'
-        long-hint: |
-            Check this for all Illumina-only assemblies; uncheck if you have more than 15x coverage by long reads (Pacbio or Nanopore) or any other long reads/mate pairs (Illumina MP, Sanger, 454, etc)
+            Those that do not end up in the same super read are called 'linking mates.' Check this for all Illumina-only assemblies. Uncheck if you have more than 15x coverage by long reads (Pacbio or Nanopore) or any other long reads/mate pairs (Illumina MP, Sanger, 454, etc).
     dna_source :
         ui-name : |
-            dna_source
+            DNA Source
         short-hint : |
-            bacteria or other organisms
-        long-hint: |
-            This parameter is useful if you have too many Illumina jumping library mates. It decides to set the limit_jump_coverage to 60 for bacteria and 300 for the other organisms; cgwErrorRate to 0.25 for bacteria and 0.15 for the other organisms
+            Bacteria or other organisms. This parameter is useful if you have too many Illumina jumping library mates. It decides to set the limit_jump_coverage to 60 for bacteria and 300 for the other organisms and the cgwErrorRate to 0.25 for bacteria and 0.15 for the other organisms.
     kmer_count_threshold :
         ui-name : |
-            kmer_count_threshold
+            K-mer Count Threshold
         short-hint : |
-            minimum count k-mers used in error correction 1 means all k-mers are used. one can increase to 2 if coverage >100
-        long-hint : |
-            MaSuRCA works best with coverage up to 150x. To use 200x+ coverage data you need to set KMER_COUNT_THRESHOLD parameter in the config file to 2 or 3, or simply use part of the data.
+            The minimum count k-mers used in error correction. 1 means all k-mers are used. Users can increase to 2 if coverage >100. MaSuRCA works best with coverage up to 150x. To use 200x+ coverage data, you need to set KMER_COUNT_THRESHOLD parameter in the config file to 2 or 3, or simply use part of the data.
     close_gaps :
         ui-name : |
-            close_gaps
+            Close Gaps
         short-hint : |
-            whether to attempt to close gaps in scaffolds with Illumina data (1) or not (0)
+            Whether to attempt to close gaps in scaffolds with Illumina data (1) or not (0).
     soap_assembly :
         ui-name : |
-            soap_assembly
+            Soap Assembly
         short-hint : |
-            set this to 1 to use SOAPdenovo contigging/scaffolding module.  Assembly will be worse but will run faster. Useful for very large (>5Gbp) genomes from Illumina-only data
+            Set this to 1 to use SOAPdenovo contigging/scaffolding module. The assembly will be worse, but it will run faster. Useful for very large (>5Gbp) genomes from Illumina-only data.
     do_homopolymer_trim :
         ui-name : |
-            do_homopolymer_trim
+            Do Homopolymer Trim
         short-hint : |
-            specifies if we do (1) or do not (0) want to trim long runs of homopolymers (e.g. GGGGGGGG) from 3 prime read ends, use it for high GC genomes DO_HOMOPOLYMER_TRIM=0
+            Specifies whether the user does (1) or does not (0) want to trim long runs of homopolymers (e.g. GGGGGGGG) from the 3’ read ends. Use it for high GC genomes.
 
 parameter-groups :
     reads_libraries :
         ui-name : |
-            Reads libraries to be assembled<font color=red>*</font>
+            Reads Libraries
         short-hint : |
-        long-hint  : |
+            The reads libraries to be assembled.
     jump_libraries :
         ui-name : |
-            Jump reads to be assembled
+            Jump Reads
         short-hint : |
-        long-hint  : |
+            The jump reads to be assembled.
 
 
 description : |
-    This is a KBase wrapper for <a href="https://academic.oup.com/bioinformatics/article/29/21/2669/195975/The-MaSuRCA-genome-assembler">MaSuRCA (Maryland Super Read Cabog Assembler).</a>
-    <The MaSuRCA assembler combines the benefits of deBruijn graph and Overlap-Layout-Consensus assembly approaches. Since version 3.2.1 it supports hybrid assembly with short Illumina reads and long high error PacBio/MinION data.
-    <strong>The MaSuRCA Quick Start Guide is available here:</strong><br><a href="ftp://ftp.genome.umd.edu/pub/MaSuRCA/MaSuRCA_QuickStartGuide.pdf">ftp://ftp.genome.umd.edu/pub/MaSuRCA/MaSuRCA_QuickStartGuide.pdf</a>
+    <p>This is a KBase wrapper for <a href="https://academic.oup.com/bioinformatics/article/29/21/2669/195975/The-MaSuRCA-genome-assembler">MaSuRCA (Maryland Super Read Cabog Assembler).</a> The MaSuRCA assembler combines the benefits of deBruijn graph and Overlap-Layout-Consensus assembly approaches. Since version 3.2.1, it supports hybrid assembly with short Illumina reads and long high error PacBio/MinION data.</p>
+
+    <p>MaSuRCA uses long reads with higher error rates combined with relatively shorter reads with lower error rates to create *mega-reads*, which are them assembled. MaSuRCA extends Illumina reads into *super-reads*, and then aligns the super-reads with PacBio reads to create the mega-reads. The assembly calls for at least 10x coverage of PacBio reads and 100x coverage of Illumina reads.</p>
+
+    <p>More information can be found at the MaSuRCA <a href="http://www.genome.umd.edu/masurca.html"> homepage</a>.</p>
+
 
 publications :
     -
