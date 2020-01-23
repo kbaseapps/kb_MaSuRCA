@@ -136,6 +136,17 @@ description : |
 
     <p>MaSuRCA uses long reads with higher error rates combined with relatively shorter reads with lower error rates to create *mega-reads*, which are them assembled. MaSuRCA extends Illumina reads into *super-reads*, and then aligns the super-reads with PacBio reads to create the mega-reads. The assembly calls for at least 10x coverage of PacBio reads and 100x coverage of Illumina reads.</p>
 
+    <p>DATA is specified as type {PE,JUMP,OTHER,PACBIO} and 5 fields:</p>
+    <ul>
+        <li>two_letter_prefix</li>
+        <li>mean</li>
+        <li>stdev</li>
+        <li>fastq(.gz)_fwd_reads</li>
+        <li>fastq(.gz)_rev_reads<li>
+    </ul>
+    <p>The PE reads are always assumed to be innies, i.e. --->.<---, and JUMP are assumed to be outties
+<---.--->. If there are any jump libraries that are innies, such as longjump, specify them as JUMP and specify NEGATIVE mean. Reverse reads are optional for PE libraries and mandatory for JUMP libraries. Any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg files (see http://wgs-assembler.sourceforge.com)</p>
+
     <p>More information can be found at the MaSuRCA <a href="http://www.genome.umd.edu/masurca.html"> homepage</a>.</p>
 
 
