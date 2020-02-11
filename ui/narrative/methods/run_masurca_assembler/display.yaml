@@ -144,11 +144,10 @@ description : |
         <li>fastq(.gz)_fwd_reads</li>
         <li>fastq(.gz)_rev_reads<li>
     </ul>
-    <p>The PE reads are always assumed to be innies, i.e. --->.<---, and JUMP are assumed to be outties
-<---.--->. If there are any jump libraries that are innies, such as longjump, specify them as JUMP and specify NEGATIVE mean. Reverse reads are optional for PE libraries and mandatory for JUMP libraries. Any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg files (see http://wgs-assembler.sourceforge.com)</p>
+
+    <p>The PE reads are always assumed to be innies, i.e. --->.<---, and JUMP are assumed to be outties <---.--->. If there are any jump libraries that are innies, such as longjump, specify them as JUMP and specify NEGATIVE mean. Reverse reads are optional for PE libraries and mandatory for JUMP libraries. Any OTHER sequence data (454, Sanger, Ion torrent, etc) must be first converted into Celera Assembler compatible .frg files (see http://wgs-assembler.sourceforge.com)</p>
 
     <p>More information can be found at the MaSuRCA <a href="http://www.genome.umd.edu/masurca.html"> homepage</a>.</p>
-
 
 publications :
     -
