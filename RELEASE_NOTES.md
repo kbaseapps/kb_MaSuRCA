@@ -1,3 +1,7 @@
+### Version 1.1.3
+__Changes__
+- updated docs
+
 ### Version 1.1.2
 __Changes__
 - updated docs
